@@ -1,5 +1,6 @@
-package com.example.graphql;
+package com.example.graphql.repository.jpa;
 
+import com.example.graphql.Person;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -2,6 +2,7 @@ type Query {
     persons: [Person]
     personById(id: ID!): Person
     personsByCity(city: String!): [Person]
+    searchPeople(text: String!): [Person]
 }
 
 type Mutation {

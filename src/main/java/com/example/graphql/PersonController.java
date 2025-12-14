@@ -31,6 +31,11 @@ public class PersonController {
         return personService.findByCity(city);
     }
 
+    @QueryMapping
+    public List<Person> searchPeople(@Argument String text) {
+        return personService.searchByName(text);
+    }
+
     @MutationMapping
     public Person createPerson(@Argument String name, @Argument int age) {
         return personService.save(new Person(null, name, age, new java.util.ArrayList<>()));
