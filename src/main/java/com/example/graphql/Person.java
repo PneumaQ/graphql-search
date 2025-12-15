@@ -21,7 +21,10 @@ public class Person {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Field(type = FieldType.Text, analyzer = "standard")
+    @org.springframework.data.elasticsearch.annotations.MultiField(
+            mainField = @Field(type = FieldType.Text, analyzer = "standard"),
+            otherFields = { @org.springframework.data.elasticsearch.annotations.InnerField(suffix = "keyword", type = FieldType.Keyword) }
+    )
     private String name;
     
     @Field(type = FieldType.Integer)
