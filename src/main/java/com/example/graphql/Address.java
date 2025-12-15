@@ -20,5 +20,6 @@ public class Address {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "person_id")
+    @org.springframework.data.annotation.Transient
     private Person person;
 }

@@ -53,7 +53,7 @@ public class PersonService {
         
         person.getAddresses().add(address);
         Person saved = personRepository.save(person);
-        // personSearchRepository.save(saved);
+        personSearchRepository.save(saved);
         saved.getAddresses().size(); // Force initialization of the collection
         return saved;
     }
