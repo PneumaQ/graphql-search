@@ -20,15 +20,24 @@
 <body>
     <h1>GraphQL Person Manager</h1>
 
+    <h2>Mutations</h2>
+
     <div class="card">
         <h3>1. Create Person (Mutation)</h3>
-        <p>Creates a new person named "Alice" with age 30.</p>
+        <p>Creates a new person named "Alice" with extra details.</p>
         <pre id="query-create">
 mutation {
-  createPerson(name: "Alice", age: 30) {
+  createPerson(
+    name: "Alice", 
+    age: 30, 
+    email: "alice@example.com", 
+    isActive: true, 
+    salary: 95000.0
+  ) {
     id
     name
-    age
+    email
+    isActive
   }
 }</pre>
         <button onclick="runQuery('query-create', 'result-create')">Run Create Mutation</button>
@@ -37,26 +46,7 @@ mutation {
     </div>
 
     <div class="card">
-        <h3>2. Get All Persons (with Addresses)</h3>
-        <p>Fetches the list of all people and their addresses.</p>
-        <pre id="query-all">
-query {
-  persons {
-    id
-    name
-    addresses {
-      street
-      city
-    }
-  }
-}</pre>
-        <button onclick="runQuery('query-all', 'result-all')">Run List Query</button>
-        <div class="response-label">Response:</div>
-        <pre id="result-all" class="result-box">Waiting for action...</pre>
-    </div>
-
-    <div class="card">
-        <h3>3. Add Address to Person (Mutation)</h3>
+        <h3>2. Add Address to Person (Mutation)</h3>
         <p>Adds an address to Person ID 1.</p>
         <pre id="query-address">
 mutation {
@@ -65,19 +55,48 @@ mutation {
     street: "123 Main St", 
     city: "New York", 
     state: "NY", 
-    zip: "10001"
+    zip: "10001",
+    country: "USA",
+    isPrimary: true
   ) {
     id
     name
     addresses {
       street
       city
+      isPrimary
     }
   }
 }</pre>
         <button onclick="runQuery('query-address', 'result-address')">Run Add Address</button>
         <div class="response-label">Response:</div>
         <pre id="result-address" class="result-box">Waiting for action...</pre>
+    </div>
+
+    <hr>
+    <h2>Database Queries (JPA)</h2>
+
+    <div class="card">
+        <h3>3. Get All Persons (with Addresses)</h3>
+        <p>Fetches the list of all people and their addresses.</p>
+        <pre id="query-all">
+query {
+  persons {
+    id
+    name
+    email
+    salary
+    isActive
+    addresses {
+      street
+      city
+      country
+    }
+  }
+}</pre>
+        <button onclick="runQuery('query-all', 'result-all')">Run List Query</button>
+        <div class="response-label">Response:</div>
+        <pre id="result-all" class="result-box">Waiting for action...</pre>
     </div>
 
     <div class="card">
@@ -89,6 +108,8 @@ query {
     id
     name
     age
+    email
+    birthDate
   }
 }</pre>
         <button onclick="runQuery('query-one', 'result-one')">Run ID Query</button>
@@ -108,6 +129,8 @@ query {
       city
       state
       zip
+      country
+      isPrimary
     }
   }
 }</pre>
@@ -133,6 +156,117 @@ query {
         <button onclick="runQuery('query-city', 'result-city')">Run City Search</button>
         <div class="response-label">Response:</div>
         <pre id="result-city" class="result-box">Waiting for action...</pre>
+    </div>
+
+    <hr>
+    <h2>Elasticsearch Queries</h2>
+
+    <div class="card">
+        <h3>7. Global Search (Google-like)</h3>
+        <p>Full-text search across Name, Email, Phone, Street, City, Zip, and Country.</p>
+        <pre id="query-search">
+query {
+  searchPeople(text: "New York") {
+    id
+    name
+    email
+    addresses {
+      street
+      city
+    }
+  }
+}</pre>
+        <button onclick="runQuery('query-search', 'result-search')">Run Global Search</button>
+        <div class="response-label">Response:</div>
+        <pre id="result-search" class="result-box">Waiting for action...</pre>
+    </div>
+
+    <div class="card">
+        <h3>8. Get Name Facets (Aggregation)</h3>
+        <p>Counts the occurrences of each name in the index.</p>
+        <pre id="query-facets">
+query {
+  nameFacets {
+    value
+    count
+  }
+}</pre>
+        <button onclick="runQuery('query-facets', 'result-facets')">Run Facet Query</button>
+        <div class="response-label">Response:</div>
+        <pre id="result-facets" class="result-box">Waiting for action...</pre>
+    </div>
+
+    <div class="card">
+        <h3>9. Search with Facets</h3>
+        <p>Global search plus aggregated counts for Active status, Country, and State.</p>
+        <pre id="query-faceted">
+query {
+  searchWithFacets(text: "") {
+    items {
+      name
+      email
+    }
+    facets {
+      byActive { value, count }
+      byCountry { value, count }
+      byState { value, count }
+    }
+  }
+}</pre>
+        <button onclick="runQuery('query-faceted', 'result-faceted')">Run Faceted Search</button>
+        <div class="response-label">Response:</div>
+        <pre id="result-faceted" class="result-box">Waiting for action...</pre>
+    </div>
+
+    <div class="card">
+        <h3>10. Rich Filter (Complex Logic)</h3>
+        <p>Global search for "John" AND (Salary > 80,000 OR Active=True) AND Country="USA".</p>
+        <pre id="query-filtered">
+query {
+  searchWithFacets(
+    text: "", 
+    filter: { 
+      address_country: { eq: "USA" }
+      or: [
+        { salary: { gt: 80000.0 } },
+        { isActive: { eq: true } }
+      ]
+    },
+    page: 0,
+    size: 5
+  ) {
+    totalElements
+    items {
+      name
+      email
+      salary
+      isActive
+    }
+  }
+}</pre>
+        <button onclick="runQuery('query-filtered', 'result-filtered')">Run Rich Filter Search</button>
+        <div class="response-label">Response:</div>
+        <pre id="result-filtered" class="result-box">Waiting for action...</pre>
+    </div>
+
+    <div class="card">
+        <h3>11. Sorted Search</h3>
+        <p>Global search + Sorting by Salary (Highest First).</p>
+        <pre id="query-sorted">
+query {
+  searchWithFacets(
+    text: "", 
+    sort: { field: SALARY, direction: DESC }
+  ) {
+    items {
+      name
+      salary
+    }
+  }
+}</pre>
+        <button onclick="runQuery('query-sorted', 'result-sorted')">Run Sorted Search</button>
+        <div class="response-label">Response:</div>
+        <pre id="result-sorted" class="result-box">Waiting for action...</pre>
     </div>
 
     <script>

@@ -7,12 +7,20 @@ import org.springframework.boot.test.autoconfigure.graphql.tester.AutoConfigureG
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.graphql.test.tester.GraphQlTester;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.SearchHit;
+import org.springframework.data.elasticsearch.core.query.Query;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -24,6 +32,9 @@ class PersonGraphqlTest {
 
     @MockitoBean
     private PersonSearchRepository personSearchRepository;
+
+    @MockitoBean
+    private ElasticsearchOperations elasticsearchOperations;
 
     @Test
     void shouldCreateAndGetPerson() {
@@ -148,9 +159,15 @@ class PersonGraphqlTest {
 
     @Test
     void shouldSearchPeople() {
-        // Mock Elasticsearch repository response
-        Person mockPerson = new Person(1L, "Search Match", 20, Collections.emptyList());
-        when(personSearchRepository.findByNameContaining(anyString())).thenReturn(List.of(mockPerson));
+        // Mock Elasticsearch operations response
+        Person mockPerson = new Person(1L, null, "Search Match", 20, null, null, null, null, null, Collections.emptyList());
+        
+        SearchHits<Person> mockHits = mock(SearchHits.class);
+        SearchHit<Person> mockHit = mock(SearchHit.class);
+        when(mockHit.getContent()).thenReturn(mockPerson);
+        when(mockHits.stream()).thenReturn(Stream.of(mockHit));
+        
+        when(elasticsearchOperations.search(any(Query.class), eq(Person.class))).thenReturn(mockHits);
 
         String searchQuery = """
             query {

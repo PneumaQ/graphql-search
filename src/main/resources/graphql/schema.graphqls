@@ -3,17 +3,106 @@ type Query {
     personById(id: ID!): Person
     personsByCity(city: String!): [Person]
     searchPeople(text: String!): [Person]
+    nameFacets: [NameFacet]
+    searchWithFacets(text: String!, filter: PersonFilterInput, page: Int, size: Int, sort: PersonSort): PersonConnection
+}
+
+input PersonFilterInput {
+    and: [PersonFilterInput]
+    or: [PersonFilterInput]
+    not: PersonFilterInput
+    
+    # Fields
+    name: StringFilter
+    email: StringFilter
+    age: IntFilter
+    salary: FloatFilter
+    isActive: BooleanFilter
+    
+    # Nested Fields (Simplified for this layer, handled by builder)
+    address_country: StringFilter
+    address_state: StringFilter
+    address_city: StringFilter
+}
+
+input StringFilter {
+    eq: String
+    contains: String
+    in: [String]
+}
+
+input IntFilter {
+    eq: Int
+    gt: Int
+    lt: Int
+    gte: Int
+    lte: Int
+}
+
+input FloatFilter {
+    eq: Float
+    gt: Float
+    lt: Float
+}
+
+input BooleanFilter {
+    eq: Boolean
+}
+
+input PersonSort {
+    field: SortField!
+    direction: SortDirection
+}
+
+enum SortField {
+    NAME
+    AGE
+    SALARY
+    BIRTH_DATE
+}
+
+enum SortDirection {
+    ASC
+    DESC
+}
+
+type PersonConnection {
+    items: [Person]
+    facets: PersonFacets
+    totalElements: Int
+    totalPages: Int
+}
+
+type PersonFacets {
+    byActive: [FacetBucket]
+    byCountry: [FacetBucket]
+    byState: [FacetBucket]
+}
+
+type FacetBucket {
+    value: String
+    count: Int
+}
+
+type NameFacet {
+    value: String
+    count: Int
 }
 
 type Mutation {
-    createPerson(name: String!, age: Int!): Person
-    addAddress(personId: ID!, street: String!, city: String!, state: String!, zip: String!): Person
+    createPerson(name: String!, age: Int!, email: String, phoneNumber: String, birthDate: String, isActive: Boolean, salary: Float): Person
+    addAddress(personId: ID!, street: String!, city: String!, state: String!, zip: String!, country: String, isPrimary: Boolean): Person
 }
 
 type Person {
     id: ID!
     name: String!
     age: Int!
+    email: String
+    phoneNumber: String
+    birthDate: String
+    isActive: Boolean
+    salary: Float
     addresses: [Address]
 }
 
@@ -24,4 +113,6 @@ type Address {
     city: String
     state: String
     zip: String
+    country: String
+    isPrimary: Boolean
 }

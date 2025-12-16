@@ -1,0 +1,47 @@
+{
+  "query": {
+    "nested": {
+      "path": "addresses",
+      "query": {
+        "match": {
+          "addresses.city": "New York"
+        }
+      }
+    }
+  }
+}
+
+{
+  "error": {
+    "root_cause": [
+      {
+        "type": "query_shard_exception",
+        "reason": "failed to create query: [nested] failed to find nested object under path [addresses]",
+        "index_uuid": "HPy2xQvOSG6dUzYF6Z2z_A",
+        "index": "person"
+      }
+    ],
+    "type": "search_phase_execution_exception",
+    "reason": "all shards failed",
+    "phase": "query",
+    "grouped": true,
+    "failed_shards": [
+      {
+        "shard": 0,
+        "index": "person",
+        "node": "oM-H5IeeS9On2nLL-WjnCw",
+        "reason": {
+          "type": "query_shard_exception",
+          "reason": "failed to create query: [nested] failed to find nested object under path [addresses]",
+          "index_uuid": "HPy2xQvOSG6dUzYF6Z2z_A",
+          "index": "person",
+          "caused_by": {
+            "type": "illegal_state_exception",
+            "reason": "[nested] failed to find nested object under path [addresses]"
+          }
+        }
+      }
+    ]
+  },
+  "status": 400
+}
