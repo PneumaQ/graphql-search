@@ -6,10 +6,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import com.example.graphql.person.service.PersonService;
+import com.example.graphql.publications.service.PublicationService;
+import com.example.graphql.person.model.Person;
+import com.example.graphql.publications.model.Publication;
 
 @SpringBootApplication
-@EnableJpaRepositories(basePackages = "com.example.graphql.repository.jpa")
-@EnableElasticsearchRepositories(basePackages = "com.example.graphql.repository.search")
+@EnableJpaRepositories(basePackages = {"com.example.graphql.person.repository.jpa", "com.example.graphql.publications.repository.jpa"})
+@EnableElasticsearchRepositories(basePackages = {"com.example.graphql.person.repository.search", "com.example.graphql.publications.repository.search"})
 public class GraphqlApplication {
 
     public static void main(String[] args) {

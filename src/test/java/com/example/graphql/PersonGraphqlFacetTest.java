@@ -1,7 +1,9 @@
 package com.example.graphql;
 
-import com.example.graphql.filter.PersonFilterInput;
-import com.example.graphql.filter.PersonSort;
+import com.example.graphql.person.filter.PersonFilterInput;
+import com.example.graphql.person.filter.PersonSort;
+import com.example.graphql.person.model.Person;
+import com.example.graphql.person.service.PersonService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.graphql.tester.AutoConfigureGraphQlTester;

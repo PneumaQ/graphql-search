@@ -1,6 +1,8 @@
 package com.example.graphql;
 
-import com.example.graphql.repository.search.PersonSearchRepository;
+import com.example.graphql.person.repository.search.PersonSearchRepository;
+import com.example.graphql.person.model.Person;
+import com.example.graphql.person.model.Address;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.graphql.tester.AutoConfigureGraphQlTester;
@@ -34,7 +36,7 @@ class PersonGraphqlTest {
     private PersonSearchRepository personSearchRepository;
 
     @MockitoBean
-    private com.example.graphql.repository.search.PublicationSearchRepository publicationSearchRepository;
+    private com.example.graphql.publications.repository.search.PublicationSearchRepository publicationSearchRepository;
 
     @MockitoBean
     private ElasticsearchOperations elasticsearchOperations;

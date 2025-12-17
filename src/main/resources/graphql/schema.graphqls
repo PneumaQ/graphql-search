@@ -48,9 +48,9 @@ input PersonFilterInput {
     isActive: BooleanFilter
     
     # Nested Fields (Simplified for this layer, handled by builder)
-    address_country: StringFilter
-    address_state: StringFilter
-    address_city: StringFilter
+    addresses_country: StringFilter
+    addresses_state: StringFilter
+    addresses_city: StringFilter
 }
 
 input StringFilter {
