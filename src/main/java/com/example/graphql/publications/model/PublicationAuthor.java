@@ -8,8 +8,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.EqualsAndHashCode;
-import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
+import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 
 @Entity
 @Data
@@ -21,24 +24,24 @@ public class PublicationAuthor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Field(type = FieldType.Integer)
-    private Integer rank; // 1st author, 2nd author, etc.
+    @GenericField
+    private Integer rank;
 
-    @Field(type = FieldType.Boolean)
+    @GenericField
     private Boolean isCorresponding;
 
-    @Field(type = FieldType.Text)
+    @FullTextField(analyzer = "standard")
     private String affiliationAtTimeOfPublication;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "publication_id")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @org.springframework.data.annotation.Transient
     private Publication publication;
 
-    @ManyToOne(fetch = FetchType.EAGER) // We generally want the person details when fetching an author
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "person_id")
-    @Field(type = FieldType.Object) // In ES, this will embed the Person object by default
+    @IndexedEmbedded // This allows searching Publications by Author Name
+    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
     private Person person;
 }

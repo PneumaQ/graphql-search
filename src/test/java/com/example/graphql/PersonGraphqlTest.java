@@ -3,26 +3,20 @@ package com.example.graphql;
 import com.example.graphql.person.repository.search.PersonSearchRepository;
 import com.example.graphql.person.model.Person;
 import com.example.graphql.person.model.Address;
+import com.example.graphql.person.service.PersonService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.graphql.tester.AutoConfigureGraphQlTester;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.graphql.test.tester.GraphQlTester;
-import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.springframework.data.elasticsearch.core.SearchHits;
-import org.springframework.data.elasticsearch.core.SearchHit;
-import org.springframework.data.elasticsearch.core.query.Query;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -37,9 +31,6 @@ class PersonGraphqlTest {
 
     @MockitoBean
     private com.example.graphql.publications.repository.search.PublicationSearchRepository publicationSearchRepository;
-
-    @MockitoBean
-    private ElasticsearchOperations elasticsearchOperations;
 
     @MockitoBean
     private org.springframework.boot.CommandLineRunner commandLineRunner;
@@ -168,15 +159,15 @@ class PersonGraphqlTest {
 
     @Test
     void shouldSearchPeople() {
-        // Mock Elasticsearch operations response
-        Person mockPerson = new Person(1L, null, "Search Match", 20, null, null, null, null, null, Collections.emptyList());
+        // Mock PersonSearchRepository response
+        Person mockPerson = new Person(1L, "Search Match", 20, null, null, null, null, null, Collections.emptyList());
         
-        SearchHits<Person> mockHits = mock(SearchHits.class);
-        SearchHit<Person> mockHit = mock(SearchHit.class);
-        when(mockHit.getContent()).thenReturn(mockPerson);
-        when(mockHits.stream()).thenReturn(Stream.of(mockHit));
+        PersonService.PersonSearchResponse mockResponse = new PersonService.PersonSearchResponse(
+            List.of(mockPerson),
+            Map.of(), Map.of(), Map.of(), null, null, 1, 1
+        );
         
-        when(elasticsearchOperations.search(any(Query.class), eq(Person.class))).thenReturn(mockHits);
+        when(personSearchRepository.searchWithFacets(any(), any(), any())).thenReturn(mockResponse);
 
         String searchQuery = """
             query {

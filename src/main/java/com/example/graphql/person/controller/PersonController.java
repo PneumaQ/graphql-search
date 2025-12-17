@@ -29,7 +29,7 @@ public class PersonController {
     }
 
     @QueryMapping
-    public PersonConnection searchPeople(
+    public PersonSearchResult searchPeople(
             @Argument String text, 
             @Argument PersonFilterInput filter,
             @Argument Integer page,
@@ -44,7 +44,7 @@ public class PersonController {
             List<org.springframework.data.domain.Sort.Order> orders = sort.stream()
                 .map(s -> {
                     String fieldName = switch (s.field()) {
-                        case NAME -> "name.keyword";
+                        case NAME -> "name_keyword";
                         case AGE -> "age";
                         case SALARY -> "salary";
                         case BIRTH_DATE -> "birthDate";
@@ -69,7 +69,7 @@ public class PersonController {
             mapStats(response.ageStats())
         );
 
-        return new PersonConnection(
+        return new PersonSearchResult(
             response.results(), 
             new PersonFacets(active, country, state),
             stats,
@@ -90,7 +90,7 @@ public class PersonController {
     }
 
     public record NameFacet(String value, int count) {}
-    public record PersonConnection(List<Person> results, PersonFacets facets, PersonStats stats, int totalElements, int totalPages) {}
+    public record PersonSearchResult(List<Person> results, PersonFacets facets, PersonStats stats, int totalElements, int totalPages) {}
     public record PersonFacets(List<FacetBucket> byActive, List<FacetBucket> byCountry, List<FacetBucket> byState) {}
     public record PersonStats(NumericStats salary, NumericStats age) {}
     public record NumericStats(Double min, Double max, Double avg, Double sum, Integer count) {}
@@ -108,7 +108,7 @@ public class PersonController {
         
         java.time.LocalDate parsedDate = (birthDate != null) ? java.time.LocalDate.parse(birthDate) : null;
         
-        return personService.save(new Person(null, null, name, age, email, phoneNumber, parsedDate, isActive, salary, new java.util.ArrayList<>()));
+        return personService.save(new Person(null, name, age, email, phoneNumber, parsedDate, isActive, salary, new java.util.ArrayList<>()));
     }
 
     @MutationMapping

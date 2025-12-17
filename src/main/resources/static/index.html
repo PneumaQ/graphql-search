@@ -334,6 +334,41 @@ query {
         <pre id="result-kitchensink" class="result-box">Waiting for action...</pre>
     </div>
 
+    <div class="card">
+        <h3>13. The "Kitchen Sink" Query for Publications</h3>
+        <p>Full-Text + Structured Filter + Facets + Pagination + Sorting.</p>
+        <pre id="query-pub-kitchensink">
+query {
+  searchPublications(
+    text: "",
+    filter: {
+      status: { eq: "PUBLISHED" }
+    },
+    page: 0,
+    size: 10,
+    sort: [
+      { field: PUBLICATION_DATE, direction: DESC }
+    ]
+  ) {
+    totalElements
+    totalPages
+    results {
+      title
+      journalName
+      status
+      publicationDate
+    }
+    facets {
+      byStatus { value, count }
+      byJournal { value, count }
+    }
+  }
+}</pre>
+        <button onclick="runQuery('query-pub-kitchensink', 'result-pub-kitchensink')">Run Publication Kitchen Sink Search</button>
+        <div class="response-label">Response:</div>
+        <pre id="result-pub-kitchensink" class="result-box">Waiting for action...</pre>
+    </div>
+
     <script>
         async function runQuery(queryElementId, resultElementId) {
             const queryElement = document.getElementById(queryElementId);

@@ -38,7 +38,7 @@ class PersonGraphqlFacetTest {
     @Test
     void shouldReturnFacetsAndStats() {
         // Mock Response
-        Person person = new Person(1L, null, "John Doe", 30, "john@example.com", null, null, true, 50000.0, Collections.emptyList());
+        Person person = new Person(1L, "John Doe", 30, "john@example.com", null, null, true, 50000.0, Collections.emptyList());
         
         PersonService.NumericStats ageStats = new PersonService.NumericStats(20.0, 40.0, 30.0, 300.0, 10);
         PersonService.NumericStats salaryStats = new PersonService.NumericStats(40000.0, 60000.0, 50000.0, 500000.0, 10);

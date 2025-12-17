@@ -4,16 +4,21 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.elasticsearch.annotations.Document;
-import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.hibernate.search.engine.backend.types.Sortable;
+import org.hibernate.search.engine.backend.types.Aggregable;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
+import org.hibernate.annotations.BatchSize;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Document(indexName = "publication")
+@Indexed(index = "publication")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -23,22 +28,24 @@ public class Publication {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Field(type = FieldType.Text, analyzer = "standard")
+    @FullTextField(analyzer = "standard")
+    @KeywordField(name = "title_keyword", sortable = Sortable.YES, aggregable = Aggregable.YES) // For sorting
     private String title;
 
-    @Field(type = FieldType.Keyword)
+    @KeywordField(name = "journalName_keyword", sortable = Sortable.YES, aggregable = Aggregable.YES)
     private String journalName;
 
-    @Field(type = FieldType.Date, format = org.springframework.data.elasticsearch.annotations.DateFormat.date)
+    @GenericField(sortable = Sortable.YES)
     private LocalDate publicationDate;
 
-    @Field(type = FieldType.Keyword)
+    @KeywordField(name = "status_keyword", sortable = Sortable.YES, aggregable = Aggregable.YES)
     private String status; // e.g., "SUBMITTED", "PUBLISHED"
 
-    @Field(type = FieldType.Keyword)
+    @KeywordField(name = "doi_keyword", aggregable = Aggregable.YES)
     private String doi;
 
     @OneToMany(mappedBy = "publication", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Field(type = FieldType.Nested)
+    @IndexedEmbedded
+    @BatchSize(size = 20)
     private List<PublicationAuthor> authors = new ArrayList<>();
 }

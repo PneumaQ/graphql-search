@@ -6,13 +6,19 @@ type Query {
         page: Int, 
         size: Int, 
         sort: [PersonSort]
-    ): PersonConnection
+    ): PersonSearchResult
 
     personById(id: ID!): Person
     
     # Publication Queries
     publications: [Publication]
-    searchPublications(text: String!): [Publication]
+    searchPublications(
+        text: String,
+        filter: PublicationFilterInput,
+        page: Int,
+        size: Int,
+        sort: [PublicationSort]
+    ): PublicationSearchResult
 }
 
 type Publication {
@@ -31,6 +37,43 @@ type PublicationAuthor {
     isCorresponding: Boolean
     affiliationAtTimeOfPublication: String
     person: Person
+}
+
+input PublicationFilterInput {
+    id: StringFilter
+    and: [PublicationFilterInput]
+    or: [PublicationFilterInput]
+    not: PublicationFilterInput
+    
+    title: StringFilter
+    journalName: StringFilter
+    publicationDate: DateFilter
+    status: StringFilter
+    doi: StringFilter
+}
+
+input PublicationSort {
+    field: PublicationSortField!
+    direction: SortDirection
+}
+
+enum PublicationSortField {
+    TITLE
+    PUBLICATION_DATE
+    JOURNAL
+    STATUS
+}
+
+type PublicationSearchResult {
+    results: [Publication]
+    facets: PublicationFacets
+    totalElements: Int
+    totalPages: Int
+}
+
+type PublicationFacets {
+    byStatus: [FacetBucket]
+    byJournal: [FacetBucket]
 }
 
 input PersonFilterInput {
@@ -104,7 +147,7 @@ enum SortDirection {
     DESC
 }
 
-type PersonConnection {
+type PersonSearchResult {
     results: [Person]
     facets: PersonFacets
     stats: PersonStats

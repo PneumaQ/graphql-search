@@ -9,13 +9,11 @@ import com.example.graphql.person.model.Person;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.graphql.publications.filter.PublicationFilterInput;
+import org.springframework.data.domain.Pageable;
+import java.util.Map;
 import java.time.LocalDate;
 import java.util.List;
-
-import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.springframework.data.elasticsearch.client.elc.NativeQuery;
-import org.springframework.data.elasticsearch.core.SearchHits;
-import java.util.stream.Collectors;
 
 @Service
 public class PublicationService {
@@ -23,16 +21,13 @@ public class PublicationService {
     private final PublicationRepository publicationRepository;
     private final PublicationSearchRepository publicationSearchRepository;
     private final PersonRepository personRepository;
-    private final ElasticsearchOperations elasticsearchOperations;
 
     public PublicationService(PublicationRepository publicationRepository, 
                               PublicationSearchRepository publicationSearchRepository,
-                              PersonRepository personRepository,
-                              ElasticsearchOperations elasticsearchOperations) {
+                              PersonRepository personRepository) {
         this.publicationRepository = publicationRepository;
         this.publicationSearchRepository = publicationSearchRepository;
         this.personRepository = personRepository;
-        this.elasticsearchOperations = elasticsearchOperations;
     }
 
     public List<Publication> findAll() {
@@ -40,22 +35,20 @@ public class PublicationService {
     }
     
     public List<Publication> searchPublications(String text) {
-        NativeQuery query = NativeQuery.builder()
-                .withQuery(q -> q.bool(b -> b
-                        .should(s -> s.match(m -> m.field("title").query(text)))
-                        .should(s -> s.nested(n -> n
-                                .path("authors")
-                                .query(nq -> nq.bool(nb -> nb
-                                    .should(ns -> ns.match(nm -> nm.field("authors.person.name").query(text))) // Assumes person is embedded
-                                    .should(ns -> ns.match(nm -> nm.field("authors.affiliationAtTimeOfPublication").query(text)))
-                                ))
-                        ))
-                ))
-                .build();
-        
-        SearchHits<Publication> searchHits = elasticsearchOperations.search(query, Publication.class);
-        return searchHits.stream().map(org.springframework.data.elasticsearch.core.SearchHit::getContent).collect(Collectors.toList());
+        return publicationSearchRepository.searchPublications(text);
     }
+
+    public PublicationSearchResponse searchWithFacets(String text, PublicationFilterInput filter, Pageable pageable) {
+        return publicationSearchRepository.searchWithFacets(text, filter, pageable);
+    }
+
+    public record PublicationSearchResponse(
+        List<Publication> results,
+        Map<String, Long> statusCounts,
+        Map<String, Long> journalCounts,
+        long totalElements,
+        int totalPages
+    ) {}
 
     @Transactional
     public Publication createPublication(String title, String journalName, LocalDate date, String status, String doi) {
@@ -66,9 +59,7 @@ public class PublicationService {
         pub.setStatus(status);
         pub.setDoi(doi);
         
-        Publication saved = publicationRepository.save(pub);
-        publicationSearchRepository.save(saved);
-        return saved;
+        return publicationRepository.save(pub);
     }
 
     @Transactional
@@ -88,12 +79,6 @@ public class PublicationService {
 
         pub.getAuthors().add(author);
         
-        Publication saved = publicationRepository.save(pub);
-        
-        // Critical: In a real system with Hibernate Search, this happens automatically. 
-        // With Spring Data ES, we must explicitly re-save the Aggregate Root to update the index.
-        publicationSearchRepository.save(saved);
-        
-        return saved;
+        return publicationRepository.save(pub);
     }
 }

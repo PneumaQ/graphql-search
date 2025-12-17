@@ -7,12 +7,17 @@ import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.elasticsearch.annotations.Document;
-import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.hibernate.search.engine.backend.types.Sortable;
+import org.hibernate.search.engine.backend.types.Aggregable;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
+import org.hibernate.annotations.BatchSize;
 
 @Entity
-@Document(indexName = "person")
+@Indexed(index = "person")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,39 +26,31 @@ public class Person {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Catch-all field for full-text search
-    @Field(type = FieldType.Text, analyzer = "standard")
-    @org.springframework.data.annotation.Transient // Not stored in DB
-    private String allSearchContent;
-
-    @org.springframework.data.elasticsearch.annotations.MultiField(
-            mainField = @Field(type = FieldType.Text, analyzer = "standard", copyTo = "allSearchContent"),
-            otherFields = { @org.springframework.data.elasticsearch.annotations.InnerField(suffix = "keyword", type = FieldType.Keyword) }
-    )
+    @FullTextField(analyzer = "standard")
+    @KeywordField(name = "name_keyword", sortable = Sortable.YES, aggregable = Aggregable.YES) // Creates name.keyword
     private String name;
     
-    @Field(type = FieldType.Integer)
+    @GenericField(sortable = Sortable.YES)
     private int age;
 
-    @org.springframework.data.elasticsearch.annotations.MultiField(
-            mainField = @Field(type = FieldType.Text, analyzer = "standard", copyTo = "allSearchContent"),
-            otherFields = { @org.springframework.data.elasticsearch.annotations.InnerField(suffix = "keyword", type = FieldType.Keyword) }
-    )
+    @FullTextField(analyzer = "standard")
+    @KeywordField(name = "email_keyword", aggregable = Aggregable.YES) // Creates email.keyword
     private String email;
 
-    @Field(type = FieldType.Keyword, copyTo = "allSearchContent")
+    @KeywordField
     private String phoneNumber;
 
-    @Field(type = FieldType.Date, format = org.springframework.data.elasticsearch.annotations.DateFormat.date)
+    @GenericField(sortable = Sortable.YES)
     private java.time.LocalDate birthDate;
 
-    @Field(type = FieldType.Boolean)
+    @GenericField(aggregable = Aggregable.YES)
     private Boolean isActive;
 
-    @Field(type = FieldType.Double)
+    @GenericField(sortable = Sortable.YES)
     private Double salary;
 
     @jakarta.persistence.OneToMany(mappedBy = "person", cascade = jakarta.persistence.CascadeType.ALL, orphanRemoval = true)
-    @Field(type = FieldType.Nested)
+    @IndexedEmbedded
+    @BatchSize(size = 20)
     private java.util.List<Address> addresses = new java.util.ArrayList<>();
 }
