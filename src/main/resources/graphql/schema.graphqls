@@ -1,13 +1,40 @@
 type Query {
-    persons: [Person]
+    # The Single Master Entry Point for Persons
+    searchPeople(
+        text: String, 
+        filter: PersonFilterInput, 
+        page: Int, 
+        size: Int, 
+        sort: [PersonSort]
+    ): PersonConnection
+
     personById(id: ID!): Person
-    personsByCity(city: String!): [Person]
-    searchPeople(text: String!): [Person]
-    nameFacets: [NameFacet]
-    searchWithFacets(text: String!, filter: PersonFilterInput, page: Int, size: Int, sort: PersonSort): PersonConnection
+    
+    # Publication Queries
+    publications: [Publication]
+    searchPublications(text: String!): [Publication]
+}
+
+type Publication {
+    id: ID!
+    title: String
+    journalName: String
+    publicationDate: String
+    status: String
+    doi: String
+    authors: [PublicationAuthor]
+}
+
+type PublicationAuthor {
+    id: ID!
+    rank: Int
+    isCorresponding: Boolean
+    affiliationAtTimeOfPublication: String
+    person: Person
 }
 
 input PersonFilterInput {
+    id: StringFilter
     and: [PersonFilterInput]
     or: [PersonFilterInput]
     not: PersonFilterInput
@@ -17,6 +44,7 @@ input PersonFilterInput {
     email: StringFilter
     age: IntFilter
     salary: FloatFilter
+    birthDate: DateFilter
     isActive: BooleanFilter
     
     # Nested Fields (Simplified for this layer, handled by builder)
@@ -28,6 +56,8 @@ input PersonFilterInput {
 input StringFilter {
     eq: String
     contains: String
+    startsWith: String
+    endsWith: String
     in: [String]
 }
 
@@ -43,6 +73,14 @@ input FloatFilter {
     eq: Float
     gt: Float
     lt: Float
+}
+
+input DateFilter {
+    eq: String
+    gt: String
+    lt: String
+    gte: String
+    lte: String
 }
 
 input BooleanFilter {
@@ -67,10 +105,24 @@ enum SortDirection {
 }
 
 type PersonConnection {
-    items: [Person]
+    results: [Person]
     facets: PersonFacets
+    stats: PersonStats
     totalElements: Int
     totalPages: Int
+}
+
+type PersonStats {
+    salary: NumericStats
+    age: NumericStats
+}
+
+type NumericStats {
+    min: Float
+    max: Float
+    avg: Float
+    sum: Float
+    count: Int
 }
 
 type PersonFacets {
@@ -92,6 +144,10 @@ type NameFacet {
 type Mutation {
     createPerson(name: String!, age: Int!, email: String, phoneNumber: String, birthDate: String, isActive: Boolean, salary: Float): Person
     addAddress(personId: ID!, street: String!, city: String!, state: String!, zip: String!, country: String, isPrimary: Boolean): Person
+    
+    # Publication Mutations
+    createPublication(title: String!, journalName: String!, publicationDate: String, status: String, doi: String): Publication
+    addAuthorToPublication(publicationId: ID!, personId: ID!, rank: Int!, isCorresponding: Boolean, affiliation: String): Publication
 }
 
 type Person {

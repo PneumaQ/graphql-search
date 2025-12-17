@@ -74,105 +74,22 @@ mutation {
     </div>
 
     <hr>
-    <h2>Database Queries (JPA)</h2>
-
-    <div class="card">
-        <h3>3. Get All Persons (with Addresses)</h3>
-        <p>Fetches the list of all people and their addresses.</p>
-        <pre id="query-all">
-query {
-  persons {
-    id
-    name
-    email
-    salary
-    isActive
-    addresses {
-      street
-      city
-      country
-    }
-  }
-}</pre>
-        <button onclick="runQuery('query-all', 'result-all')">Run List Query</button>
-        <div class="response-label">Response:</div>
-        <pre id="result-all" class="result-box">Waiting for action...</pre>
-    </div>
-
-    <div class="card">
-        <h3>4. Get Person by ID</h3>
-        <p>Fetches a specific person with ID 1.</p>
-        <pre id="query-one">
-query {
-  personById(id: "1") {
-    id
-    name
-    age
-    email
-    birthDate
-  }
-}</pre>
-        <button onclick="runQuery('query-one', 'result-one')">Run ID Query</button>
-        <div class="response-label">Response:</div>
-        <pre id="result-one" class="result-box">Waiting for action...</pre>
-    </div>
-
-    <div class="card">
-        <h3>5. Get Person with Full Address</h3>
-        <p>Fetches Person ID 1 with all address fields.</p>
-        <pre id="query-full-address">
-query {
-  personById(id: "1") {
-    name
-    addresses {
-      street
-      city
-      state
-      zip
-      country
-      isPrimary
-    }
-  }
-}</pre>
-        <button onclick="runQuery('query-full-address', 'result-full-address')">Run Full Address Query</button>
-        <div class="response-label">Response:</div>
-        <pre id="result-full-address" class="result-box">Waiting for action...</pre>
-    </div>
-
-    <div class="card">
-        <h3>6. Find Persons by City</h3>
-        <p>Finds all people living in "New York".</p>
-        <pre id="query-city">
-query {
-  personsByCity(city: "New York") {
-    name
-    addresses {
-      street
-      city
-      zip
-    }
-  }
-}</pre>
-        <button onclick="runQuery('query-city', 'result-city')">Run City Search</button>
-        <div class="response-label">Response:</div>
-        <pre id="result-city" class="result-box">Waiting for action...</pre>
-    </div>
-
-    <hr>
     <h2>Elasticsearch Queries</h2>
 
     <div class="card">
-        <h3>7. Global Search (Google-like)</h3>
+        <h3>3. Global Search (Google-like)</h3>
         <p>Full-text search across Name, Email, Phone, Street, City, Zip, and Country.</p>
         <pre id="query-search">
 query {
   searchPeople(text: "New York") {
-    id
-    name
-    email
-    addresses {
-      street
-      city
+    results {
+      id
+      name
+      email
+      addresses {
+        street
+        city
+      }
     }
   }
 }</pre>
@@ -182,13 +99,17 @@ query {
     </div>
 
     <div class="card">
-        <h3>8. Get Name Facets (Aggregation)</h3>
+        <h3>4. Get Name Facets (Aggregation)</h3>
         <p>Counts the occurrences of each name in the index.</p>
         <pre id="query-facets">
 query {
-  nameFacets {
-    value
-    count
+  searchPeople(text: "") {
+    facets {
+       # We only have active/country/state implemented in the unified controller.
+       # We removed 'nameFacets' from schema.
+       # Using active count as example replacement.
+       byActive { value, count }
+    }
   }
 }</pre>
         <button onclick="runQuery('query-facets', 'result-facets')">Run Facet Query</button>
@@ -197,12 +118,12 @@ query {
     </div>
 
     <div class="card">
-        <h3>9. Search with Facets</h3>
+        <h3>5. Search with Facets</h3>
         <p>Global search plus aggregated counts for Active status, Country, and State.</p>
         <pre id="query-faceted">
 query {
-  searchWithFacets(text: "") {
-    items {
+  searchPeople(text: "") {
+    results {
       name
       email
     }
@@ -219,28 +140,23 @@ query {
     </div>
 
     <div class="card">
-        <h3>10. Rich Filter (Complex Logic)</h3>
-        <p>Global search for "John" AND (Salary > 80,000 OR Active=True) AND Country="USA".</p>
+        <h3>6. Rich Filter (Date & Prefix)</h3>
+        <p>Global search for "John" AND (BirthDate < 2000-01-01) AND Name starts with "J".</p>
         <pre id="query-filtered">
 query {
-  searchWithFacets(
-    text: "", 
+  searchPeople(
+    text: "John", 
     filter: { 
-      address_country: { eq: "USA" }
-      or: [
-        { salary: { gt: 80000.0 } },
-        { isActive: { eq: true } }
-      ]
+      birthDate: { lt: "2000-01-01" }
+      name: { startsWith: "J" }
     },
     page: 0,
     size: 5
   ) {
     totalElements
-    items {
+    results {
       name
-      email
-      salary
-      isActive
+      birthDate
     }
   }
 }</pre>
@@ -250,15 +166,15 @@ query {
     </div>
 
     <div class="card">
-        <h3>11. Sorted Search</h3>
+        <h3>7. Sorted Search</h3>
         <p>Global search + Sorting by Salary (Highest First).</p>
         <pre id="query-sorted">
 query {
-  searchWithFacets(
+  searchPeople(
     text: "", 
-    sort: { field: SALARY, direction: DESC }
+    sort: [{ field: SALARY, direction: DESC }]
   ) {
-    items {
+    results {
       name
       salary
     }
@@ -267,6 +183,155 @@ query {
         <button onclick="runQuery('query-sorted', 'result-sorted')">Run Sorted Search</button>
         <div class="response-label">Response:</div>
         <pre id="result-sorted" class="result-box">Waiting for action...</pre>
+    </div>
+
+    <div class="card">
+        <h3>8. Search with Facets & Stats</h3>
+        <p>Global search plus aggregated counts and numerical stats for Age and Salary.</p>
+        <pre id="query-stats">
+query {
+  searchPeople(text: "") {
+    results {
+      name
+      age
+      salary
+    }
+    facets {
+      byActive { value, count }
+    }
+    stats {
+      age { min, max, avg, sum, count }
+      salary { min, max, avg, sum, count }
+    }
+  }
+}</pre>
+        <button onclick="runQuery('query-stats', 'result-stats')">Run Stats Search</button>
+        <div class="response-label">Response:</div>
+        <pre id="result-stats" class="result-box">Waiting for action...</pre>
+    </div>
+
+    <div class="card">
+        <h3>9. Multi-Field Sort</h3>
+        <p>Sort by Active Status (Descending) THEN by Salary (Ascending).</p>
+        <pre id="query-multisort">
+query {
+  searchPeople(
+    text: "", 
+    sort: [
+      { field: AGE, direction: DESC },
+      { field: SALARY, direction: ASC }
+    ]
+  ) {
+    results {
+      name
+      age
+      salary
+    }
+  }
+}</pre>
+        <button onclick="runQuery('query-multisort', 'result-multisort')">Run Multi-Sort Search</button>
+        <div class="response-label">Response:</div>
+        <pre id="result-multisort" class="result-box">Waiting for action...</pre>
+    </div>
+
+    <div class="card">
+        <h3>10. Complex Boolean Logic</h3>
+        <p>Filter: (Name contains "John" OR Name contains "Jane") AND (Age > 25)</p>
+        <pre id="query-boolean">
+query {
+  searchPeople(
+    text: "", 
+    filter: {
+      and: [
+        {
+            or: [
+                { name: { contains: "John" } },
+                { name: { contains: "Jane" } }
+            ]
+        },
+        { age: { gt: 25 } }
+      ]
+    }
+  ) {
+    totalElements
+    results {
+      name
+      age
+    }
+  }
+}</pre>
+        <button onclick="runQuery('query-boolean', 'result-boolean')">Run Boolean Logic Search</button>
+        <div class="response-label">Response:</div>
+        <pre id="result-boolean" class="result-box">Waiting for action...</pre>
+    </div>
+
+    <div class="card">
+        <h3>11. Search Publications</h3>
+        <p>Search by Title or Author Name (e.g., "Medical" or "Smith").</p>
+        <pre id="query-pub-search">
+query {
+  searchPublications(text: "Smith") {
+    title
+    journalName
+    authors {
+      rank
+      person {
+        name
+      }
+      affiliationAtTimeOfPublication
+    }
+  }
+}</pre>
+        <button onclick="runQuery('query-pub-search', 'result-pub-search')">Run Publication Search</button>
+        <div class="response-label">Response:</div>
+        <pre id="result-pub-search" class="result-box">Waiting for action...</pre>
+    </div>
+
+    <div class="card">
+        <h3>12. The "Kitchen Sink" Query</h3>
+        <p>Full-Text + Structured Filter (Nested Boolean) + Facets + Stats + Pagination + Multi-Field Sorting.</p>
+        <pre id="query-kitchensink">
+query {
+  searchPeople(
+    text: "John",
+    filter: {
+      and: [
+        { age: { gt: 20 } },
+        { address_country: { eq: "USA" } }
+      ]
+    },
+    page: 0,
+    size: 10,
+    sort: [
+      { field: SALARY, direction: DESC },
+      { field: NAME, direction: ASC }
+    ]
+  ) {
+    totalElements
+    totalPages
+    results {
+      name
+      age
+      salary
+      email
+      addresses {
+        city
+        country
+      }
+    }
+    stats {
+      salary { min, max, avg, sum }
+      age { min, max, avg }
+    }
+    facets {
+      byActive { value, count }
+      byCountry { value, count }
+    }
+  }
+}</pre>
+        <button onclick="runQuery('query-kitchensink', 'result-kitchensink')">Run All Features Search</button>
+        <div class="response-label">Response:</div>
+        <pre id="result-kitchensink" class="result-box">Waiting for action...</pre>
     </div>
 
     <script>

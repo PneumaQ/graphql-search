@@ -21,6 +21,8 @@ import java.util.stream.Collectors;
 import co.elastic.clients.elasticsearch._types.aggregations.NestedAggregate;
 import co.elastic.clients.elasticsearch._types.aggregations.LongTermsBucket;
 
+import co.elastic.clients.elasticsearch._types.aggregations.StatsAggregate;
+
 import com.example.graphql.filter.ElasticsearchQueryBuilder;
 import com.example.graphql.filter.PersonFilterInput;
 
@@ -70,6 +72,8 @@ public class PersonService {
                         .aggregations("country_counts", sub -> sub.terms(t -> t.field("addresses.country.keyword").size(10)))
                         .aggregations("state_counts", sub -> sub.terms(t -> t.field("addresses.state.keyword").size(10)))
                 ))
+                .withAggregation("age_stats", Aggregation.of(a -> a.stats(s -> s.field("age"))))
+                .withAggregation("salary_stats", Aggregation.of(a -> a.stats(s -> s.field("salary"))))
                 .build();
 
         SearchHits<Person> searchHits = elasticsearchOperations.search(query, Person.class);
@@ -80,6 +84,8 @@ public class PersonService {
         Map<String, Long> activeCounts = new HashMap<>();
         Map<String, Long> countryCounts = new HashMap<>();
         Map<String, Long> stateCounts = new HashMap<>();
+        NumericStats ageStats = null;
+        NumericStats salaryStats = null;
 
         if (searchHits.getAggregations() instanceof ElasticsearchAggregations aggregations) {
             parseTerms(aggregations, "active_counts", activeCounts);
@@ -91,9 +97,21 @@ public class PersonService {
                 parseTermsFromMap(subAggs, "country_counts", countryCounts);
                 parseTermsFromMap(subAggs, "state_counts", stateCounts);
             }
+
+            ageStats = parseStats(aggregations, "age_stats");
+            salaryStats = parseStats(aggregations, "salary_stats");
         }
 
-        return new PersonSearchResponse(people, activeCounts, countryCounts, stateCounts, totalElements, totalPages);
+        return new PersonSearchResponse(people, activeCounts, countryCounts, stateCounts, ageStats, salaryStats, totalElements, totalPages);
+    }
+
+    private NumericStats parseStats(ElasticsearchAggregations aggregations, String key) {
+        ElasticsearchAggregation agg = (ElasticsearchAggregation) aggregations.aggregationsAsMap().get(key);
+        if (agg != null) {
+            StatsAggregate stats = agg.aggregation().getAggregate().stats();
+            return new NumericStats(stats.min(), stats.max(), stats.avg(), stats.sum(), stats.count());
+        }
+        return null;
     }
 
     private void parseTerms(ElasticsearchAggregations aggregations, String key, Map<String, Long> target) {
@@ -122,7 +140,9 @@ public class PersonService {
         }
     }
 
-    public record PersonSearchResponse(List<Person> items, Map<String, Long> activeCounts, Map<String, Long> countryCounts, Map<String, Long> stateCounts, long totalElements, int totalPages) {}
+    public record PersonSearchResponse(List<Person> results, Map<String, Long> activeCounts, Map<String, Long> countryCounts, Map<String, Long> stateCounts, NumericStats ageStats, NumericStats salaryStats, long totalElements, int totalPages) {}
+    
+    public record NumericStats(double min, double max, double avg, double sum, long count) {}
 
     public Map<String, Long> getNameFacets() {
         NativeQuery query = NativeQuery.builder()

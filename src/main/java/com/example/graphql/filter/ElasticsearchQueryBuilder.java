@@ -5,6 +5,7 @@ import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.stream.Collectors;
+import com.example.graphql.filter.DateFilter;
 
 @Component
 public class ElasticsearchQueryBuilder {
@@ -39,6 +40,10 @@ public class ElasticsearchQueryBuilder {
             bool.must(buildStringQuery("name", "name.keyword", filter.name()));
             hasClauses = true;
         }
+        if (filter.id() != null) {
+            bool.must(buildStringQuery("id", null, filter.id()));
+            hasClauses = true;
+        }
         if (filter.email() != null) {
             bool.must(buildStringQuery("email", "email.keyword", filter.email()));
             hasClauses = true;
@@ -55,6 +60,10 @@ public class ElasticsearchQueryBuilder {
         }
         if (filter.salary() != null) {
             bool.must(buildFloatQuery("salary", filter.salary()));
+            hasClauses = true;
+        }
+        if (filter.birthDate() != null) {
+            bool.must(buildDateQuery("birthDate", filter.birthDate()));
             hasClauses = true;
         }
 
@@ -88,6 +97,14 @@ public class ElasticsearchQueryBuilder {
             b.must(q -> q.wildcard(w -> w.field(keywordField != null ? keywordField : textField).value("*" + filter.contains() + "*")));
             hasFilter = true;
         }
+        if (filter.startsWith() != null) {
+            b.must(q -> q.prefix(p -> p.field(keywordField != null ? keywordField : textField).value(filter.startsWith())));
+            hasFilter = true;
+        }
+        if (filter.endsWith() != null) {
+            b.must(q -> q.wildcard(w -> w.field(keywordField != null ? keywordField : textField).value("*" + filter.endsWith())));
+            hasFilter = true;
+        }
         if (filter.in() != null && !filter.in().isEmpty()) {
             List<co.elastic.clients.elasticsearch._types.FieldValue> values = filter.in().stream()
                 .map(co.elastic.clients.elasticsearch._types.FieldValue::of)
@@ -116,6 +133,18 @@ public class ElasticsearchQueryBuilder {
             if (filter.eq() != null) t.gte(String.valueOf(filter.eq())).lte(String.valueOf(filter.eq()));
             if (filter.gt() != null) t.gt(String.valueOf(filter.gt()));
             if (filter.lt() != null) t.lt(String.valueOf(filter.lt()));
+            return t;
+        })));
+    }
+
+    private Query buildDateQuery(String field, DateFilter filter) {
+        return Query.of(q -> q.range(r -> r.term(t -> {
+            t.field(field);
+            if (filter.eq() != null) t.gte(filter.eq()).lte(filter.eq());
+            if (filter.gt() != null) t.gt(filter.gt());
+            if (filter.gte() != null) t.gte(filter.gte());
+            if (filter.lt() != null) t.lt(filter.lt());
+            if (filter.lte() != null) t.lte(filter.lte());
             return t;
         })));
     }

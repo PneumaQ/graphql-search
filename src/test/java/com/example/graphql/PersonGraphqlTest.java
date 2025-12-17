@@ -34,7 +34,13 @@ class PersonGraphqlTest {
     private PersonSearchRepository personSearchRepository;
 
     @MockitoBean
+    private com.example.graphql.repository.search.PublicationSearchRepository publicationSearchRepository;
+
+    @MockitoBean
     private ElasticsearchOperations elasticsearchOperations;
+
+    @MockitoBean
+    private org.springframework.boot.CommandLineRunner commandLineRunner;
 
     @Test
     void shouldCreateAndGetPerson() {
@@ -60,23 +66,24 @@ class PersonGraphqlTest {
                 })
                 .get();
 
-        // Get Persons
-        String personsQuery = """
+        // Verify with Get By ID
+        String getQuery = String.format("""
             query {
-                persons {
+                personById(id: "%s") {
                     id
                     name
                     age
                 }
             }
-        """;
+        """, createdPerson.getId());
 
-        graphQlTester.document(personsQuery)
+        graphQlTester.document(getQuery)
                 .execute()
-                .path("persons")
-                .entityList(Person.class)
-                .satisfies(persons -> {
-                    assertTrue(persons.stream().anyMatch(p -> p.getId().equals(createdPerson.getId())));
+                .path("personById")
+                .entity(Person.class)
+                .satisfies(person -> {
+                    assertEquals("Test User", person.getName());
+                    assertEquals(createdPerson.getId(), person.getId());
                 });
     }
 
@@ -172,15 +179,17 @@ class PersonGraphqlTest {
         String searchQuery = """
             query {
                 searchPeople(text: "Match") {
-                    name
-                    age
+                    results {
+                        name
+                        age
+                    }
                 }
             }
         """;
 
         graphQlTester.document(searchQuery)
                 .execute()
-                .path("searchPeople")
+                .path("searchPeople.results")
                 .entityList(Person.class)
                 .satisfies(persons -> {
                     assertFalse(persons.isEmpty());

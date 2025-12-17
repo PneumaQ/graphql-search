@@ -17,7 +17,7 @@ public class GraphqlApplication {
     }
 
     @Bean
-    CommandLineRunner commandLineRunner(PersonService personService) {
+    CommandLineRunner commandLineRunner(PersonService personService, PublicationService publicationService) {
         return args -> {
             // Person 1: 1 Address
             Person p1 = new Person(null, null, "John Doe", 30, "john.doe@example.com", "555-0101", java.time.LocalDate.of(1993, 1, 15), true, 75000.00, new java.util.ArrayList<>());
@@ -36,6 +36,16 @@ public class GraphqlApplication {
             personService.addAddress(savedP3.getId(), "101 Maple Dr", "Austin", "TX", "73301", "USA", true);
             personService.addAddress(savedP3.getId(), "202 Cedar Blvd", "Houston", "TX", "77001", "USA", false);
             personService.addAddress(savedP3.getId(), "303 Birch Rd", "Dallas", "TX", "75001", "USA", false);
+            
+            // Create Publications
+            Publication pub1 = publicationService.createPublication("Advanced Clinical Trials for Generic Search", "Journal of Medical AI", java.time.LocalDate.now().minusMonths(3), "PUBLISHED", "10.1001/jma.2023.001");
+            
+            // Add Authors (Cross-Aggregate)
+            publicationService.addAuthor(pub1.getId(), savedP1.getId(), 1, true, "Harvard Medical School"); // John Doe
+            publicationService.addAuthor(pub1.getId(), savedP2.getId(), 2, false, "Johns Hopkins University"); // Jane Smith
+            
+            Publication pub2 = publicationService.createPublication("GraphQL in Healthcare", "Tech Medicine Review", java.time.LocalDate.now().minusMonths(1), "SUBMITTED", "10.1002/tmr.2023.055");
+            publicationService.addAuthor(pub2.getId(), savedP3.getId(), 1, true, "Mayo Clinic"); // Bob Johnson
         };
     }
 
