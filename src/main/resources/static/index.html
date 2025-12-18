@@ -271,14 +271,16 @@ query {
         <pre id="query-pub-search">
 query {
   searchPublications(text: "Smith") {
-    title
-    journalName
-    authors {
-      rank
-      person {
-        name
+    results {
+      title
+      journalName
+      authors {
+        rank
+        person {
+          name
+        }
+        affiliationAtTimeOfPublication
       }
-      affiliationAtTimeOfPublication
     }
   }
 }</pre>
@@ -367,6 +369,59 @@ query {
         <button onclick="runQuery('query-pub-kitchensink', 'result-pub-kitchensink')">Run Publication Kitchen Sink Search</button>
         <div class="response-label">Response:</div>
         <pre id="result-pub-kitchensink" class="result-box">Waiting for action...</pre>
+    </div>
+
+    <hr>
+    <h2>Product Management (Dynamic Attributes)</h2>
+
+    <div class="card">
+        <h3>14. Create Product (with Dynamic Attributes)</h3>
+        <p>Creates a product with flexible JSON attributes.</p>
+        <pre id="query-create-product">
+mutation {
+  createProduct(
+    name: "Gaming Mouse", 
+    sku: "GM-500", 
+    attributes: [
+      { key: "color", value: "black" },
+      { key: "dpi", value: "16000" },
+      { key: "wireless", value: "true" }
+    ]
+  ) {
+    id
+    name
+    attributes {
+      key
+      value
+    }
+  }
+}</pre>
+        <button onclick="runQuery('query-create-product', 'result-create-product')">Run Create Product</button>
+        <div class="response-label">Response:</div>
+        <pre id="result-create-product" class="result-box">Waiting for action...</pre>
+    </div>
+
+    <div class="card">
+        <h3>15. Search Products by Attribute</h3>
+        <p>Find products where attribute "color" is "black".</p>
+        <pre id="query-search-product">
+query {
+  searchProducts(filter: {
+    attributes: [
+      { key: "color", value: { eq: "black" } }
+    ]
+  }) {
+    name
+    sku
+    attributes {
+      key
+      value
+    }
+  }
+}</pre>
+        <button onclick="runQuery('query-search-product', 'result-search-product')">Run Product Search</button>
+        <div class="response-label">Response:</div>
+        <pre id="result-search-product" class="result-box">Waiting for action...</pre>
     </div>
 
     <script>

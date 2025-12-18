@@ -11,7 +11,11 @@ import com.example.graphql.person.model.Person;
 import com.example.graphql.publications.model.Publication;
 
 @SpringBootApplication
-@EnableJpaRepositories(basePackages = {"com.example.graphql.person.repository.jpa", "com.example.graphql.publications.repository.jpa"})
+@EnableJpaRepositories(basePackages = {
+    "com.example.graphql.person.repository.jpa", 
+    "com.example.graphql.publications.repository.jpa",
+    "com.example.graphql.product.repository"
+})
 public class GraphqlApplication {
 
     public static void main(String[] args) {

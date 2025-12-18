@@ -10,5 +10,9 @@ public class TestLuceneAnalysisConfigurer implements LuceneAnalysisConfigurer {
                 .tokenizer("standard")
                 .tokenFilter("lowercase")
                 .tokenFilter("asciiFolding");
+
+        context.normalizer("lowercase").custom()
+                .tokenFilter("lowercase")
+                .tokenFilter("asciiFolding");
     }
 }

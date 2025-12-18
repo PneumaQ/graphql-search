@@ -19,6 +19,31 @@ type Query {
         size: Int,
         sort: [PublicationSort]
     ): PublicationSearchResult
+
+    # Product Queries
+    searchProducts(filter: ProductFilterInput): [Product]
+}
+
+type Product {
+    id: ID!
+    name: String
+    sku: String
+    attributes: [ProductAttribute]
+}
+
+type ProductAttribute {
+    key: String
+    value: String
+}
+
+input ProductAttributeFilterInput {
+    key: String!
+    value: StringFilter
+}
+
+input ProductFilterInput {
+    name: StringFilter
+    attributes: [ProductAttributeFilterInput]
 }
 
 type Publication {
@@ -191,6 +216,14 @@ type Mutation {
     # Publication Mutations
     createPublication(title: String!, journalName: String!, publicationDate: String, status: String, doi: String): Publication
     addAuthorToPublication(publicationId: ID!, personId: ID!, rank: Int!, isCorresponding: Boolean, affiliation: String): Publication
+
+    # Product Mutations
+    createProduct(name: String!, sku: String!, attributes: [ProductAttributeInput]): Product
+}
+
+input ProductAttributeInput {
+    key: String!
+    value: String!
 }
 
 type Person {
