@@ -9,7 +9,6 @@ import java.util.Optional;
 
 import com.example.graphql.person.filter.PersonFilterInput;
 import com.example.graphql.person.filter.PersonSort;
-import com.example.graphql.person.filter.PersonSortField;
 import com.example.graphql.platform.filter.SortDirection;
 import com.example.graphql.person.model.Person;
 import com.example.graphql.person.service.PersonService;
@@ -43,16 +42,18 @@ public class PersonController {
         if (sort != null && !sort.isEmpty()) {
             List<org.springframework.data.domain.Sort.Order> orders = sort.stream()
                 .map(s -> {
-                    String fieldName = switch (s.field()) {
-                        case NAME -> "name_keyword";
-                        case AGE -> "age";
-                        case SALARY -> "salary";
-                        case BIRTH_DATE -> "birthDate";
+                    String fieldName = s.field();
+                    String indexField = switch (fieldName.toLowerCase()) {
+                        case "name" -> "name_keyword";
+                        case "age" -> "age";
+                        case "salary" -> "salary";
+                        case "birthdate" -> "birthDate";
+                        default -> fieldName;
                     };
                     org.springframework.data.domain.Sort.Direction direction = (s.direction() == SortDirection.DESC) 
                         ? org.springframework.data.domain.Sort.Direction.DESC 
                         : org.springframework.data.domain.Sort.Direction.ASC;
-                    return new org.springframework.data.domain.Sort.Order(direction, fieldName);
+                    return new org.springframework.data.domain.Sort.Order(direction, indexField);
                 })
                 .collect(java.util.stream.Collectors.toList());
             springSort = org.springframework.data.domain.Sort.by(orders);

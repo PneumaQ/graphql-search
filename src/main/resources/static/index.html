@@ -3,425 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GraphQL Person Client</title>
+    <title>Universal GraphQL Search Showcase</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; background-color: #f9f9f9; }
-        h1 { color: #333; text-align: center; }
-        .card { background: white; border: 1px solid #ddd; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        h3 { margin-top: 0; color: #555; }
-        pre { background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; font-size: 14px; border: 1px solid #eee; }
-        button { padding: 12px 20px; cursor: pointer; background-color: #007bff; color: white; border: none; border-radius: 5px; font-size: 16px; transition: background-color 0.2s; display: block; width: 100%; }
-        button:hover { background-color: #0056b3; }
-        .response-label { margin-top: 15px; font-weight: bold; color: #333; }
-        .result-box { min-height: 40px; color: #006600; }
-        .error-box { color: #cc0000; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; padding: 20px; max-width: 900px; margin: 0 auto; background-color: #f4f7f6; }
+        h1 { color: #2c3e50; text-align: center; margin-bottom: 30px; }
+        .card { background: white; border: none; padding: 25px; margin-bottom: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h3 { margin-top: 0; color: #34495e; border-bottom: 2px solid #3498db; padding-bottom: 10px; display: inline-block; }
+        p { color: #7f8c8d; margin-top: 10px; }
+        pre { background: #2d3436; color: #f1f2f6; padding: 15px; border-radius: 8px; overflow-x: auto; font-size: 14px; line-height: 1.5; }
+        button { padding: 12px 24px; cursor: pointer; background-color: #3498db; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: 600; transition: all 0.3s; display: block; width: 100%; margin-top: 15px; }
+        button:hover { background-color: #2980b9; transform: translateY(-1px); }
+        .response-label { margin-top: 20px; font-weight: bold; color: #2c3e50; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
+        .result-box { min-height: 60px; color: #27ae60; background: #fdfdfd; border: 1px solid #eee; margin-top: 10px; }
+        .error-box { color: #e74c3c !important; border-color: #fab1a0; }
+        hr { border: 0; height: 1px; background: #dfe6e9; margin: 40px 0; }
+        .badge { background: #3498db; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px; vertical-align: middle; margin-left: 10px; }
     </style>
 </head>
 <body>
-    <h1>GraphQL Person Manager</h1>
+    <h1>Universal Product Search <span class="badge">POC</span></h1>
 
-    <h2>Mutations</h2>
-
+    <!-- 1. Global Search -->
     <div class="card">
-        <h3>1. Create Person (Mutation)</h3>
-        <p>Creates a new person named "Alice" with extra details.</p>
-        <pre id="query-create">
-mutation {
-  createPerson(
-    name: "Alice", 
-    age: 30, 
-    email: "alice@example.com", 
-    isActive: true, 
-    salary: 95000.0
-  ) {
-    id
-    name
-    email
-    isActive
-  }
-}</pre>
-        <button onclick="runQuery('query-create', 'result-create')">Run Create Mutation</button>
-        <div class="response-label">Response:</div>
-        <pre id="result-create" class="result-box">Waiting for action...</pre>
-    </div>
-
-    <div class="card">
-        <h3>2. Add Address to Person (Mutation)</h3>
-        <p>Adds an address to Person ID 1.</p>
-        <pre id="query-address">
-mutation {
-  addAddress(
-    personId: "1", 
-    street: "123 Main St", 
-    city: "New York", 
-    state: "NY", 
-    zip: "10001",
-    country: "USA",
-    isPrimary: true
-  ) {
-    id
-    name
-    addresses {
-      street
-      city
-      isPrimary
-    }
-  }
-}</pre>
-        <button onclick="runQuery('query-address', 'result-address')">Run Add Address</button>
-        <div class="response-label">Response:</div>
-        <pre id="result-address" class="result-box">Waiting for action...</pre>
-    </div>
-
-    <hr>
-    <h2>Elasticsearch Queries</h2>
-
-    <div class="card">
-        <h3>3. Global Search (Google-like)</h3>
-        <p>Full-text search across Name, Email, Phone, Street, City, Zip, and Country.</p>
-        <pre id="query-search">
+        <h3>1. Global Full-Text Search</h3>
+        <p>Google-like search across <b>Name, SKU, Category,</b> and <b>all Custom Attributes</b>. Try searching for "Navy" or "Cotton" or "Mechanical".</p>
+        <pre id="q1">
 query {
-  searchPeople(text: "New York") {
-    results {
-      id
-      name
-      email
-      addresses {
-        street
-        city
-      }
-    }
-  }
-}</pre>
-        <button onclick="runQuery('query-search', 'result-search')">Run Global Search</button>
-        <div class="response-label">Response:</div>
-        <pre id="result-search" class="result-box">Waiting for action...</pre>
-    </div>
-
-    <div class="card">
-        <h3>4. Get Name Facets (Aggregation)</h3>
-        <p>Counts the occurrences of each name in the index.</p>
-        <pre id="query-facets">
-query {
-  searchPeople(text: "") {
-    facets {
-       # We only have active/country/state implemented in the unified controller.
-       # We removed 'nameFacets' from schema.
-       # Using active count as example replacement.
-       byActive { value, count }
-    }
-  }
-}</pre>
-        <button onclick="runQuery('query-facets', 'result-facets')">Run Facet Query</button>
-        <div class="response-label">Response:</div>
-        <pre id="result-facets" class="result-box">Waiting for action...</pre>
-    </div>
-
-    <div class="card">
-        <h3>5. Search with Facets</h3>
-        <p>Global search plus aggregated counts for Active status, Country, and State.</p>
-        <pre id="query-faceted">
-query {
-  searchPeople(text: "") {
+  searchProducts(text: "Navy") {
     results {
       name
-      email
-    }
-    facets {
-      byActive { value, count }
-      byCountry { value, count }
-      byState { value, count }
+      category
+      custom_attributes
     }
   }
 }</pre>
-        <button onclick="runQuery('query-faceted', 'result-faceted')">Run Faceted Search</button>
+        <button onclick="runQuery('q1', 'r1')">Run Global Search</button>
         <div class="response-label">Response:</div>
-        <pre id="result-faceted" class="result-box">Waiting for action...</pre>
+        <pre id="r1" class="result-box">Waiting for action...</pre>
     </div>
 
+    <!-- 2. Filtering Core Fields -->
     <div class="card">
-        <h3>6. Rich Filter (Date & Prefix)</h3>
-        <p>Global search for "John" AND (BirthDate < 2000-01-01) AND Name starts with "J".</p>
-        <pre id="query-filtered">
+        <h3>2. Filter by Core Field (Numeric)</h3>
+        <p>Find products where <b>price</b> is greater than 50.</p>
+        <pre id="q2">
 query {
-  searchPeople(
-    text: "John", 
-    filter: { 
-      birthDate: { lt: "2000-01-01" }
-      name: { startsWith: "J" }
-    },
+  searchProducts(filter: [
+    { field: "price", gt: 50.0 }
+  ]) {
+    results {
+      name
+      price
+    }
+  }
+}</pre>
+        <button onclick="runQuery('q2', 'r2')">Run Price Filter</button>
+        <div class="response-label">Response:</div>
+        <pre id="r2" class="result-box">Waiting for action...</pre>
+    </div>
+
+    <!-- 3. Filtering Custom Attributes -->
+    <div class="card">
+        <h3>3. Filter by Custom Attribute</h3>
+        <p>Find products where the <b>dynamic</b> attribute "color" is exactly "black".</p>
+        <pre id="q3">
+query {
+  searchProducts(filter: [
+    { field: "color", eq: "black" }
+  ]) {
+    results {
+      name
+      custom_attributes
+    }
+  }
+}</pre>
+        <button onclick="runQuery('q3', 'r3')">Run Attribute Filter</button>
+        <div class="response-label">Response:</div>
+        <pre id="r3" class="result-box">Waiting for action...</pre>
+    </div>
+
+    <!-- 4. Nested Search -->
+    <div class="card">
+        <h3>4. Nested Search (Reviews)</h3>
+        <p>Find products where any review <b>rating</b> is 5 stars.</p>
+        <pre id="q4">
+query {
+  searchProducts(filter: [
+    { field: "rating", eq: "5" }
+  ]) {
+    results {
+      name
+      reviews { author, rating }
+    }
+  }
+}</pre>
+        <button onclick="runQuery('q4', 'r4')">Run Rating Filter</button>
+        <div class="response-label">Response:</div>
+        <pre id="r4" class="result-box">Waiting for action...</pre>
+    </div>
+
+    <!-- 5. Dynamic Faceting -->
+    <div class="card">
+        <h3>5. Dynamic Faceting</h3>
+        <p>Get aggregate counts for <b>Category</b> and custom <b>Color</b> on the fly. Returns a clean JSON map!</p>
+        <pre id="q5">
+query {
+  searchProducts(facetKeys: ["category", "color"]) {
+    facets
+  }
+}</pre>
+        <button onclick="runQuery('q5', 'r5')">Run Facet Aggregations</button>
+        <div class="response-label">Response:</div>
+        <pre id="r5" class="result-box">Waiting for action...</pre>
+    </div>
+
+    <!-- 6. Dynamic Stats -->
+    <div class="card">
+        <h3>6. Dynamic Numeric Stats</h3>
+        <p>Get min/max/avg for <b>Price</b> and <b>Rating</b> across matching products.</p>
+        <pre id="q6">
+query {
+  searchProducts(statsKeys: ["price", "rating"]) {
+    stats
+  }
+}</pre>
+        <button onclick="runQuery('q6', 'r6')">Run Statistical Summary</button>
+        <div class="response-label">Response:</div>
+        <pre id="r6" class="result-box">Waiting for action...</pre>
+    </div>
+
+    <!-- 7. Dynamic Sorting -->
+    <div class="card">
+        <h3>7. Dynamic Sorting</h3>
+        <p>Sort by <b>Price</b> (Highest First) using the unified string syntax.</p>
+        <pre id="q7">
+query {
+  searchProducts(sort: [{ field: "price", direction: DESC }]) {
+    results {
+      name
+      price
+    }
+  }
+}</pre>
+        <button onclick="runQuery('q7', 'r7')">Run Sorted Search</button>
+        <div class="response-label">Response:</div>
+        <pre id="r7" class="result-box">Waiting for action...</pre>
+    </div>
+
+    <!-- 8. THE KITCHEN SINK -->
+    <div class="card" style="background: #edf2f7; border: 2px dashed #3498db;">
+        <h3>8. THE "KITCHEN SINK"</h3>
+        <p>Combining everything: Search "Cotton" + Price > 10 + Facets + Stats + Pagination.</p>
+        <pre id="q8">
+query {
+  searchProducts(
+    text: "Cotton",
+    filter: [ { field: "price", gt: 10.0 } ],
+    facetKeys: ["category", "color"],
+    statsKeys: ["price", "rating"],
+    sort: [{ field: "name", direction: ASC }],
     page: 0,
-    size: 5
+    size: 10
   ) {
     totalElements
     results {
       name
-      birthDate
+      price
+      category
+      custom_attributes
     }
+    facets
+    stats
   }
 }</pre>
-        <button onclick="runQuery('query-filtered', 'result-filtered')">Run Rich Filter Search</button>
+        <button onclick="runQuery('q8', 'r8')" style="background-color: #2c3e50;">Run Master Query</button>
         <div class="response-label">Response:</div>
-        <pre id="result-filtered" class="result-box">Waiting for action...</pre>
-    </div>
-
-    <div class="card">
-        <h3>7. Sorted Search</h3>
-        <p>Global search + Sorting by Salary (Highest First).</p>
-        <pre id="query-sorted">
-query {
-  searchPeople(
-    text: "", 
-    sort: [{ field: SALARY, direction: DESC }]
-  ) {
-    results {
-      name
-      salary
-    }
-  }
-}</pre>
-        <button onclick="runQuery('query-sorted', 'result-sorted')">Run Sorted Search</button>
-        <div class="response-label">Response:</div>
-        <pre id="result-sorted" class="result-box">Waiting for action...</pre>
-    </div>
-
-    <div class="card">
-        <h3>8. Search with Facets & Stats</h3>
-        <p>Global search plus aggregated counts and numerical stats for Age and Salary.</p>
-        <pre id="query-stats">
-query {
-  searchPeople(text: "") {
-    results {
-      name
-      age
-      salary
-    }
-    facets {
-      byActive { value, count }
-    }
-    stats {
-      age { min, max, avg, sum, count }
-      salary { min, max, avg, sum, count }
-    }
-  }
-}</pre>
-        <button onclick="runQuery('query-stats', 'result-stats')">Run Stats Search</button>
-        <div class="response-label">Response:</div>
-        <pre id="result-stats" class="result-box">Waiting for action...</pre>
-    </div>
-
-    <div class="card">
-        <h3>9. Multi-Field Sort</h3>
-        <p>Sort by Active Status (Descending) THEN by Salary (Ascending).</p>
-        <pre id="query-multisort">
-query {
-  searchPeople(
-    text: "", 
-    sort: [
-      { field: AGE, direction: DESC },
-      { field: SALARY, direction: ASC }
-    ]
-  ) {
-    results {
-      name
-      age
-      salary
-    }
-  }
-}</pre>
-        <button onclick="runQuery('query-multisort', 'result-multisort')">Run Multi-Sort Search</button>
-        <div class="response-label">Response:</div>
-        <pre id="result-multisort" class="result-box">Waiting for action...</pre>
-    </div>
-
-    <div class="card">
-        <h3>10. Complex Boolean Logic</h3>
-        <p>Filter: (Name contains "John" OR Name contains "Jane") AND (Age > 25)</p>
-        <pre id="query-boolean">
-query {
-  searchPeople(
-    text: "", 
-    filter: {
-      and: [
-        {
-            or: [
-                { name: { contains: "John" } },
-                { name: { contains: "Jane" } }
-            ]
-        },
-        { age: { gt: 25 } }
-      ]
-    }
-  ) {
-    totalElements
-    results {
-      name
-      age
-    }
-  }
-}</pre>
-        <button onclick="runQuery('query-boolean', 'result-boolean')">Run Boolean Logic Search</button>
-        <div class="response-label">Response:</div>
-        <pre id="result-boolean" class="result-box">Waiting for action...</pre>
-    </div>
-
-    <div class="card">
-        <h3>11. Search Publications</h3>
-        <p>Search by Title or Author Name (e.g., "Medical" or "Smith").</p>
-        <pre id="query-pub-search">
-query {
-  searchPublications(text: "Smith") {
-    results {
-      title
-      journalName
-      authors {
-        rank
-        person {
-          name
-        }
-        affiliationAtTimeOfPublication
-      }
-    }
-  }
-}</pre>
-        <button onclick="runQuery('query-pub-search', 'result-pub-search')">Run Publication Search</button>
-        <div class="response-label">Response:</div>
-        <pre id="result-pub-search" class="result-box">Waiting for action...</pre>
-    </div>
-
-    <div class="card">
-        <h3>12. The "Kitchen Sink" Query</h3>
-        <p>Full-Text + Structured Filter (Nested Boolean) + Facets + Stats + Pagination + Multi-Field Sorting.</p>
-        <pre id="query-kitchensink">
-query {
-  searchPeople(
-    text: "John",
-    filter: {
-      and: [
-        { age: { gt: 20 } },
-        { addresses_country: { eq: "USA" } }
-      ]
-    },
-    page: 0,
-    size: 10,
-    sort: [
-      { field: SALARY, direction: DESC },
-      { field: NAME, direction: ASC }
-    ]
-  ) {
-    totalElements
-    totalPages
-    results {
-      name
-      age
-      salary
-      email
-      addresses {
-        city
-        country
-      }
-    }
-    stats {
-      salary { min, max, avg, sum }
-      age { min, max, avg }
-    }
-    facets {
-      byActive { value, count }
-      byCountry { value, count }
-    }
-  }
-}</pre>
-        <button onclick="runQuery('query-kitchensink', 'result-kitchensink')">Run All Features Search</button>
-        <div class="response-label">Response:</div>
-        <pre id="result-kitchensink" class="result-box">Waiting for action...</pre>
-    </div>
-
-    <div class="card">
-        <h3>13. The "Kitchen Sink" Query for Publications</h3>
-        <p>Full-Text + Structured Filter + Facets + Pagination + Sorting.</p>
-        <pre id="query-pub-kitchensink">
-query {
-  searchPublications(
-    text: "",
-    filter: {
-      status: { eq: "PUBLISHED" }
-    },
-    page: 0,
-    size: 10,
-    sort: [
-      { field: PUBLICATION_DATE, direction: DESC }
-    ]
-  ) {
-    totalElements
-    totalPages
-    results {
-      title
-      journalName
-      status
-      publicationDate
-    }
-    facets {
-      byStatus { value, count }
-      byJournal { value, count }
-    }
-  }
-}</pre>
-        <button onclick="runQuery('query-pub-kitchensink', 'result-pub-kitchensink')">Run Publication Kitchen Sink Search</button>
-        <div class="response-label">Response:</div>
-        <pre id="result-pub-kitchensink" class="result-box">Waiting for action...</pre>
-    </div>
-
-    <hr>
-    <h2>Product Management (Dynamic Attributes)</h2>
-
-    <div class="card">
-        <h3>14. Create Product (with Dynamic Attributes)</h3>
-        <p>Creates a product with flexible JSON attributes.</p>
-        <pre id="query-create-product">
-mutation {
-  createProduct(
-    name: "Gaming Mouse", 
-    sku: "GM-500", 
-    attributes: [
-      { key: "color", value: "black" },
-      { key: "dpi", value: "16000" },
-      { key: "wireless", value: "true" }
-    ]
-  ) {
-    id
-    name
-    attributes {
-      key
-      value
-    }
-  }
-}</pre>
-        <button onclick="runQuery('query-create-product', 'result-create-product')">Run Create Product</button>
-        <div class="response-label">Response:</div>
-        <pre id="result-create-product" class="result-box">Waiting for action...</pre>
-    </div>
-
-    <div class="card">
-        <h3>15. Search Products by Attribute</h3>
-        <p>Find products where attribute "color" is "black".</p>
-        <pre id="query-search-product">
-query {
-  searchProducts(filter: {
-    attributes: [
-      { key: "color", value: { eq: "black" } }
-    ]
-  }) {
-    name
-    sku
-    attributes {
-      key
-      value
-    }
-  }
-}</pre>
-        <button onclick="runQuery('query-search-product', 'result-search-product')">Run Product Search</button>
-        <div class="response-label">Response:</div>
-        <pre id="result-search-product" class="result-box">Waiting for action...</pre>
+        <pre id="r8" class="result-box">Waiting for action...</pre>
     </div>
 
     <script>
@@ -430,7 +187,7 @@ query {
             const resultElement = document.getElementById(resultElementId);
             const query = queryElement.innerText;
             
-            resultElement.innerText = "Loading...";
+            resultElement.innerText = "Processing universal search...";
             resultElement.classList.remove('error-box');
 
             try {
@@ -450,7 +207,7 @@ query {
                     resultElement.classList.add('error-box');
                 }
             } catch (error) {
-                resultElement.innerText = "Network Error: " + error.message;
+                resultElement.innerText = "Search Error: " + error.message;
                 resultElement.classList.add('error-box');
             }
         }

@@ -17,8 +17,8 @@ public class ProductAttributeBridge implements PropertyBridge {
             return;
         }
 
-        // We assume "attributes" object field is defined in the binder
-        DocumentElement attributesObject = target.addObject("attributes");
+        // We assume "custom_attributes" object field is defined in the binder
+        DocumentElement attributesObject = target.addObject("custom_attributes");
 
         for (Map.Entry<String, String> entry : attributes.entrySet()) {
             String key = entry.getKey();
@@ -26,10 +26,11 @@ public class ProductAttributeBridge implements PropertyBridge {
             
             if (key == null || value == null) continue;
 
-            // We follow the _keyword convention
-            // This will trigger the template defined in the binder matching "*_keyword"
-            String fieldName = key + "_keyword";
-            attributesObject.addValue(fieldName, value);
+            // 1. Keyword field (for exact match, sorting, faceting)
+            attributesObject.addValue(key + "_keyword", value);
+
+            // 2. Text field (for full-text search)
+            attributesObject.addValue(key + "_text", value);
         }
     }
 }

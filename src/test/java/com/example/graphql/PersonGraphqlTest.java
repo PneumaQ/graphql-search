@@ -180,13 +180,80 @@ class PersonGraphqlTest {
             }
         """;
 
-        graphQlTester.document(searchQuery)
-                .execute()
-                .path("searchPeople.results")
-                .entityList(Person.class)
-                .satisfies(persons -> {
-                    assertFalse(persons.isEmpty());
-                    assertEquals("Search Match", persons.get(0).getName());
-                });
-    }
-}
+                graphQlTester.document(searchQuery)
+
+                        .execute()
+
+                        .path("searchPeople.results")
+
+                        .entityList(Person.class)
+
+                        .satisfies(persons -> {
+
+                            assertFalse(persons.isEmpty());
+
+                            assertEquals("Search Match", persons.get(0).getName());
+
+                        });
+
+            }
+
+        
+
+            @Test
+
+            void shouldSearchPeopleWithSort() {
+
+                // Mock Response
+
+                Person mockPerson = new Person(1L, "Sorted Person", 30, null, null, null, null, 1000.0, Collections.emptyList());
+
+                PersonService.PersonSearchResponse mockResponse = new PersonService.PersonSearchResponse(
+
+                    List.of(mockPerson),
+
+                    Map.of(), Map.of(), Map.of(), null, null, 1, 1
+
+                );
+
+                when(personSearchRepository.searchWithFacets(any(), any(), any())).thenReturn(mockResponse);
+
+        
+
+                String searchQuery = """
+
+                    query {
+
+                        searchPeople(text: "", sort: [{ field: "salary", direction: DESC }]) {
+
+                            results {
+
+                                name
+
+                                salary
+
+                            }
+
+                        }
+
+                    }
+
+                """;
+
+        
+
+                graphQlTester.document(searchQuery)
+
+                        .execute()
+
+                        .path("searchPeople.results")
+
+                        .entityList(Person.class)
+
+                        .hasSize(1);
+
+            }
+
+        }
+
+        

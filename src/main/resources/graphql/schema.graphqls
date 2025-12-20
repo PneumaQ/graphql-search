@@ -1,170 +1,36 @@
+scalar JSON
+
 type Query {
-    # The Single Master Entry Point for Persons
-    searchPeople(
+    # The Universal Search Entry Point for Products
+    searchProducts(
         text: String, 
-        filter: PersonFilterInput, 
-        page: Int, 
-        size: Int, 
-        sort: [PersonSort]
-    ): PersonSearchResult
-
-    personById(id: ID!): Person
-    
-    # Publication Queries
-    publications: [Publication]
-    searchPublications(
-        text: String,
-        filter: PublicationFilterInput,
+        filter: [SearchCondition], 
+        facetKeys: [String], 
+        statsKeys: [String],
+        sort: [ProductSort],
         page: Int,
-        size: Int,
-        sort: [PublicationSort]
-    ): PublicationSearchResult
-
-    # Product Queries
-    searchProducts(filter: ProductFilterInput): [Product]
+        size: Int
+    ): ProductSearchResult
 }
 
-type Product {
-    id: ID!
-    name: String
-    sku: String
-    attributes: [ProductAttribute]
-}
-
-type ProductAttribute {
-    key: String
-    value: String
-}
-
-input ProductAttributeFilterInput {
-    key: String!
-    value: StringFilter
-}
-
-input ProductFilterInput {
-    name: StringFilter
-    attributes: [ProductAttributeFilterInput]
-}
-
-type Publication {
-    id: ID!
-    title: String
-    journalName: String
-    publicationDate: String
-    status: String
-    doi: String
-    authors: [PublicationAuthor]
-}
-
-type PublicationAuthor {
-    id: ID!
-    rank: Int
-    isCorresponding: Boolean
-    affiliationAtTimeOfPublication: String
-    person: Person
-}
-
-input PublicationFilterInput {
-    id: StringFilter
-    and: [PublicationFilterInput]
-    or: [PublicationFilterInput]
-    not: PublicationFilterInput
-    
-    title: StringFilter
-    journalName: StringFilter
-    publicationDate: DateFilter
-    status: StringFilter
-    doi: StringFilter
-}
-
-input PublicationSort {
-    field: PublicationSortField!
-    direction: SortDirection
-}
-
-enum PublicationSortField {
-    TITLE
-    PUBLICATION_DATE
-    JOURNAL
-    STATUS
-}
-
-type PublicationSearchResult {
-    results: [Publication]
-    facets: PublicationFacets
-    totalElements: Int
-    totalPages: Int
-}
-
-type PublicationFacets {
-    byStatus: [FacetBucket]
-    byJournal: [FacetBucket]
-}
-
-input PersonFilterInput {
-    id: StringFilter
-    and: [PersonFilterInput]
-    or: [PersonFilterInput]
-    not: PersonFilterInput
-    
-    # Fields
-    name: StringFilter
-    email: StringFilter
-    age: IntFilter
-    salary: FloatFilter
-    birthDate: DateFilter
-    isActive: BooleanFilter
-    
-    # Nested Fields (Simplified for this layer, handled by builder)
-    addresses_country: StringFilter
-    addresses_state: StringFilter
-    addresses_city: StringFilter
-}
-
-input StringFilter {
+input SearchCondition {
+    field: String!
+    # String Operators
     eq: String
     contains: String
     startsWith: String
-    endsWith: String
     in: [String]
-}
-
-input IntFilter {
-    eq: Int
-    gt: Int
-    lt: Int
-    gte: Int
-    lte: Int
-}
-
-input FloatFilter {
-    eq: Float
+    
+    # Numeric/Date Operators
     gt: Float
     lt: Float
+    gte: Float
+    lte: Float
 }
 
-input DateFilter {
-    eq: String
-    gt: String
-    lt: String
-    gte: String
-    lte: String
-}
-
-input BooleanFilter {
-    eq: Boolean
-}
-
-input PersonSort {
-    field: SortField!
+input ProductSort {
+    field: String!
     direction: SortDirection
-}
-
-enum SortField {
-    NAME
-    AGE
-    SALARY
-    BIRTH_DATE
 }
 
 enum SortDirection {
@@ -172,79 +38,38 @@ enum SortDirection {
     DESC
 }
 
-type PersonSearchResult {
-    results: [Person]
-    facets: PersonFacets
-    stats: PersonStats
+type ProductSearchResult {
+    results: [Product]
+    facets: JSON      # Clean Map: { "category": { "Electronics": 5, "Clothing": 2 } }
+    stats: JSON       # Clean Map: { "price": { "min": 10, "max": 500, "avg": 45 }, "rating": { ... } }
     totalElements: Int
     totalPages: Int
 }
 
-type PersonStats {
-    salary: NumericStats
-    age: NumericStats
+type Product {
+    id: ID!
+    name: String
+    sku: String
+    category: String
+    price: Float
+    custom_attributes: JSON
+    reviews: [Review]
 }
 
-type NumericStats {
-    min: Float
-    max: Float
-    avg: Float
-    sum: Float
-    count: Int
-}
-
-type PersonFacets {
-    byActive: [FacetBucket]
-    byCountry: [FacetBucket]
-    byState: [FacetBucket]
-}
-
-type FacetBucket {
-    value: String
-    count: Int
-}
-
-type NameFacet {
-    value: String
-    count: Int
+type Review {
+    id: ID!
+    author: String
+    comment: String
+    rating: Int
 }
 
 type Mutation {
-    createPerson(name: String!, age: Int!, email: String, phoneNumber: String, birthDate: String, isActive: Boolean, salary: Float): Person
-    addAddress(personId: ID!, street: String!, city: String!, state: String!, zip: String!, country: String, isPrimary: Boolean): Person
-    
-    # Publication Mutations
-    createPublication(title: String!, journalName: String!, publicationDate: String, status: String, doi: String): Publication
-    addAuthorToPublication(publicationId: ID!, personId: ID!, rank: Int!, isCorresponding: Boolean, affiliation: String): Publication
-
-    # Product Mutations
-    createProduct(name: String!, sku: String!, attributes: [ProductAttributeInput]): Product
+    # Keep mutations for data setup if needed, but we will focus on search in UI
+    createProduct(name: String!, sku: String!, category: String, price: Float, custom_attributes: [ProductAttributeInput]): Product
+    addReview(productId: ID!, author: String, comment: String, rating: Int): Product
 }
 
 input ProductAttributeInput {
     key: String!
     value: String!
-}
-
-type Person {
-    id: ID!
-    name: String!
-    age: Int!
-    email: String
-    phoneNumber: String
-    birthDate: String
-    isActive: Boolean
-    salary: Float
-    addresses: [Address]
-}
-
-type Address {
-    id: ID!
-
-    street: String
-    city: String
-    state: String
-    zip: String
-    country: String
-    isPrimary: Boolean
 }
