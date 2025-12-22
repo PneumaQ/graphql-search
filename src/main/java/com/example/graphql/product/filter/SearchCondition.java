@@ -11,5 +11,10 @@ public record SearchCondition(
     Double gt,
     Double lt,
     Double gte,
-    Double lte
+    Double lte,
+    
+    // Recursive logic
+    List<SearchCondition> and,
+    List<SearchCondition> or,
+    SearchCondition not
 ) {}

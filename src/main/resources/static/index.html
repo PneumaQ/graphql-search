@@ -150,15 +150,49 @@ query {
         <pre id="r7" class="result-box">Waiting for action...</pre>
     </div>
 
-    <!-- 8. THE KITCHEN SINK -->
-    <div class="card" style="background: #edf2f7; border: 2px dashed #3498db;">
-        <h3>8. THE "KITCHEN SINK"</h3>
-        <p>Combining everything: Search "Cotton" + Price > 10 + Facets + Stats + Pagination.</p>
+    <!-- 8. Advanced Boolean Logic -->
+    <div class="card">
+        <h3>8. Advanced Boolean Logic (OR/AND)</h3>
+        <p>Find products where <b>(Category is Electronics OR Color is Navy)</b> AND <b>Price < 100</b>.</p>
         <pre id="q8">
+query {
+  searchProducts(filter: [
+    {
+      or: [
+        { field: "category", eq: "Electronics" },
+        { field: "color", eq: "navy blue" }
+      ]
+    },
+    { field: "price", lt: 100.0 }
+  ]) {
+    results {
+      name
+      category
+      custom_attributes
+    }
+  }
+}</pre>
+        <button onclick="runQuery('q8', 'r8')">Run Boolean Query</button>
+        <div class="response-label">Response:</div>
+        <pre id="r8" class="result-box">Waiting for action...</pre>
+    </div>
+
+    <!-- 9. THE KITCHEN SINK -->
+    <div class="card" style="background: #edf2f7; border: 2px dashed #3498db;">
+        <h3>9. THE "KITCHEN SINK"</h3>
+        <p>Combining everything: Full-Text + Recursive Logic + Facets + Stats + Pagination + SKU Alias + <b>Brand Lookups</b>.</p>
+        <pre id="q9">
 query {
   searchProducts(
     text: "Cotton",
-    filter: [ { field: "price", gt: 10.0 } ],
+    filter: [ 
+      { 
+        or: [
+          { field: "price", gt: 10.0 },
+          { field: "color", eq: "black" }
+        ]
+      } 
+    ],
     facetKeys: ["category", "color"],
     statsKeys: ["price", "rating"],
     sort: [{ field: "name", direction: ASC }],
@@ -168,17 +202,63 @@ query {
     totalElements
     results {
       name
+      sku
       price
       category
+      brand {
+        name
+      }
       custom_attributes
     }
     facets
     stats
   }
 }</pre>
-        <button onclick="runQuery('q8', 'r8')" style="background-color: #2c3e50;">Run Master Query</button>
+        <button onclick="runQuery('q9', 'r9')" style="background-color: #2c3e50;">Run Master Query</button>
         <div class="response-label">Response:</div>
-        <pre id="r8" class="result-box">Waiting for action...</pre>
+        <pre id="r9" class="result-box">Waiting for action...</pre>
+    </div>
+
+    <!-- 10. Nested Lookup Search -->
+    <div class="card">
+        <h3>10. Nested Lookup Search (Brands)</h3>
+        <p>Find products by searching for text within the <b>Brand</b> name. This demonstrates retrieving rich, immutable configuration data from the Caffeine cache.</p>
+        <pre id="q10">
+query {
+  searchProducts(text: "Logitech") {
+    results {
+      name
+      brand {
+        name
+        description
+        lookupType
+      }
+    }
+  }
+}</pre>
+        <button onclick="runQuery('q10', 'r10')">Run Brand Search</button>
+        <div class="response-label">Response:</div>
+        <pre id="r10" class="result-box">Waiting for action...</pre>
+    </div>
+
+    <!-- 11. Flat Tabular Join -->
+    <div class="card" style="border: 2px solid #27ae60;">
+        <h3>11. Flat Tabular Join (Product + Review + Brand)</h3>
+        <p>This query returns a <b>flat list of rows</b> (one row per review). It aggregates data from the Product entity, the Review collection, and the Brand cache into a single tabular structure.</p>
+        <pre id="q11">
+query {
+  searchProductReviewTable(text: "Amazing") {
+    productName
+    sku
+    brandName
+    author
+    comment
+    rating
+  }
+}</pre>
+        <button onclick="runQuery('q11', 'r11')" style="background-color: #27ae60;">Run Tabular Search</button>
+        <div class="response-label">Response:</div>
+        <pre id="r11" class="result-box">Waiting for action...</pre>
     </div>
 
     <script>

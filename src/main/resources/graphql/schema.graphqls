@@ -11,10 +11,25 @@ type Query {
         page: Int,
         size: Int
     ): ProductSearchResult
+
+    # Tabular "Join" View: One row per Review
+    searchProductReviewTable(text: String): [ProductReviewRow]
+}
+
+type ProductReviewRow {
+    # From Product
+    productName: String
+    sku: String
+    brandName: String
+    
+    # From Review
+    author: String
+    comment: String
+    rating: Int
 }
 
 input SearchCondition {
-    field: String!
+    field: String
     # String Operators
     eq: String
     contains: String
@@ -26,6 +41,11 @@ input SearchCondition {
     lt: Float
     gte: Float
     lte: Float
+
+    # Recursive Logic
+    and: [SearchCondition]
+    or: [SearchCondition]
+    not: SearchCondition
 }
 
 input ProductSort {
@@ -52,8 +72,16 @@ type Product {
     sku: String
     category: String
     price: Float
+    brand: Lookup
     custom_attributes: JSON
     reviews: [Review]
+}
+
+type Lookup {
+    id: ID!
+    name: String
+    description: String
+    lookupType: String
 }
 
 type Review {

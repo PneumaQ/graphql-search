@@ -24,16 +24,26 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public ProductSearchResponse searchProducts(String text, List<SearchCondition> filter, List<String> facetKeys, List<String> statsKeys, List<ProductSort> sort, int page, int size) {
-        var repoResponse = productSearchRepository.search(text, filter, facetKeys, statsKeys, sort, page, size);
-        return new ProductSearchResponse(repoResponse.results(), repoResponse.facets(), repoResponse.stats(), repoResponse.totalElements(), repoResponse.totalPages());
+    public ProductSearchResponse searchProducts(String text, List<SearchCondition> filter, List<String> facetKeys, List<String> statsKeys, List<ProductSort> sort, Integer page, Integer size) {
+        int pageNum = (page != null) ? page : 0;
+        int pageSize = (size != null) ? size : 10;
+
+        var repoResponse = productSearchRepository.search(text, filter, facetKeys, statsKeys, sort, pageNum, pageSize);
+        
+        return new ProductSearchResponse(
+                repoResponse.results(), 
+                repoResponse.facets(), 
+                repoResponse.stats(), 
+                (int) repoResponse.totalElements(), 
+                repoResponse.totalPages()
+        );
     }
 
     @Transactional
     public Product createProduct(String name, String sku, String category, Double price, Map<String, String> attributes) {
         Product product = new Product();
         product.setName(name);
-        product.setSku(sku);
+        product.setInternalStockCode(sku);
         product.setCategory(category);
         product.setPrice(price);
         product.setCustom_attributes(attributes);
@@ -53,5 +63,5 @@ public class ProductService {
         return productRepository.save(product);
     }
     
-    public record ProductSearchResponse(List<Product> results, Map<String, Map<String, Long>> facets, Map<String, Object> stats, long totalElements, int totalPages) {}
+    public record ProductSearchResponse(List<Product> results, Object facets, Object stats, int totalElements, int totalPages) {}
 }
