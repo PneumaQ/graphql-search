@@ -1,29 +1,29 @@
-# Comparison of Hibernate Search Implementations
+# Search Architecture: Universal Search vs. Legacy Platform
 
-This document compares the "Universal Search" POC implementation with the production-grade implementation found in the `platform-api` project.
+This document captures the architectural pivot from a **Database-First** security model to a **Search-First** high-performance model.
 
-## 1. Entity Loading Strategy
-| Feature | Universal Search POC | Platform API (Production) |
+## 1. Core Philosophy
+| Feature | Legacy Platform (`platform-api`) | New Universal Search Design |
 | :--- | :--- | :--- |
-| **Loading Phase** | **Automatic:** Hibernate Search automatically fetches managed entities from the DB using IDs returned by Elasticsearch. | **Manual (Two-Phase):** Hibernate Search returns only `Long` IDs. The service then manually fetches entities from the DB. |
-| **Reasoning** | Simpler code, leverages built-in Hibernate Search optimizations for basic use cases. | **DAC Support:** Fetching IDs first allows the DB phase to apply complex Data Access Controls (permissions) before paging results. |
-| **Paging** | Performed at the Elasticsearch layer (`fetch(offset, limit)`). | Performed at the Database layer after filtering all hits by permissions. |
+| **Primary Engine** | **Relational Database:** SQL is the source of truth for both search and security. | **Search Engine:** Elasticsearch is the primary intelligence engine for all queries. |
+| **Postgres Role** | **Executioner:** Performs complex joins and applies DAC rules at runtime. | **Hydrator:** A "dumb" store that provides entity data by ID after filtering is complete. |
+| **Security (DAC)** | **SQL Injection:** Dynamic WHERE clauses applied to database queries. | **Predicate Injection:** Dynamic DAC rules translated into Elasticsearch predicates. |
 
-## 2. Metadata & Registry
-| Feature | Universal Search POC | Platform API (Production) |
-| :--- | :--- | :--- |
-| **Source of Truth** | `CustomFieldDefinition` entity (Simplified Registry). | Comprehensive `EntityCfg`, `PropertyCfg`, `FieldCfg` hierarchy. |
-| **Caching** | **Caffeine Cache:** Actively caches field definitions to avoid SQL lookups. | Likely uses a similar service-level or Hibernate second-level cache. |
-| **Field Resolution** | Uses `dotPath` logic to map GraphQL keys to index paths. | Deeply nested path resolution (`getDotPath(targetEntity)`) supporting embedded entities. |
+## 2. Data Access Control (DAC) Implementation
+### The Legacy Approach (SQL-Side DAC)
+*   **Mechanism:** Two-Phase Search. ES finds broad hits; SQL applies fine-grained security joins.
+*   **Result:** Broken hit counts and "Phantom Paging" (where requested results are filtered out post-search).
+*   **Cost:** High CPU/IO pressure on Postgres for every search request.
 
-## 3. Query Construction
-| Feature | Universal Search POC | Platform API (Production) |
-| :--- | :--- | :--- |
-| **Text Search** | Basic `simpleQueryString` across discovered text fields. | **Sophisticated Fuzzing:** Custom logic to apply `~1` slop values, handle quotes, and avoid fuzzing excluded terms. |
-| **Aggregations** | Manual Java calculation for statistics (Min/Max/Avg) to support Lucene. | Heavy use of `AggregationKey` for term counts (facets) across diverse data types. |
-| **Flexibility** | Uses a generic `[SearchCondition]` list. | Uses structured `SearchQueryRequest` with specific `SearchFilter` and `SearchRange` objects. |
+### The New Approach (Search-First DAC)
+*   **Mechanism:** Denormalized Read Model. All attributes required for security (Store, Region, Category) are indexed within the target document.
+*   **Injection:** Runtime DAC configurations (`DacCfg`) are translated into recursive `SearchCondition` trees and merged with user criteria.
+*   **Result:** 100% accurate facets, perfect pagination, and sub-millisecond response times regardless of security complexity.
 
-## 4. Key Takeaways for POC Maturity
-1.  **Transition to Two-Phase Search:** If the POC requires row-level security or multi-tenant permissions that Elasticsearch isn't aware of, we should adopt the `select(f -> f.id(Long.class))` pattern.
-2.  **Robust Fuzzing:** The `SearchTextManager` in the production project provides a great blueprint for how to make the global search bar feel "smarter" (e.g., handles `~1` and quoted phrases more gracefully).
-3.  **Advanced Sorting:** The production project handles nested embedded sorting significantly more robustly via `findEmbeddedSortableField`.
+## 3. The "Big Assumption": Single-Index Read Models
+The new design assumes that an Aggregate Root (AR) index contains all data necessary to satisfy both **User Search** and **Data Access Control**. 
+*   **Joins are moved to Index-Time:** Using Hibernate Search `@IndexedEmbedded`, the cost of relational traversal is paid once during an update, rather than millions of times during reads.
+*   **Dumb Hydration:** By the time Postgres is touched, the "Who" and "What" have already been decided by Elasticsearch. Postgres only handles the "How it looks."
+
+## 4. Conclusion for Design Document
+The transition to **Search-First Authorization** eliminates the largest performance bottleneck in the system. By treating security as a top-level search filter, we achieve a stable, scalable API that decouples business logic from database schema complexity.

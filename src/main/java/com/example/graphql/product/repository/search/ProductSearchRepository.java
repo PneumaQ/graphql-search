@@ -77,7 +77,7 @@ public class ProductSearchRepository {
 
         QueryContext.set("Hibernate Search - Phase 2 (Entity Loading)");
         var result = query.fetch(page * size, size);
-        QueryContext.set("Mapping Results");
+        // QueryContext.set("Mapping Results");
 
         return new ProductSearchInternalResponse(
             result.hits(),

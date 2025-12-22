@@ -89,7 +89,7 @@ public class GraphqlApplication {
             p3.getCustom_attributes().put("size", "L");
             p3.getCustom_attributes().put("material", "100% Cotton");
             
-            addReview(p3, "User D", "Very soft", 5);
+            addReview(p3, "Gregg", "Excellent navy color", 5);
             productRepository.save(p3);
 
             // 4. Clothing: Silk Scarf

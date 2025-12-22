@@ -109,11 +109,11 @@ public class UniversalQueryBuilder {
             bool.must(f.terms().field(path).matchingAny(cond.in()));
         }
 
-        // Range Operators
-        if (cond.gt() != null) bool.must(f.range().field(path).greaterThan(cond.gt()));
-        if (cond.lt() != null) bool.must(f.range().field(path).lessThan(cond.lt()));
-        if (cond.gte() != null) bool.must(f.range().field(path).atLeast(cond.gte()));
-        if (cond.lte() != null) bool.must(f.range().field(path).atMost(cond.lte()));
+        // Range Operators - Using convertValue to ensure correct types (e.g., Integer for rating)
+        if (cond.gt() != null) bool.must(f.range().field(path).greaterThan(convertValue(cond.gt(), path, def)));
+        if (cond.lt() != null) bool.must(f.range().field(path).lessThan(convertValue(cond.lt(), path, def)));
+        if (cond.gte() != null) bool.must(f.range().field(path).atLeast(convertValue(cond.gte(), path, def)));
+        if (cond.lte() != null) bool.must(f.range().field(path).atMost(convertValue(cond.lte(), path, def)));
     }
 
     private boolean isStringField(String path, CustomFieldDefinition def) {
@@ -121,19 +121,22 @@ public class UniversalQueryBuilder {
         return def != null && def.getDataType() == CustomFieldDefinition.FieldDataType.STRING;
     }
 
-    private Object convertValue(String value, String path, CustomFieldDefinition def) {
-        if (path.endsWith("rating")) return Integer.parseInt(value);
-        if (path.equals("price")) return Double.parseDouble(value);
+    private Object convertValue(Object rawValue, String path, CustomFieldDefinition def) {
+        if (rawValue == null) return null;
+        String stringValue = rawValue.toString();
+
+        if (path.endsWith("rating")) return (int) Double.parseDouble(stringValue);
+        if (path.equals("price")) return Double.parseDouble(stringValue);
         
         if (def != null) {
             return switch (def.getDataType()) {
-                case INT -> Integer.parseInt(value);
-                case FLOAT -> Float.parseFloat(value);
-                case DOUBLE -> Double.parseDouble(value);
-                case BOOLEAN -> Boolean.parseBoolean(value);
-                default -> value;
+                case INT -> (int) Double.parseDouble(stringValue);
+                case FLOAT -> Float.parseFloat(stringValue);
+                case DOUBLE -> Double.parseDouble(stringValue);
+                case BOOLEAN -> Boolean.parseBoolean(stringValue);
+                default -> stringValue;
             };
         }
-        return value;
+        return stringValue;
     }
 }

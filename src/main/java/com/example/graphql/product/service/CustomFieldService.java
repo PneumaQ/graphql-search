@@ -7,7 +7,6 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class CustomFieldService {
@@ -18,7 +17,6 @@ public class CustomFieldService {
     public CustomFieldService(CustomFieldRepository repository) {
         this.repository = repository;
         this.cache = Caffeine.newBuilder()
-                .expireAfterWrite(10, TimeUnit.MINUTES)
                 .maximumSize(100)
                 .build();
     }

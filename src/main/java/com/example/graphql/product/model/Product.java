@@ -1,31 +1,27 @@
 package com.example.graphql.product.model;
 
+import com.example.graphql.cfg.converter.LookupCfgAttributeConverter;
+import com.example.graphql.cfg.model.LookupCfgRecord;
+import com.example.graphql.product.search.ProductAttributeBinder;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.BatchSize;
-import org.hibernate.type.SqlTypes;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.search.engine.backend.types.Sortable;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.PropertyBinding;
 import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.PropertyBinderRef;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
-import org.hibernate.search.engine.backend.types.Sortable;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
-import com.example.graphql.product.search.ProductAttributeBinder;
-import com.example.graphql.cfg.model.LookupCfgRecord;
-import com.example.graphql.cfg.converter.LookupCfgAttributeConverter;
+import org.hibernate.type.SqlTypes;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Entity
 @Indexed(index = "product")
-@BatchSize(size = 20)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -59,7 +55,7 @@ public class Product {
     @PropertyBinding(binder = @PropertyBinderRef(type = ProductAttributeBinder.class))
     private Map<String, String> custom_attributes = new HashMap<>();
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @IndexedEmbedded
     private List<Review> reviews = new ArrayList<>();
 }

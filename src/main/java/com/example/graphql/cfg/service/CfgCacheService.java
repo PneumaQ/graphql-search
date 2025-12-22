@@ -7,8 +7,6 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.springframework.stereotype.Service;
 
-import java.util.concurrent.TimeUnit;
-
 @Service
 public class CfgCacheService {
 
@@ -18,7 +16,6 @@ public class CfgCacheService {
     public CfgCacheService(LookupCfgRepository repository) {
         this.repository = repository;
         this.cache = Caffeine.newBuilder()
-                .expireAfterWrite(1, TimeUnit.HOURS)
                 .maximumSize(1000)
                 .build();
     }

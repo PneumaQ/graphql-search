@@ -33,7 +33,11 @@ query {
     results {
       name
       category
-      custom_attributes
+      reviews {
+        author
+        comment
+        rating
+      }
     }
   }
 }</pre>
@@ -84,20 +88,20 @@ query {
 
     <!-- 4. Nested Search -->
     <div class="card">
-        <h3>4. Nested Search (Reviews)</h3>
-        <p>Find products where any review <b>rating</b> is 5 stars.</p>
+        <h3>4. Nested Search (Rating Sync)</h3>
+        <p>Find products with 5-star reviews. <b>Notice:</b> The nested review list is <i>automatically filtered</i> to only show those 5-star reviews, ensuring the UI stays consistent with your search.</p>
         <pre id="q4">
 query {
   searchProducts(filter: [
-    { field: "rating", eq: "5" }
+    { field: "rating", gte: 5 }
   ]) {
     results {
       name
-      reviews { author, rating }
+      reviews { author, rating, comment }
     }
   }
 }</pre>
-        <button onclick="runQuery('q4', 'r4')">Run Rating Filter</button>
+        <button onclick="runQuery('q4', 'r4')">Run Synchronized Filter</button>
         <div class="response-label">Response:</div>
         <pre id="r4" class="result-box">Waiting for action...</pre>
     </div>
