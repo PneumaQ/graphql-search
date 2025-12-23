@@ -1,113 +1,53 @@
 package com.example.graphql.person.repository.search;
 
 import com.example.graphql.person.model.Person;
-import com.example.graphql.person.filter.PersonFilterInput;
-import com.example.graphql.platform.search.HibernateSearchQueryBuilder;
-import com.example.graphql.person.service.PersonService.PersonSearchResponse;
-import com.example.graphql.person.service.PersonService.NumericStats;
-
+import com.example.graphql.product.filter.SearchCondition;
+import com.example.graphql.platform.search.UniversalQueryBuilder;
+import com.example.graphql.platform.metadata.EntityCfg;
+import com.example.graphql.platform.metadata.EntityCfgRepository;
+import com.example.graphql.platform.logging.QueryContext;
 import org.hibernate.search.mapper.orm.Search;
 import org.hibernate.search.mapper.orm.session.SearchSession;
-import org.hibernate.search.engine.search.query.SearchResult;
-import org.hibernate.search.engine.search.aggregation.AggregationKey;
 import org.springframework.stereotype.Repository;
 import jakarta.persistence.EntityManager;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Repository
 public class PersonSearchRepository {
 
     private final EntityManager entityManager;
-    private final HibernateSearchQueryBuilder queryBuilder;
+    private final UniversalQueryBuilder queryBuilder;
+    private final EntityCfgRepository entityCfgRepository;
 
-    public PersonSearchRepository(EntityManager entityManager, HibernateSearchQueryBuilder queryBuilder) {
+    public PersonSearchRepository(EntityManager entityManager, 
+                                  UniversalQueryBuilder queryBuilder,
+                                  EntityCfgRepository entityCfgRepository) {
         this.entityManager = entityManager;
         this.queryBuilder = queryBuilder;
+        this.entityCfgRepository = entityCfgRepository;
     }
 
-    public PersonSearchResponse searchWithFacets(String text, PersonFilterInput filter, Pageable pageable) {
+    public PersonSearchInternalResponse search(String text, List<SearchCondition> filter, int page, int size) {
         SearchSession searchSession = Search.session(entityManager);
-        
-        AggregationKey<Map<Boolean, Long>> activeKey = AggregationKey.of("active_counts");
-        AggregationKey<Map<String, Long>> countryKey = AggregationKey.of("country_counts");
-        AggregationKey<Map<String, Long>> stateKey = AggregationKey.of("state_counts");
-        
-        SearchResult<Person> result = searchSession.search(Person.class)
-            .where(f -> {
-                var root = f.bool();
-                
-                if (filter != null) {
-                    root.filter(queryBuilder.build(f, filter));
-                }
+        EntityCfg rootEntity = entityCfgRepository.findByName("Person").orElseThrow();
 
-                if (text != null && !text.trim().isEmpty()) {
-                     root.must(f.bool()
-                        .should(f.match().field("name").matching(text))
-                        .should(f.match().field("addresses.street").matching(text))
-                        .should(f.match().field("addresses.city").matching(text))
-                     );
-                } else {
-                    root.must(f.matchAll());
+        var query = searchSession.search(Person.class)
+            .where(f -> f.bool(b -> {
+                b.must(queryBuilder.build(f, filter, rootEntity));
+                if (text != null && !text.isBlank()) {
+                    b.must(f.simpleQueryString().field("name").field("email").matching(text));
                 }
-                return root;
-            })
-            .sort(f -> {
-                if (pageable.getSort().isSorted()) {
-                    var composite = f.composite();
-                    for (Sort.Order order : pageable.getSort()) {
-                        var fieldSort = f.field(order.getProperty());
-                        if (order.isDescending()) fieldSort.desc(); else fieldSort.asc();
-                        composite.add(fieldSort);
-                    }
-                    return composite;
-                }
-                return f.score();
-            })
-            .aggregation(activeKey, f -> f.terms().field("isActive", Boolean.class))
-            .aggregation(countryKey, f -> f.terms().field("addresses.country_keyword", String.class))
-            .aggregation(stateKey, f -> f.terms().field("addresses.state_keyword", String.class))
-            
-            .fetch((int) pageable.getOffset(), pageable.getPageSize());
+            }));
 
-        long total = result.total().hitCount();
-        int totalPages = (int) Math.ceil((double) total / pageable.getPageSize());
+        QueryContext.set("Hibernate Search - Person Loading");
+        var result = query.fetch(page * size, size);
         
-        Map<String, Long> activeCounts = result.aggregation(activeKey).entrySet().stream()
-            .collect(Collectors.toMap(e -> String.valueOf(e.getKey()), Map.Entry::getValue));
-
-        return new PersonSearchResponse(
+        return new PersonSearchInternalResponse(
             result.hits(),
-            activeCounts,
-            result.aggregation(countryKey),
-            result.aggregation(stateKey),
-            new NumericStats(0.0, 0.0, 0.0, 0.0, total), 
-            new NumericStats(0.0, 0.0, 0.0, 0.0, total), 
-            total,
-            totalPages
+            result.total().hitCount(),
+            (int) Math.ceil((double) result.total().hitCount() / size)
         );
     }
-    
-    public List<Person> searchByName(String text) {
-        SearchSession searchSession = Search.session(entityManager);
-        return searchSession.search(Person.class)
-            .where(f -> f.bool()
-                .should(f.match().field("name").matching(text))
-                .should(f.match().field("addresses.street").matching(text))
-            ) // Defaults to minShouldMatch(1) as no must/filter
-            .fetchHits(20);
-    }
 
-    public Map<String, Long> getNameFacets() {
-        SearchSession searchSession = Search.session(entityManager);
-        AggregationKey<Map<String, Long>> nameKey = AggregationKey.of("name_counts");
-        
-        return searchSession.search(Person.class)
-            .where(f -> f.matchAll())
-            .aggregation(nameKey, f -> f.terms().field("name_keyword", String.class).maxTermCount(10))
-            .fetch(0).aggregation(nameKey);
-    }
+    public record PersonSearchInternalResponse(List<Person> results, long totalElements, int totalPages) {}
 }

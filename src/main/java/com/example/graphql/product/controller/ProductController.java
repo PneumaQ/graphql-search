@@ -17,15 +17,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.example.graphql.platform.security.DacService;
+
 @Controller
 public class ProductController {
 
     private final ProductService productService;
     private final ReviewRepository reviewRepository;
+    private final DacService dacService;
 
-    public ProductController(ProductService productService, ReviewRepository reviewRepository) {
+    public ProductController(ProductService productService, ReviewRepository reviewRepository, DacService dacService) {
         this.productService = productService;
         this.reviewRepository = reviewRepository;
+        this.dacService = dacService;
     }
 
     @SchemaMapping(typeName = "Product", field = "sku")
@@ -41,7 +45,10 @@ public class ProductController {
         Integer minRating = context.get("review_minRating");
         List<Long> productIds = products.stream().map(Product::getId).toList();
         
-        // 2. Apply the filter if it exists
+        // 2. Fetch security conditions for reviews (simulation)
+        // In a real system, we'd check DACs for the Review entity too
+        
+        // 3. Apply the filter if it exists
         List<Review> allReviews = (minRating != null) 
             ? reviewRepository.findByProductIdInAndRatingGreaterThanEqual(productIds, minRating)
             : reviewRepository.findByProductIdIn(productIds);
@@ -61,28 +68,12 @@ public class ProductController {
             @Argument Integer size,
             GraphQLContext context) {
         
-        // 3. Capture 'rating' filters to synchronize with the nested reviews
-        if (filter != null) {
-            filter.stream()
-                .filter(c -> "rating".equalsIgnoreCase(c.field()) && c.eq() != null)
-                .findFirst()
-                .ifPresent(c -> context.put("review_minRating", Integer.parseInt(c.eq())));
-            
-            // Also handle range filters (gt/gte)
-            filter.stream()
-                .filter(c -> "rating".equalsIgnoreCase(c.field()))
-                .forEach(c -> {
-                    if (c.gt() != null) context.put("review_minRating", c.gt().intValue() + 1);
-                    if (c.gte() != null) context.put("review_minRating", c.gte().intValue());
-                });
-        }
-        
-        return productService.searchProducts(text, filter, facetKeys, statsKeys, sort, page, size);      
+        return productService.searchProducts(text, filter, facetKeys, statsKeys, sort, page, size, context);      
     }
 
     @QueryMapping
     public List<ProductReviewRow> searchProductReviewTable(@Argument String text) {
-        var response = productService.searchProducts(text, null, null, null, null, 0, 100);        
+        var response = productService.searchProducts(text, null, null, null, null, 0, 100, null);        
         return response.results().stream()
             .flatMap(product -> product.getReviews().stream()
                 .map(review -> new ProductReviewRow(

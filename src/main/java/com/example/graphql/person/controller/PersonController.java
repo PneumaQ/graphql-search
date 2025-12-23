@@ -1,17 +1,17 @@
 package com.example.graphql.person.controller;
 
+import com.example.graphql.person.model.Person;
+import com.example.graphql.person.model.Address;
+import com.example.graphql.person.service.PersonService;
+import com.example.graphql.product.filter.SearchCondition;
 import org.springframework.graphql.data.method.annotation.Argument;
-import org.springframework.graphql.data.method.annotation.MutationMapping;
+import org.springframework.graphql.data.method.annotation.BatchMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
-import java.util.List;
-import java.util.Optional;
 
-import com.example.graphql.person.filter.PersonFilterInput;
-import com.example.graphql.person.filter.PersonSort;
-import com.example.graphql.platform.filter.SortDirection;
-import com.example.graphql.person.model.Person;
-import com.example.graphql.person.service.PersonService;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 public class PersonController {
@@ -23,104 +23,22 @@ public class PersonController {
     }
 
     @QueryMapping
-    public Optional<Person> personById(@Argument Long id) {
-        return personService.findById(id);
-    }
-
-    @QueryMapping
-    public PersonSearchResult searchPeople(
-            @Argument String text, 
-            @Argument PersonFilterInput filter,
+    public PersonService.PersonSearchResponse searchPeople(
+            @Argument String text,
+            @Argument List<SearchCondition> filter,
             @Argument Integer page,
-            @Argument Integer size,
-            @Argument List<PersonSort> sort) {
+            @Argument Integer size) {
         
-        int pageNum = (page != null) ? page : 0;
-        int pageSize = (size != null) ? size : 10;
-        
-        org.springframework.data.domain.Sort springSort = org.springframework.data.domain.Sort.unsorted();
-        if (sort != null && !sort.isEmpty()) {
-            List<org.springframework.data.domain.Sort.Order> orders = sort.stream()
-                .map(s -> {
-                    String fieldName = s.field();
-                    String indexField = switch (fieldName.toLowerCase()) {
-                        case "name" -> "name_keyword";
-                        case "age" -> "age";
-                        case "salary" -> "salary";
-                        case "birthdate" -> "birthDate";
-                        default -> fieldName;
-                    };
-                    org.springframework.data.domain.Sort.Direction direction = (s.direction() == SortDirection.DESC) 
-                        ? org.springframework.data.domain.Sort.Direction.DESC 
-                        : org.springframework.data.domain.Sort.Direction.ASC;
-                    return new org.springframework.data.domain.Sort.Order(direction, indexField);
-                })
-                .collect(java.util.stream.Collectors.toList());
-            springSort = org.springframework.data.domain.Sort.by(orders);
-        }
-        
-        PersonService.PersonSearchResponse response = personService.searchWithFacets(text, filter, org.springframework.data.domain.PageRequest.of(pageNum, pageSize, springSort));
-        
-        List<FacetBucket> active = mapFacets(response.activeCounts());
-        List<FacetBucket> country = mapFacets(response.countryCounts());
-        List<FacetBucket> state = mapFacets(response.stateCounts());
-        
-        PersonStats stats = new PersonStats(
-            mapStats(response.salaryStats()),
-            mapStats(response.ageStats())
-        );
-
-        return new PersonSearchResult(
-            response.results(), 
-            new PersonFacets(active, country, state),
-            stats,
-            (int) response.totalElements(),
-            response.totalPages()
-        );
+        return personService.searchPeople(text, filter, page, size);
     }
 
-    private List<FacetBucket> mapFacets(java.util.Map<String, Long> counts) {
-        return counts.entrySet().stream()
-                .map(e -> new FacetBucket(e.getKey(), e.getValue().intValue()))
-                .collect(java.util.stream.Collectors.toList());
-    }
-    
-    private NumericStats mapStats(PersonService.NumericStats stats) {
-        if (stats == null) return null;
-        return new NumericStats(stats.min(), stats.max(), stats.avg(), stats.sum(), (int) stats.count());
-    }
-
-    public record NameFacet(String value, int count) {}
-    public record PersonSearchResult(List<Person> results, PersonFacets facets, PersonStats stats, int totalElements, int totalPages) {}
-    public record PersonFacets(List<FacetBucket> byActive, List<FacetBucket> byCountry, List<FacetBucket> byState) {}
-    public record PersonStats(NumericStats salary, NumericStats age) {}
-    public record NumericStats(Double min, Double max, Double avg, Double sum, Integer count) {}
-    public record FacetBucket(String value, int count) {}
-
-    @MutationMapping
-    public Person createPerson(
-            @Argument String name, 
-            @Argument int age,
-            @Argument String email,
-            @Argument String phoneNumber,
-            @Argument String birthDate,
-            @Argument Boolean isActive,
-            @Argument Double salary) {
-        
-        java.time.LocalDate parsedDate = (birthDate != null) ? java.time.LocalDate.parse(birthDate) : null;
-        
-        return personService.save(new Person(null, name, age, email, phoneNumber, parsedDate, isActive, salary, new java.util.ArrayList<>()));
-    }
-
-    @MutationMapping
-    public Person addAddress(
-            @Argument Long personId, 
-            @Argument String street, 
-            @Argument String city, 
-            @Argument String state, 
-            @Argument String zip,
-            @Argument String country,
-            @Argument Boolean isPrimary) {
-        return personService.addAddress(personId, street, city, state, zip, country, isPrimary);
+    @BatchMapping
+    public Map<Person, List<Address>> addresses(List<Person> people) {
+        // Simple N+1 resolution for demo. In a real system, we'd use a Repository.
+        // For the POC, we just return the already-loaded collection.
+        return people.stream().collect(Collectors.toMap(
+            p -> p,
+            Person::getAddresses
+        ));
     }
 }

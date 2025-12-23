@@ -1,142 +1,125 @@
 package com.example.graphql.platform.search;
 
+import com.example.graphql.platform.metadata.EntityCfg;
+import com.example.graphql.platform.metadata.PropertyCfg;
+import com.example.graphql.platform.metadata.PropertyCfgRepository;
 import com.example.graphql.product.filter.SearchCondition;
-import com.example.graphql.product.model.CustomFieldDefinition;
 import org.hibernate.search.engine.search.predicate.dsl.BooleanPredicateClausesStep;
 import org.hibernate.search.engine.search.predicate.dsl.SearchPredicateFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component
 public class UniversalQueryBuilder {
 
+    private static final Logger log = LoggerFactory.getLogger(UniversalQueryBuilder.class);
+    private final PropertyCfgRepository propertyCfgRepository;
+
+    public UniversalQueryBuilder(PropertyCfgRepository propertyCfgRepository) {
+        this.propertyCfgRepository = propertyCfgRepository;
+    }
+
     public org.hibernate.search.engine.search.predicate.dsl.PredicateFinalStep build(
-            SearchPredicateFactory f, List<SearchCondition> conditions, List<CustomFieldDefinition> customFields) {
+            SearchPredicateFactory f, List<SearchCondition> conditions, EntityCfg rootEntity) {
         
         if (conditions == null || conditions.isEmpty()) {
             return f.matchAll();
         }
 
-        Map<String, CustomFieldDefinition> fieldMap = customFields.stream()
-                .collect(Collectors.toMap(CustomFieldDefinition::getFieldKey, d -> d));
-
         BooleanPredicateClausesStep<?> bool = f.bool();
         for (SearchCondition cond : conditions) {
-            bool.must(buildRecursive(f, cond, fieldMap));
+            bool.must(buildRecursive(f, cond, rootEntity));
         }
         return bool;
     }
 
     private org.hibernate.search.engine.search.predicate.dsl.PredicateFinalStep buildRecursive(
-            SearchPredicateFactory f, SearchCondition cond, Map<String, CustomFieldDefinition> fieldMap) {
+            SearchPredicateFactory f, SearchCondition cond, EntityCfg rootEntity) {
         
         BooleanPredicateClausesStep<?> bool = f.bool();
         boolean hasClause = false;
 
         // 1. Handle Recursive AND
-        if (cond.and() != null && !cond.and().isEmpty()) {
-            for (SearchCondition sub : cond.and()) {
-                bool.must(buildRecursive(f, sub, fieldMap));
+        if (cond.getAnd() != null && !cond.getAnd().isEmpty()) {
+            for (SearchCondition sub : cond.getAnd()) {
+                bool.must(buildRecursive(f, sub, rootEntity));
             }
             hasClause = true;
         }
 
         // 2. Handle Recursive OR
-        if (cond.or() != null && !cond.or().isEmpty()) {
+        if (cond.getOr() != null && !cond.getOr().isEmpty()) {
             BooleanPredicateClausesStep<?> orBool = f.bool();
-            for (SearchCondition sub : cond.or()) {
-                orBool.should(buildRecursive(f, sub, fieldMap));
+            for (SearchCondition sub : cond.getOr()) {
+                orBool.should(buildRecursive(f, sub, rootEntity));
             }
             bool.must(orBool);
             hasClause = true;
         }
 
-        // 3. Handle Recursive NOT
-        if (cond.not() != null) {
-            bool.mustNot(buildRecursive(f, cond.not(), fieldMap));
-            hasClause = true;
-        }
+        // 3. Handle Leaf Node (Field Condition)
+        if (cond.getField() != null) {
+            // Find property globally, then check if it's reachable from this root
+            List<PropertyCfg> properties = propertyCfgRepository.findByPropertyName(cond.getField());
+            
+            // Find the one that belongs to our aggregate (direct parent or traversable)
+            Optional<PropertyCfg> propOpt = properties.stream()
+                .filter(p -> p.getParentEntity().getName().equalsIgnoreCase(rootEntity.getName()) || 
+                             rootEntity.getPropertyRepresentingEntity(p.getParentEntity()) != null)
+                .findFirst();
 
-        // 4. Handle Leaf Node (Field Condition)
-        if (cond.field() != null) {
-            CustomFieldDefinition def = fieldMap.get(cond.field());
-            String path = getFieldPath(cond.field(), def);
-            applyCondition(f, bool, path, cond, def);
+            if (propOpt.isPresent()) {
+                PropertyCfg prop = propOpt.get();
+                String resolvedPath = prop.getDotPath(rootEntity);
+                log.info("Resolved Filter: {} -> {}", cond.getField(), resolvedPath);
+                applyCondition(f, bool, resolvedPath, cond, prop);
+            } else if (cond.getField().contains(".")) {
+                // Fallback for direct paths
+                log.info("Using Direct Path: {}", cond.getField());
+                applyCondition(f, bool, cond.getField(), cond, null);
+            }
             hasClause = true;
         }
 
         return hasClause ? bool : f.matchAll();
     }
 
-    private String getFieldPath(String field, CustomFieldDefinition def) {
-        String lower = field.toLowerCase();
-        return switch (lower) {
-            case "name" -> "name_keyword";
-            case "sku" -> "sku_keyword";
-            case "category" -> "category_keyword";
-            case "price" -> "price";
-            case "rating" -> "reviews.rating";
-            default -> {
-                if (def != null && def.getDataType() == CustomFieldDefinition.FieldDataType.STRING) {
-                    yield "custom_attributes." + field + "_keyword";
-                }
-                yield "custom_attributes." + field;
-            }
-        };
-    }
+    private void applyCondition(SearchPredicateFactory f, BooleanPredicateClausesStep<?> bool, String path, SearchCondition cond, PropertyCfg prop) {
+        // Range Operators
+        if (cond.getGt() != null) bool.must(f.range().field(path).greaterThan(convertValue(cond.getGt(), prop)));
+        if (cond.getLt() != null) bool.must(f.range().field(path).lessThan(convertValue(cond.getLt(), prop)));
+        if (cond.getGte() != null) bool.must(f.range().field(path).atLeast(convertValue(cond.getGte(), prop)));
+        if (cond.getLte() != null) bool.must(f.range().field(path).atMost(convertValue(cond.getLte(), prop)));
 
-    private void applyCondition(SearchPredicateFactory f, BooleanPredicateClausesStep<?> bool, String path, SearchCondition cond, CustomFieldDefinition def) {
-        // String/Equality Operators
-        if (cond.eq() != null) {
-            Object value = convertValue(cond.eq(), path, def);
-            bool.must(f.match().field(path).matching(value));
+        // Equality
+        if (cond.getEq() != null) {
+            bool.must(f.match().field(path).matching(convertValue(cond.getEq(), prop)));
         }
         
-        // Only apply string-only operators if we have a string field
-        if (isStringField(path, def)) {
-            if (cond.contains() != null) {
-                bool.must(f.wildcard().field(path).matching("*" + cond.contains().toLowerCase() + "*"));
-            }
-            if (cond.startsWith() != null) {
-                bool.must(f.wildcard().field(path).matching(cond.startsWith().toLowerCase() + "*"));
-            }
+        // Full-Text
+        if (cond.getContains() != null) {
+            String textPath = path.endsWith("_keyword") ? path.replace("_keyword", "_text") : path;
+            bool.must(f.wildcard().field(textPath).matching("*" + cond.getContains().toLowerCase() + "*"));
         }
-
-        if (cond.in() != null && !cond.in().isEmpty()) {
-            bool.must(f.terms().field(path).matchingAny(cond.in()));
-        }
-
-        // Range Operators - Using convertValue to ensure correct types (e.g., Integer for rating)
-        if (cond.gt() != null) bool.must(f.range().field(path).greaterThan(convertValue(cond.gt(), path, def)));
-        if (cond.lt() != null) bool.must(f.range().field(path).lessThan(convertValue(cond.lt(), path, def)));
-        if (cond.gte() != null) bool.must(f.range().field(path).atLeast(convertValue(cond.gte(), path, def)));
-        if (cond.lte() != null) bool.must(f.range().field(path).atMost(convertValue(cond.lte(), path, def)));
     }
 
-    private boolean isStringField(String path, CustomFieldDefinition def) {
-        if (path.contains("name") || path.contains("sku") || path.contains("category")) return true;
-        return def != null && def.getDataType() == CustomFieldDefinition.FieldDataType.STRING;
-    }
-
-    private Object convertValue(Object rawValue, String path, CustomFieldDefinition def) {
+    private Object convertValue(Object rawValue, PropertyCfg prop) {
         if (rawValue == null) return null;
-        String stringValue = rawValue.toString();
+        if (prop == null) return rawValue;
 
-        if (path.endsWith("rating")) return (int) Double.parseDouble(stringValue);
-        if (path.equals("price")) return Double.parseDouble(stringValue);
+        String stringValue = rawValue.toString();
+        String dataType = (prop.getDataType() != null) ? prop.getDataType().toUpperCase() : "STRING";
         
-        if (def != null) {
-            return switch (def.getDataType()) {
-                case INT -> (int) Double.parseDouble(stringValue);
-                case FLOAT -> Float.parseFloat(stringValue);
-                case DOUBLE -> Double.parseDouble(stringValue);
-                case BOOLEAN -> Boolean.parseBoolean(stringValue);
-                default -> stringValue;
-            };
-        }
-        return stringValue;
+        return switch (dataType) {
+            case "INT", "INTEGER" -> (int) Double.parseDouble(stringValue);
+            case "DOUBLE", "FLOAT" -> Double.parseDouble(stringValue);
+            case "BOOLEAN" -> Boolean.parseBoolean(stringValue);
+            default -> stringValue;
+        };
     }
 }

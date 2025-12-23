@@ -3,31 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universal GraphQL Search Showcase</title>
+    <title>Search Architecture Playground</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; padding: 20px; max-width: 900px; margin: 0 auto; background-color: #f4f7f6; }
-        h1 { color: #2c3e50; text-align: center; margin-bottom: 30px; }
-        .card { background: white; border: none; padding: 25px; margin-bottom: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        h3 { margin-top: 0; color: #34495e; border-bottom: 2px solid #3498db; padding-bottom: 10px; display: inline-block; }
-        p { color: #7f8c8d; margin-top: 10px; }
-        pre { background: #2d3436; color: #f1f2f6; padding: 15px; border-radius: 8px; overflow-x: auto; font-size: 14px; line-height: 1.5; }
-        button { padding: 12px 24px; cursor: pointer; background-color: #3498db; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: 600; transition: all 0.3s; display: block; width: 100%; margin-top: 15px; }
-        button:hover { background-color: #2980b9; transform: translateY(-1px); }
-        .response-label { margin-top: 20px; font-weight: bold; color: #2c3e50; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
-        .result-box { min-height: 60px; color: #27ae60; background: #fdfdfd; border: 1px solid #eee; margin-top: 10px; }
-        .error-box { color: #e74c3c !important; border-color: #fab1a0; }
-        hr { border: 0; height: 1px; background: #dfe6e9; margin: 40px 0; }
-        .badge { background: #3498db; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px; vertical-align: middle; margin-left: 10px; }
+        :root { --primary: #2c3e50; --secondary: #3498db; --success: #27ae60; --warning: #e67e22; --danger: #e74c3c; --bg: #f8fafc; }
+        body { font-family: 'Inter', system-ui, sans-serif; padding: 40px; max-width: 1100px; margin: 0 auto; background-color: var(--bg); color: #334155; line-height: 1.6; }
+        h1 { color: var(--primary); text-align: center; font-size: 2.5rem; margin-bottom: 10px; }
+        .subtitle { text-align: center; color: #64748b; margin-bottom: 40px; font-size: 1.1rem; }
+        
+        .section-header { border-bottom: 2px solid #e2e8f0; margin: 60px 0 30px; padding-bottom: 10px; display: flex; align-items: center; }
+        .section-header h2 { margin: 0; color: var(--primary); }
+        .badge { background: var(--secondary); color: white; padding: 4px 12px; border-radius: 999px; font-size: 0.8rem; margin-left: 15px; text-transform: uppercase; letter-spacing: 1px; }
+
+        .card { background: white; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); padding: 30px; margin-bottom: 30px; border: 1px solid #f1f5f9; transition: transform 0.2s; }
+        .card:hover { transform: translateY(-2px); }
+        
+        h3 { margin-top: 0; color: #1e293b; font-size: 1.25rem; display: flex; justify-content: space-between; align-items: center; }
+        p { color: #64748b; font-size: 0.95rem; margin-bottom: 20px; }
+
+        .editor-container { position: relative; background: #1e293b; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+        .query-editor { background: transparent; color: #e2e8f0; border: none; width: 100%; font-family: 'Fira Code', monospace; font-size: 14px; resize: vertical; min-height: 120px; outline: none; line-height: 1.5; }
+        .label-editor { position: absolute; top: -10px; left: 20px; background: var(--secondary); color: white; padding: 2px 10px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; }
+
+        .action-bar { display: flex; gap: 15px; align-items: center; }
+        button { flex: 1; padding: 12px 24px; cursor: pointer; background-color: var(--secondary); color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; transition: all 0.2s; }
+        button:hover { background-color: #2980b9; box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3); }
+        button.success { background-color: var(--success); }
+        button.warning { background-color: var(--warning); }
+
+        .response-area { margin-top: 25px; border-top: 1px solid #f1f5f9; padding-top: 20px; }
+        .response-meta { display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; color: #94a3b8; margin-bottom: 10px; }
+        .result-box { background: #f8fafc; color: #334155; padding: 15px; border-radius: 8px; overflow-x: auto; font-size: 13px; border: 1px solid #e2e8f0; max-height: 400px; }
+        .count-badge { color: var(--success); }
+        .error-badge { color: var(--danger); }
+
+        .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; margin-right: 5px; }
+        .tag-tech { background: #e0f2fe; color: #0369a1; }
+        .tag-sec { background: #fef2f2; color: #991b1b; }
     </style>
 </head>
 <body>
-    <h1>Universal Product Search <span class="badge">POC</span></h1>
+    <h1>Search Architecture Playground</h1>
+    <p class="subtitle">A Production-Grade Universal Search POC with Dynamic Security & Metadata Registry</p>
 
-    <!-- 1. Global Search -->
+    <div class="section-header">
+        <h2>Domain 1: Product Inventory</h2>
+        <span class="badge">E-Commerce</span>
+    </div>
+
+    <!-- 1. Text Search -->
     <div class="card">
-        <h3>1. Global Full-Text Search</h3>
-        <p>Google-like search across <b>Name, SKU, Category,</b> and <b>all Custom Attributes</b>. Try searching for "Navy" or "Cotton" or "Mechanical".</p>
-        <pre id="q1">
+        <h3>1. Global Full-Text Search <span class="tag tag-tech">Elasticsearch</span></h3>
+        <p>Google-like search across <b>Name, SKU, Category,</b> and <b>JSON Attributes</b>. Try changing "Navy" to "Mouse" or "Keyboard".</p>
+        <div class="editor-container">
+            <span class="label-editor">GraphQL Query</span>
+            <textarea id="q1" class="query-editor">
 query {
   searchProducts(text: "Navy") {
     results {
@@ -35,264 +64,150 @@ query {
       category
       reviews {
         author
-        comment
         rating
       }
     }
   }
-}</pre>
-        <button onclick="runQuery('q1', 'r1')">Run Global Search</button>
-        <div class="response-label">Response:</div>
-        <pre id="r1" class="result-box">Waiting for action...</pre>
+}</textarea>
+        </div>
+        <div class="action-bar">
+            <button onclick="runQuery('q1', 'r1')">Execute Search</button>
+        </div>
+        <div id="r1" class="response-area" style="display:none">
+            <div class="response-meta">
+                <span>Server Response</span>
+                <span id="r1-count" class="count-badge"></span>
+            </div>
+            <pre id="r1-body" class="result-box"></pre>
+        </div>
     </div>
 
-    <!-- 2. Filtering Core Fields -->
+    <!-- 2. Synchronized Filtering -->
     <div class="card">
-        <h3>2. Filter by Core Field (Numeric)</h3>
-        <p>Find products where <b>price</b> is greater than 50.</p>
-        <pre id="q2">
-query {
-  searchProducts(filter: [
-    { field: "price", gt: 50.0 }
-  ]) {
-    results {
-      name
-      price
-    }
-  }
-}</pre>
-        <button onclick="runQuery('q2', 'r2')">Run Price Filter</button>
-        <div class="response-label">Response:</div>
-        <pre id="r2" class="result-box">Waiting for action...</pre>
-    </div>
-
-    <!-- 3. Filtering Custom Attributes -->
-    <div class="card">
-        <h3>3. Filter by Custom Attribute</h3>
-        <p>Find products where the <b>dynamic</b> attribute "color" is exactly "black".</p>
-        <pre id="q3">
-query {
-  searchProducts(filter: [
-    { field: "color", eq: "black" }
-  ]) {
-    results {
-      name
-      custom_attributes
-    }
-  }
-}</pre>
-        <button onclick="runQuery('q3', 'r3')">Run Attribute Filter</button>
-        <div class="response-label">Response:</div>
-        <pre id="r3" class="result-box">Waiting for action...</pre>
-    </div>
-
-    <!-- 4. Nested Search -->
-    <div class="card">
-        <h3>4. Nested Search (Rating Sync)</h3>
-        <p>Find products with 5-star reviews. <b>Notice:</b> The nested review list is <i>automatically filtered</i> to only show those 5-star reviews, ensuring the UI stays consistent with your search.</p>
-        <pre id="q4">
+        <h3>2. Synchronized Graph Filtering <span class="tag tag-tech">BatchMapping</span></h3>
+        <p>This demonstrates <b>Metadata-Driven Consistency</b>. When you filter the search by rating, the nested list automatically syncs to show only matching reviews.</p>
+        <div class="editor-container">
+            <span class="label-editor">GraphQL Query</span>
+            <textarea id="q2" class="query-editor">
 query {
   searchProducts(filter: [
     { field: "rating", gte: 5 }
   ]) {
     results {
       name
-      reviews { author, rating, comment }
+      reviews {
+        author
+        rating
+        comment
+      }
     }
   }
-}</pre>
-        <button onclick="runQuery('q4', 'r4')">Run Synchronized Filter</button>
-        <div class="response-label">Response:</div>
-        <pre id="r4" class="result-box">Waiting for action...</pre>
+}</textarea>
+        </div>
+        <div class="action-bar">
+            <button class="success" onclick="runQuery('q2', 'r2')">Run Sync Filter</button>
+        </div>
+        <div id="r2" class="response-area" style="display:none">
+            <div class="response-meta"><span>Server Response</span><span id="r2-count" class="count-badge"></span></div>
+            <pre id="r2-body" class="result-box"></pre>
+        </div>
     </div>
 
-    <!-- 5. Dynamic Faceting -->
+    <!-- 3. Dynamic Aggregations -->
     <div class="card">
-        <h3>5. Dynamic Faceting</h3>
-        <p>Get aggregate counts for <b>Category</b> and custom <b>Color</b> on the fly. Returns a clean JSON map!</p>
-        <pre id="q5">
-query {
-  searchProducts(facetKeys: ["category", "color"]) {
-    facets
-  }
-}</pre>
-        <button onclick="runQuery('q5', 'r5')">Run Facet Aggregations</button>
-        <div class="response-label">Response:</div>
-        <pre id="r5" class="result-box">Waiting for action...</pre>
-    </div>
-
-    <!-- 6. Dynamic Stats -->
-    <div class="card">
-        <h3>6. Dynamic Numeric Stats</h3>
-        <p>Get min/max/avg for <b>Price</b> and <b>Rating</b> across matching products.</p>
-        <pre id="q6">
-query {
-  searchProducts(statsKeys: ["price", "rating"]) {
-    stats
-  }
-}</pre>
-        <button onclick="runQuery('q6', 'r6')">Run Statistical Summary</button>
-        <div class="response-label">Response:</div>
-        <pre id="r6" class="result-box">Waiting for action...</pre>
-    </div>
-
-    <!-- 7. Dynamic Sorting -->
-    <div class="card">
-        <h3>7. Dynamic Sorting</h3>
-        <p>Sort by <b>Price</b> (Highest First) using the unified string syntax.</p>
-        <pre id="q7">
-query {
-  searchProducts(sort: [{ field: "price", direction: DESC }]) {
-    results {
-      name
-      price
-    }
-  }
-}</pre>
-        <button onclick="runQuery('q7', 'r7')">Run Sorted Search</button>
-        <div class="response-label">Response:</div>
-        <pre id="r7" class="result-box">Waiting for action...</pre>
-    </div>
-
-    <!-- 8. Advanced Boolean Logic -->
-    <div class="card">
-        <h3>8. Advanced Boolean Logic (OR/AND)</h3>
-        <p>Find products where <b>(Category is Electronics OR Color is Navy)</b> AND <b>Price < 100</b>.</p>
-        <pre id="q8">
-query {
-  searchProducts(filter: [
-    {
-      or: [
-        { field: "category", eq: "Electronics" },
-        { field: "color", eq: "navy blue" }
-      ]
-    },
-    { field: "price", lt: 100.0 }
-  ]) {
-    results {
-      name
-      category
-      custom_attributes
-    }
-  }
-}</pre>
-        <button onclick="runQuery('q8', 'r8')">Run Boolean Query</button>
-        <div class="response-label">Response:</div>
-        <pre id="r8" class="result-box">Waiting for action...</pre>
-    </div>
-
-    <!-- 9. THE KITCHEN SINK -->
-    <div class="card" style="background: #edf2f7; border: 2px dashed #3498db;">
-        <h3>9. THE "KITCHEN SINK"</h3>
-        <p>Combining everything: Full-Text + Recursive Logic + Facets + Stats + Pagination + SKU Alias + <b>Brand Lookups</b>.</p>
-        <pre id="q9">
+        <h3>3. Real-Time Analytics <span class="tag tag-tech">Faceting & Stats</span></h3>
+        <p>Retrieve term distributions and numeric statistics (min/max/avg) across the entire filtered result set.</p>
+        <div class="editor-container">
+            <span class="label-editor">GraphQL Query</span>
+            <textarea id="q3" class="query-editor">
 query {
   searchProducts(
-    text: "Cotton",
-    filter: [ 
-      { 
-        or: [
-          { field: "price", gt: 10.0 },
-          { field: "color", eq: "black" }
-        ]
-      } 
-    ],
     facetKeys: ["category", "color"],
-    statsKeys: ["price", "rating"],
-    sort: [{ field: "name", direction: ASC }],
-    page: 0,
-    size: 10
+    statsKeys: ["price", "rating"]
   ) {
+    facets
+    stats
+  }
+}</textarea>
+        </div>
+        <div class="action-bar">
+            <button onclick="runQuery('q3', 'r3')">Calculate Stats</button>
+        </div>
+        <div id="r3" class="response-area" style="display:none">
+            <div class="response-meta"><span>Server Response</span></div>
+            <pre id="r3-body" class="result-box"></pre>
+        </div>
+    </div>
+
+    <div class="section-header">
+        <h2>Domain 2: Human Resources</h2>
+        <span class="badge">Security & DAC</span>
+    </div>
+
+    <!-- 4. Security DAC -->
+    <div class="card">
+        <h3>4. Runtime Security Injection <span class="tag tag-sec">DAC Active</span></h3>
+        <p>A Data Access Control (DAC) rule is active in the database: <b>"USA Residents Only"</b>. The search engine will automatically filter out anyone from France at the index level.</p>
+        <div class="editor-container">
+            <span class="label-editor">GraphQL Query</span>
+            <textarea id="q4" class="query-editor">
+query {
+  searchPeople(text: "example") {
     totalElements
     results {
       name
-      sku
-      price
-      category
-      brand {
-        name
-      }
-      custom_attributes
-    }
-    facets
-    stats
-  }
-}</pre>
-        <button onclick="runQuery('q9', 'r9')" style="background-color: #2c3e50;">Run Master Query</button>
-        <div class="response-label">Response:</div>
-        <pre id="r9" class="result-box">Waiting for action...</pre>
-    </div>
-
-    <!-- 10. Nested Lookup Search -->
-    <div class="card">
-        <h3>10. Nested Lookup Search (Brands)</h3>
-        <p>Find products by searching for text within the <b>Brand</b> name. This demonstrates retrieving rich, immutable configuration data from the Caffeine cache.</p>
-        <pre id="q10">
-query {
-  searchProducts(text: "Logitech") {
-    results {
-      name
-      brand {
-        name
-        description
-        lookupType
+      email
+      addresses {
+        city
+        country
       }
     }
   }
-}</pre>
-        <button onclick="runQuery('q10', 'r10')">Run Brand Search</button>
-        <div class="response-label">Response:</div>
-        <pre id="r10" class="result-box">Waiting for action...</pre>
-    </div>
-
-    <!-- 11. Flat Tabular Join -->
-    <div class="card" style="border: 2px solid #27ae60;">
-        <h3>11. Flat Tabular Join (Product + Review + Brand)</h3>
-        <p>This query returns a <b>flat list of rows</b> (one row per review). It aggregates data from the Product entity, the Review collection, and the Brand cache into a single tabular structure.</p>
-        <pre id="q11">
-query {
-  searchProductReviewTable(text: "Amazing") {
-    productName
-    sku
-    brandName
-    author
-    comment
-    rating
-  }
-}</pre>
-        <button onclick="runQuery('q11', 'r11')" style="background-color: #27ae60;">Run Tabular Search</button>
-        <div class="response-label">Response:</div>
-        <pre id="r11" class="result-box">Waiting for action...</pre>
+}</textarea>
+        </div>
+        <div class="action-bar">
+            <button class="warning" onclick="runQuery('q4', 'r4')">Search People (Secured)</button>
+        </div>
+        <div id="r4" class="response-area" style="display:none">
+            <div class="response-meta"><span>Server Response</span><span id="r4-count" class="count-badge"></span></div>
+            <pre id="r4-body" class="result-box"></pre>
+        </div>
     </div>
 
     <script>
-        async function runQuery(queryElementId, resultElementId) {
-            const queryElement = document.getElementById(queryElementId);
-            const resultElement = document.getElementById(resultElementId);
-            const query = queryElement.innerText;
+        async function runQuery(queryId, resultId) {
+            const query = document.getElementById(queryId).value;
+            const resArea = document.getElementById(resultId);
+            const resBody = document.getElementById(resultId + '-body');
+            const resCount = document.getElementById(resultId + '-count');
             
-            resultElement.innerText = "Processing universal search...";
-            resultElement.classList.remove('error-box');
+            resArea.style.display = 'block';
+            resBody.innerText = "Processing request...";
+            if(resCount) resCount.innerText = "";
 
             try {
                 const response = await fetch('/graphql', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ query: query })
                 });
 
                 const data = await response.json();
-                resultElement.innerText = JSON.stringify(data, null, 2);
+                resBody.innerText = JSON.stringify(data, null, 2);
+                
+                // Update result count if applicable
+                const searchKey = Object.keys(data.data || {})[0];
+                if (data.data && data.data[searchKey] && data.data[searchKey].results) {
+                    const count = data.data[searchKey].results.length;
+                    const total = data.data[searchKey].totalElements || count;
+                    resCount.innerText = `Showing ${count} of ${total} results`;
+                }
                 
                 if (data.errors) {
-                    resultElement.classList.add('error-box');
+                    resCount.innerHTML = `<span class="error-badge">Error Detected</span>`;
                 }
             } catch (error) {
-                resultElement.innerText = "Search Error: " + error.message;
-                resultElement.classList.add('error-box');
+                resBody.innerText = "Error: " + error.message;
             }
         }
     </script>
