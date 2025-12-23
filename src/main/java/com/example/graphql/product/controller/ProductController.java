@@ -18,6 +18,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.example.graphql.platform.security.DacService;
+import com.example.graphql.platform.metadata.PropertyMetadata;
+import com.example.graphql.platform.metadata.PropertyCfgRepository;
 
 @Controller
 public class ProductController {
@@ -25,11 +27,24 @@ public class ProductController {
     private final ProductService productService;
     private final ReviewRepository reviewRepository;
     private final DacService dacService;
+    private final PropertyCfgRepository propertyCfgRepository;
 
-    public ProductController(ProductService productService, ReviewRepository reviewRepository, DacService dacService) {
+    public ProductController(ProductService productService, 
+                             ReviewRepository reviewRepository, 
+                             DacService dacService,
+                             PropertyCfgRepository propertyCfgRepository) {
         this.productService = productService;
         this.reviewRepository = reviewRepository;
         this.dacService = dacService;
+        this.propertyCfgRepository = propertyCfgRepository;
+    }
+
+    @QueryMapping
+    public List<PropertyMetadata> metadata(@Argument String entityName) {
+        return propertyCfgRepository.findAll().stream()
+            .filter(p -> p.getParentEntity().getName().equalsIgnoreCase(entityName))
+            .map(p -> new PropertyMetadata(p.getPropertyName(), p.getDataType(), p.getDotPath(p.getParentEntity())))
+            .toList();
     }
 
     @SchemaMapping(typeName = "Product", field = "sku")
@@ -88,5 +103,22 @@ public class ProductController {
             .toList();
     }
 
+    @org.springframework.graphql.data.method.annotation.MutationMapping
+    public Product createProduct(@Argument String name, @Argument String sku, @Argument String category, @Argument Double price, @Argument List<ProductAttributeInput> custom_attributes) {
+        Map<String, String> attrs = new java.util.HashMap<>();
+        if (custom_attributes != null) {
+            for (ProductAttributeInput input : custom_attributes) {
+                attrs.put(input.key(), input.value());
+            }
+        }
+        return productService.createProduct(name, sku, category, price, attrs);
+    }
+
+    @org.springframework.graphql.data.method.annotation.MutationMapping
+    public Product addReview(@Argument Long productId, @Argument String author, @Argument String comment, @Argument Integer rating) {
+        return productService.addReview(productId, author, comment, rating);
+    }
+
+    public record ProductAttributeInput(String key, String value) {}
     public record ProductReviewRow(String productName, String sku, String brandName, String author, String comment, int rating) {}
 }

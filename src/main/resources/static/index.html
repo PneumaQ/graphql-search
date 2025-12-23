@@ -3,213 +3,370 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search Architecture Playground</title>
+    <title>Search Architecture Dashboard</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #2c3e50; --secondary: #3498db; --success: #27ae60; --warning: #e67e22; --danger: #e74c3c; --bg: #f8fafc; }
-        body { font-family: 'Inter', system-ui, sans-serif; padding: 40px; max-width: 1100px; margin: 0 auto; background-color: var(--bg); color: #334155; line-height: 1.6; }
-        h1 { color: var(--primary); text-align: center; font-size: 2.5rem; margin-bottom: 10px; }
-        .subtitle { text-align: center; color: #64748b; margin-bottom: 40px; font-size: 1.1rem; }
-        
-        .section-header { border-bottom: 2px solid #e2e8f0; margin: 60px 0 30px; padding-bottom: 10px; display: flex; align-items: center; }
-        .section-header h2 { margin: 0; color: var(--primary); }
-        .badge { background: var(--secondary); color: white; padding: 4px 12px; border-radius: 999px; font-size: 0.8rem; margin-left: 15px; text-transform: uppercase; letter-spacing: 1px; }
-
-        .card { background: white; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); padding: 30px; margin-bottom: 30px; border: 1px solid #f1f5f9; transition: transform 0.2s; }
-        .card:hover { transform: translateY(-2px); }
-        
-        h3 { margin-top: 0; color: #1e293b; font-size: 1.25rem; display: flex; justify-content: space-between; align-items: center; }
-        p { color: #64748b; font-size: 0.95rem; margin-bottom: 20px; }
-
-        .editor-container { position: relative; background: #1e293b; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
-        .query-editor { background: transparent; color: #e2e8f0; border: none; width: 100%; font-family: 'Fira Code', monospace; font-size: 14px; resize: vertical; min-height: 120px; outline: none; line-height: 1.5; }
-        .label-editor { position: absolute; top: -10px; left: 20px; background: var(--secondary); color: white; padding: 2px 10px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; }
-
-        .action-bar { display: flex; gap: 15px; align-items: center; }
-        button { flex: 1; padding: 12px 24px; cursor: pointer; background-color: var(--secondary); color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; transition: all 0.2s; }
-        button:hover { background-color: #2980b9; box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3); }
-        button.success { background-color: var(--success); }
-        button.warning { background-color: var(--warning); }
-
-        .response-area { margin-top: 25px; border-top: 1px solid #f1f5f9; padding-top: 20px; }
-        .response-meta { display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; color: #94a3b8; margin-bottom: 10px; }
-        .result-box { background: #f8fafc; color: #334155; padding: 15px; border-radius: 8px; overflow-x: auto; font-size: 13px; border: 1px solid #e2e8f0; max-height: 400px; }
-        .count-badge { color: var(--success); }
-        .error-badge { color: var(--danger); }
-
-        .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; margin-right: 5px; }
-        .tag-tech { background: #e0f2fe; color: #0369a1; }
-        .tag-sec { background: #fef2f2; color: #991b1b; }
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
+        .code-font { font-family: 'Fira Code', monospace; }
+        [v-cloak] { display: none; }
     </style>
 </head>
-<body>
-    <h1>Search Architecture Playground</h1>
-    <p class="subtitle">A Production-Grade Universal Search POC with Dynamic Security & Metadata Registry</p>
-
-    <div class="section-header">
-        <h2>Domain 1: Product Inventory</h2>
-        <span class="badge">E-Commerce</span>
-    </div>
-
-    <!-- 1. Text Search -->
-    <div class="card">
-        <h3>1. Global Full-Text Search <span class="tag tag-tech">Elasticsearch</span></h3>
-        <p>Google-like search across <b>Name, SKU, Category,</b> and <b>JSON Attributes</b>. Try changing "Navy" to "Mouse" or "Keyboard".</p>
-        <div class="editor-container">
-            <span class="label-editor">GraphQL Query</span>
-            <textarea id="q1" class="query-editor">
-query {
-  searchProducts(text: "Navy") {
-    results {
-      name
-      category
-      reviews {
-        author
-        rating
-      }
-    }
-  }
-}</textarea>
-        </div>
-        <div class="action-bar">
-            <button onclick="runQuery('q1', 'r1')">Execute Search</button>
-        </div>
-        <div id="r1" class="response-area" style="display:none">
-            <div class="response-meta">
-                <span>Server Response</span>
-                <span id="r1-count" class="count-badge"></span>
+<body class="antialiased">
+    <div id="app" v-cloak class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-slate-900 text-white p-4 shadow-lg flex justify-between items-center px-8">
+            <div class="flex items-center space-x-4">
+                <div class="bg-blue-500 p-2 rounded-lg">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight">Search Intelligence Dashboard</h1>
+                    <p class="text-xs text-slate-400 uppercase tracking-widest">Universal Search Platform POC</p>
+                </div>
             </div>
-            <pre id="r1-body" class="result-box"></pre>
-        </div>
-    </div>
+            <div class="flex space-x-6 text-sm">
+                <div class="text-right">
+                    <span class="block text-slate-400 uppercase text-[10px] font-bold">Search Engine</span>
+                    <span class="text-green-400 font-semibold">Elasticsearch Online</span>
+                </div>
+                <div class="text-right border-l border-slate-700 pl-6">
+                    <span class="block text-slate-400 uppercase text-[10px] font-bold">Metadata Source</span>
+                    <span class="text-blue-400 font-semibold">JPA PropertyCfg Registry</span>
+                </div>
+            </div>
+        </header>
 
-    <!-- 2. Synchronized Filtering -->
-    <div class="card">
-        <h3>2. Synchronized Graph Filtering <span class="tag tag-tech">BatchMapping</span></h3>
-        <p>This demonstrates <b>Metadata-Driven Consistency</b>. When you filter the search by rating, the nested list automatically syncs to show only matching reviews.</p>
-        <div class="editor-container">
-            <span class="label-editor">GraphQL Query</span>
-            <textarea id="q2" class="query-editor">
-query {
-  searchProducts(filter: [
-    { field: "rating", gte: 5 }
-  ]) {
-    results {
-      name
-      reviews {
-        author
-        rating
-        comment
-      }
-    }
-  }
-}</textarea>
-        </div>
-        <div class="action-bar">
-            <button class="success" onclick="runQuery('q2', 'r2')">Run Sync Filter</button>
-        </div>
-        <div id="r2" class="response-area" style="display:none">
-            <div class="response-meta"><span>Server Response</span><span id="r2-count" class="count-badge"></span></div>
-            <pre id="r2-body" class="result-box"></pre>
-        </div>
-    </div>
+        <div class="flex-1 flex overflow-hidden">
+            <!-- Sidebar: Configuration Panel -->
+            <aside class="w-96 bg-white border-r border-slate-200 overflow-y-auto p-6 space-y-8 shadow-sm">
+                
+                <!-- Domain Selection -->
+                <section>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Active Domain</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button @click="entity = 'Product'" :class="entity === 'Product' ? 'bg-blue-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" class="py-2 rounded-lg text-sm font-semibold transition-all">Products</button>
+                        <button @click="entity = 'Person'" :class="entity === 'Person' ? 'bg-blue-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" class="py-2 rounded-lg text-sm font-semibold transition-all">People</button>
+                    </div>
+                </section>
 
-    <!-- 3. Dynamic Aggregations -->
-    <div class="card">
-        <h3>3. Real-Time Analytics <span class="tag tag-tech">Faceting & Stats</span></h3>
-        <p>Retrieve term distributions and numeric statistics (min/max/avg) across the entire filtered result set.</p>
-        <div class="editor-container">
-            <span class="label-editor">GraphQL Query</span>
-            <textarea id="q3" class="query-editor">
-query {
-  searchProducts(
-    facetKeys: ["category", "color"],
-    statsKeys: ["price", "rating"]
-  ) {
-    facets
-    stats
-  }
-}</textarea>
-        </div>
-        <div class="action-bar">
-            <button onclick="runQuery('q3', 'r3')">Calculate Stats</button>
-        </div>
-        <div id="r3" class="response-area" style="display:none">
-            <div class="response-meta"><span>Server Response</span></div>
-            <pre id="r3-body" class="result-box"></pre>
-        </div>
-    </div>
+                <!-- Full Text Search -->
+                <section>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Global Text Search</label>
+                    <div class="relative">
+                        <input v-model="searchText" type="text" placeholder="Search any field..." class="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+                        <svg class="absolute left-3 top-2.5 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </div>
+                </section>
 
-    <div class="section-header">
-        <h2>Domain 2: Human Resources</h2>
-        <span class="badge">Security & DAC</span>
-    </div>
+                <!-- Dynamic Filter Builder -->
+                <section>
+                    <div class="flex justify-between items-center mb-3">
+                        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Universal Filters</label>
+                        <button @click="addFilter" class="text-blue-600 text-[10px] font-bold uppercase hover:underline">+ Add Filter</button>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <div v-for="(filter, index) in filters" :key="index" class="p-3 bg-slate-50 rounded-lg border border-slate-100 relative group">
+                            <button @click="removeFilter(index)" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">×</button>
+                            <div class="grid grid-cols-2 gap-2 mb-2">
+                                <select v-model="filter.field" class="text-[11px] font-semibold bg-white border border-slate-200 rounded p-1 outline-none">
+                                    <option v-for="prop in availableProperties" :value="prop.propertyName">{{ prop.propertyName }}</option>
+                                </select>
+                                <select v-model="filter.op" class="text-[11px] bg-white border border-slate-200 rounded p-1 outline-none">
+                                    <option value="eq">Equals</option>
+                                    <option value="gte">Greater Than Eq</option>
+                                    <option value="contains">Contains</option>
+                                </select>
+                            </div>
+                            <input v-model="filter.value" type="text" placeholder="Value..." class="w-full text-[11px] bg-white border border-slate-200 rounded p-1 outline-none">
+                        </div>
+                        <p v-if="filters.length === 0" class="text-center py-4 text-xs text-slate-400 italic bg-slate-50 rounded-lg border-2 border-dashed border-slate-200">No active filters</p>
+                    </div>
+                </section>
 
-    <!-- 4. Security DAC -->
-    <div class="card">
-        <h3>4. Runtime Security Injection <span class="tag tag-sec">DAC Active</span></h3>
-        <p>A Data Access Control (DAC) rule is active in the database: <b>"USA Residents Only"</b>. The search engine will automatically filter out anyone from France at the index level.</p>
-        <div class="editor-container">
-            <span class="label-editor">GraphQL Query</span>
-            <textarea id="q4" class="query-editor">
-query {
-  searchPeople(text: "example") {
-    totalElements
-    results {
-      name
-      email
-      addresses {
-        city
-        country
-      }
-    }
-  }
-}</textarea>
-        </div>
-        <div class="action-bar">
-            <button class="warning" onclick="runQuery('q4', 'r4')">Search People (Secured)</button>
-        </div>
-        <div id="r4" class="response-area" style="display:none">
-            <div class="response-meta"><span>Server Response</span><span id="r4-count" class="count-badge"></span></div>
-            <pre id="r4-body" class="result-box"></pre>
+                <!-- Facets -->
+                <section>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Intelligence: Facets</label>
+                    <div class="space-y-2">
+                        <label v-for="key in possibleFacets" :key="key" class="flex items-center space-x-3 p-2 hover:bg-slate-50 rounded-md cursor-pointer transition-colors">
+                            <input type="checkbox" :value="key" v-model="selectedFacets" class="rounded text-blue-600 w-4 h-4">
+                            <span class="text-sm text-slate-700">Count by <b class="capitalize">{{key}}</b></span>
+                        </label>
+                    </div>
+                </section>
+
+                <!-- Stats -->
+                <section v-if="possibleStats.length > 0">
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Intelligence: Stats</label>
+                    <div class="space-y-2">
+                        <label v-for="key in possibleStats" :key="key" class="flex items-center space-x-3 p-2 hover:bg-slate-50 rounded-md cursor-pointer transition-colors">
+                            <input type="checkbox" :value="key" v-model="selectedStats" class="rounded text-blue-600 w-4 h-4">
+                            <span class="text-sm text-slate-700">Stats for <b class="capitalize">{{key}}</b></span>
+                        </label>
+                    </div>
+                </section>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <button @click="resetSearch" class="py-3 bg-slate-200 text-slate-700 rounded-xl font-bold text-sm hover:bg-slate-300 transition-all">
+                        Reset Search
+                    </button>
+                    <button @click="runSearch" :disabled="loading" class="py-3 bg-slate-900 text-white rounded-xl font-bold text-sm shadow-xl hover:bg-black transition-all flex items-center justify-center space-x-2">
+                        <span v-if="loading" class="animate-spin border-2 border-white border-t-transparent rounded-full w-4 h-4"></span>
+                        <span>{{ loading ? 'Searching...' : 'Execute' }}</span>
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Main Area: Results & Insight -->
+            <main class="flex-1 bg-slate-50 overflow-y-auto p-8 relative">
+                
+                <!-- Security Insight Banner -->
+                <div v-if="lastResponse && lastResponse.extensions" class="mb-6 p-4 bg-amber-50 border-l-4 border-amber-400 rounded-r-lg flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+                        <p class="text-xs text-amber-800 font-medium">
+                            <b>DAC Insight:</b> Search automatically filtered by active Security Policies from the database.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Main Stats Bar (Removed to move to sidebar) -->
+                <div v-if="results" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col justify-center">
+                        <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total Matches</span>
+                        <span class="text-2xl font-bold text-slate-900">{{ results.totalElements }}</span>
+                    </div>
+                </div>
+
+                <!-- Result Cards -->
+                <div v-if="results" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div v-for="item in results.results" :key="item.id" class="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-200 flex flex-col">
+                        <div class="p-5 flex-1">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h4 class="font-bold text-slate-900 text-lg">{{ item.name }}</h4>
+                                    <span class="text-xs text-slate-400 font-semibold uppercase tracking-tighter">{{ item.category }} | SKU: {{ item.sku }}</span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-lg font-bold text-green-600">${{ item.price }}</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Nested Reviews -->
+                            <div v-if="item.reviews && item.reviews.length > 0" class="mt-4 pt-4 border-t border-slate-50 space-y-3">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase">Latest Reviews</label>
+                                <div v-for="rev in item.reviews" class="text-xs p-3 bg-slate-50 rounded-lg">
+                                    <div class="flex justify-between mb-1">
+                                        <span class="font-bold text-slate-700">{{ rev.author }}</span>
+                                        <span class="text-amber-500 font-bold">★ {{ rev.rating }}</span>
+                                    </div>
+                                    <p class="text-slate-500 leading-snug">{{ rev.comment }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div v-if="!results && !loading" class="h-full flex flex-col items-center justify-center text-center opacity-40">
+                    <div class="bg-slate-200 p-8 rounded-full mb-4">
+                        <svg class="w-16 h-16 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </div>
+                    <h2 class="text-2xl font-bold">Ready to Explore</h2>
+                    <p>Configure your search and click Execute</p>
+                </div>
+            </main>
+
+            <!-- Right Area: Code Inspection -->
+            <aside class="w-[450px] bg-slate-800 p-6 overflow-y-auto">
+                <div class="mb-8">
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Active GraphQL Query</label>
+                    <pre class="code-font text-blue-300 text-xs bg-black/30 p-4 rounded-lg border border-slate-700 whitespace-pre-wrap">{{ generatedQuery }}</pre>
+                </div>
+
+                <div v-if="results && results.facets" class="space-y-6">
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-slate-700 pb-2 mb-4">Live Facets</label>
+                    <div v-for="(counts, field) in results.facets" :key="field">
+                        <h5 class="text-slate-300 text-xs font-bold uppercase mb-3 px-2 border-l-2 border-blue-500">{{field}}</h5>
+                        <div class="space-y-1">
+                            <div v-for="(count, val) in counts" :key="val" class="flex justify-between items-center bg-slate-700/50 p-2 rounded px-3">
+                                <span class="text-slate-400 text-[11px]">{{val}}</span>
+                                <span class="bg-slate-900 text-blue-400 text-[10px] font-bold px-2 py-0.5 rounded-full">{{count}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Statistics -->
+                <div v-if="results && results.stats" class="space-y-6 mt-8">
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-slate-700 pb-2 mb-4">Live Statistics</label>
+                    <div v-for="(stat, field) in results.stats" :key="field">
+                        <h5 class="text-slate-300 text-xs font-bold uppercase mb-3 px-2 border-l-2 border-green-500">{{field}}</h5>
+                        <div class="space-y-1">
+                            <div v-for="(val, label) in stat" :key="label" class="flex justify-between items-center bg-slate-700/50 p-2 rounded px-3">
+                                <span class="text-slate-400 text-[11px] capitalize">{{label}}</span>
+                                <span class="bg-slate-900 text-green-400 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                                    {{ typeof val === 'number' ? (val % 1 === 0 ? val : val.toFixed(2)) : val }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Raw JSON Response -->
+                <div v-if="lastResponse" class="mt-12">
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-slate-700 pb-2 mb-4">Raw JSON Response</label>
+                    <pre class="code-font text-green-500 text-[10px] bg-black/50 p-4 rounded-lg border border-slate-700 overflow-x-auto">{{ JSON.stringify(lastResponse, null, 2) }}</pre>
+                </div>
+            </aside>
         </div>
     </div>
 
     <script>
-        async function runQuery(queryId, resultId) {
-            const query = document.getElementById(queryId).value;
-            const resArea = document.getElementById(resultId);
-            const resBody = document.getElementById(resultId + '-body');
-            const resCount = document.getElementById(resultId + '-count');
-            
-            resArea.style.display = 'block';
-            resBody.innerText = "Processing request...";
-            if(resCount) resCount.innerText = "";
+        const {createApp, ref, computed, onMounted, watch} = Vue;
 
-            try {
-                const response = await fetch('/graphql', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ query: query })
+        createApp({
+            setup() {
+                const entity = ref('Product');
+                const searchText = ref('');
+                const loading = ref(false);
+                const results = ref(null);
+                const lastResponse = ref(null);
+                const availableProperties = ref([]);
+                const filters = ref([]);
+                const selectedFacets = ref(['category']);
+                const selectedStats = ref(['price']);
+                
+                const possibleFacets = computed(() => {
+                    return entity.value === 'Product' ? ['category', 'color', 'brand', 'material', 'ram', 'desc'] : ['country', 'isActive'];
                 });
 
-                const data = await response.json();
-                resBody.innerText = JSON.stringify(data, null, 2);
-                
-                // Update result count if applicable
-                const searchKey = Object.keys(data.data || {})[0];
-                if (data.data && data.data[searchKey] && data.data[searchKey].results) {
-                    const count = data.data[searchKey].results.length;
-                    const total = data.data[searchKey].totalElements || count;
-                    resCount.innerText = `Showing ${count} of ${total} results`;
-                }
-                
-                if (data.errors) {
-                    resCount.innerHTML = `<span class="error-badge">Error Detected</span>`;
-                }
-            } catch (error) {
-                resBody.innerText = "Error: " + error.message;
+                const possibleStats = computed(() => {
+                    return entity.value === 'Product' ? ['price', 'rating'] : [];
+                });
+
+                // Fetch metadata for current entity
+                const fetchMetadata = async () => {
+                    const query = `query { metadata(entityName: "${entity.value}") { propertyName dataType dotPath } }`;
+                    try {
+                        const response = await fetch('/graphql', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ query })
+                        });
+                        const data = await response.json();
+                        availableProperties.value = data.data.metadata;
+                    } catch (e) { console.error("Metadata fetch failed", e); }
+                };
+
+                onMounted(fetchMetadata);
+                watch(entity, () => {
+                    filters.value = [];
+                    selectedFacets.value = entity.value === 'Product' ? ['category'] : ['country'];
+                    selectedStats.value = entity.value === 'Product' ? ['price'] : [];
+                    fetchMetadata();
+                });
+
+                const addFilter = () => {
+                    if (availableProperties.value.length > 0) {
+                        filters.value.push({ field: availableProperties.value[0].propertyName, op: 'eq', value: '' });
+                    }
+                };
+
+                const removeFilter = (index) => filters.value.splice(index, 1);
+
+                const resetSearch = () => {
+                    searchText.value = '';
+                    filters.value = [];
+                    selectedFacets.value = entity.value === 'Product' ? ['category'] : ['country'];
+                    selectedStats.value = entity.value === 'Product' ? ['price'] : [];
+                    results.value = null;
+                    lastResponse.value = null;
+                };
+
+                const generatedQuery = computed(() => {
+                    const indent = "    ";
+                    let args = [];
+                    
+                    args.push(`${indent}text: "${searchText.value}"`);
+                    
+                    if (filters.value.length > 0) {
+                        const conds = filters.value.map(f => {
+                            const val = (f.value === "" || isNaN(f.value)) ? `"${f.value}"` : f.value;
+                            return `{ field: "${f.field}", ${f.op}: ${val} }`;
+                        }).join(", ");
+                        args.push(`${indent}filter: [${conds}]`);
+                    }
+
+                    if (selectedFacets.value.length > 0) {
+                        args.push(`${indent}facetKeys: ${JSON.stringify(selectedFacets.value)}`);
+                    }
+                    
+                    if (selectedStats.value.length > 0) {
+                        args.push(`${indent}statsKeys: ${JSON.stringify(selectedStats.value)}`);
+                    }
+
+                    const argsStr = args.join(",\n");
+
+                    return `query {
+  search${entity.value}s(
+${argsStr}
+  ) {
+    totalElements
+    results {
+      name
+      ${entity.value === 'Product' ? 'category\n      sku\n      price\n      reviews {\n        author\n        rating\n        comment\n      }' : 'email\n      addresses {\n        city\n        country\n      }'}
+    }
+    facets
+    ${entity.value === 'Product' ? 'stats' : ''}
+  }
+}`;
+                });
+
+                const runSearch = async () => {
+                    loading.value = true;
+                    try {
+                        const response = await fetch('/graphql', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ query: generatedQuery.value })
+                        });
+                        const data = await response.json();
+                        lastResponse.value = data;
+                        
+                        if (data.errors) {
+                            console.error("GraphQL Errors:", data.errors);
+                        }
+
+                        const searchKey = Object.keys(data.data || {})[0];
+                        const searchResult = data.data[searchKey];
+                        
+                        if (searchResult) {
+                            // Defensive parsing if JSON scalars come back as strings
+                            if (typeof searchResult.facets === 'string') {
+                                try { searchResult.facets = JSON.parse(searchResult.facets); } catch(e) {}
+                            }
+                            if (typeof searchResult.stats === 'string') {
+                                try { searchResult.stats = JSON.parse(searchResult.stats); } catch(e) {}
+                            }
+                            console.log("Search Result:", searchResult);
+                        }
+                        
+                        results.value = searchResult;
+                    } catch (e) { console.error("Search failed", e); }
+                    finally { loading.value = false; }
+                };
+
+                return {
+                    entity, searchText, loading, results, lastResponse,
+                    availableProperties, filters, selectedFacets, possibleFacets,
+                    selectedStats, possibleStats,
+                    addFilter, removeFilter, resetSearch, generatedQuery, runSearch
+                };
             }
-        }
+        }).mount('#app');
     </script>
 </body>
 </html>

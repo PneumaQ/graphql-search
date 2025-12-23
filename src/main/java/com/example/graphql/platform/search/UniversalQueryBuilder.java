@@ -100,6 +100,17 @@ public class UniversalQueryBuilder {
         if (cond.getEq() != null) {
             bool.must(f.match().field(path).matching(convertValue(cond.getEq(), prop)));
         }
+
+        // StartsWith
+        if (cond.getStartsWith() != null) {
+            bool.must(f.wildcard().field(path).matching(cond.getStartsWith().toLowerCase() + "*"));
+        }
+
+        // In
+        if (cond.getIn() != null && !cond.getIn().isEmpty()) {
+            List<Object> values = cond.getIn().stream().map(v -> convertValue(v, prop)).toList();
+            bool.must(f.terms().field(path).matchingAny(values));
+        }
         
         // Full-Text
         if (cond.getContains() != null) {

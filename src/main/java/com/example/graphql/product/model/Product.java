@@ -47,7 +47,7 @@ public class Product {
 
     @Convert(converter = LookupCfgAttributeConverter.class)
     @Column(name = "brand_id")
-    @IndexedEmbedded(includePaths = {"name", "description"})
+    @IndexedEmbedded(includePaths = {"name", "name_keyword", "description"})
     private LookupCfgRecord brand;
 
     @JdbcTypeCode(SqlTypes.JSON)

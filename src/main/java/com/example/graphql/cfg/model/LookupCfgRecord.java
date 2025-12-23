@@ -8,7 +8,7 @@ public record LookupCfgRecord(
     Long id,
     
     @FullTextField(analyzer = "standard")
-    @KeywordField(name = "name_keyword", sortable = Sortable.YES, normalizer = "lowercase")
+    @KeywordField(name = "name_keyword", sortable = Sortable.YES, normalizer = "lowercase", aggregable = org.hibernate.search.engine.backend.types.Aggregable.YES)
     String name,
     
     @FullTextField(analyzer = "standard")

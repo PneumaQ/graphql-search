@@ -1,42 +1,28 @@
-# Gemini Context & Project Status
+# Search-First Architecture POC - Transition Context
 
-## Project: graphql-search
+## Overview
+This POC demonstrates a "Search-First" paradigm where Elasticsearch (via Hibernate Search) handles all business intelligence, filtering, and authorization (DAC), relegating Postgres to a simple hydration store.
 
-### Architecture
-- **Framework:** Spring Boot 3.5.4
-- **Language:** Java 21
-- **API:** Spring GraphQL (Universal Search Platform)
-- **Data:** Spring Data JPA + H2 (In-Memory)
-- **Search:** Hibernate Search 7.1 (Elasticsearch backend)
-- **Caching:** Caffeine (Used for Metadata Registry and Configuration Lookups)
+## Current State
+- **Metadata Registry:** A production-style JPA-backed registry (`EntityCfg`, `PropertyCfg`) maps logical names (e.g., "rating") to technical paths (e.g., "reviews.rating") and data types.
+- **Dynamic DAC Engine:** `DacService` translates relational security rules (`DacCfg`) into Elasticsearch predicates at runtime.
+- **Universal Query Builder:** A unified component that resolves dot-paths and handles type-safe value conversion for both Products and People.
+- **Synchronized Filtering:** Root search criteria (like `minRating`) are passed via `GraphQLContext` to `@BatchMapping` loaders to keep child collections in sync with the search results.
+- **Interactive Dashboard:** A Vue.js 3 dashboard (`index.html`) provides a point-and-click interface for query building, faceting, and security insights.
 
-### Current Status: Advanced Architectural Proof Complete
-We have moved beyond basic search into a production-mirroring architecture that emphasizes performance, stability, and clean decoupling.
+## Recent Fixes (Done)
+- **Brand Faceting:** Registered the `brand` property to map to `brand.name_keyword`, resolving ES aggregation errors.
+- **Type-Safe Sync:** Refactored `ProductService` to use metadata `dataType` before parsing numbers, eliminating `NumberFormatExceptions`.
+- **Seeding scoping:** Fixed Java scoping issues in `GraphqlApplication` to ensure a "Success-First" dataset for demos.
 
-### Key Implementation Details
-- **Metadata Registry:** Replaced expensive table scans with a `CustomFieldDefinition` registry. Search now consults a Caffeine-cached map to determine dynamic field paths and data types.
-- **Recursive Boolean Logic:** `SearchCondition` now supports nested `and`, `or`, and `not` structures, allowing the UI to build complex multi-clause queries.
-- **The GraphQL "Firewall":** Proved API stability by renaming domain field `sku` to `internalStockCode` while maintaining the public `sku` field via `@SchemaMapping`.
-- **Immutable Lookup Pattern:** Implemented `LookupCfg` (entity) and `LookupCfgRecord` (immutable record). Used a JPA `AttributeConverter` + Caffeine cache to "hydrate" rich brand objects without DB joins.
-- **Beautified Codebase:**
-    - `ProductController`: Pure delegator.
-    - `ProductService`: Orchestrator for pagination and DTO mapping.
-    - `ProductSearchRepository`: Decomposed into readable private methods (`applyFullTextSearch`, `mapFacetResults`, etc.).
-- **Tabular Transformation:** Implemented `searchProductReviewTable` to demonstrate flattening a 3-layer graph (Product + Review + Brand) into a flat "JDBC-like" row list for the UI.
-- **Query Tracer:** Added instrumentation to label SQL queries (e.g., `/* Action: Entity Loading */`) and log GraphQL request boundaries.
+## Next Steps
+1. **Verification:** Confirm the "Search People" domain works with the USA-only DAC.
+2. **Expansion:** Potentially add "Material" or other JSON attributes to the dashboard's default facets.
+3. **Architecture Summary:** Finalize the technical document for stakeholders.
 
-### Outstanding Mysteries / Debugging Phase
-- **Ghost Logging:** In "Run" mode (DevTools active), GraphQL banners and SQL logs repeat 16 times for a single request. In "Debug" mode, they appear only once. 
-- **Batch Loading:** Hibernate Search is currently loading entities one-by-one (`where id in (?)`) instead of in batches, despite `batch_size` settings.
-- **Baseline Test:** Seed data has been simplified to **1 Product** to isolate the logging duplication from the data volume.
-
-### Todo List (Next Steps)
-- [ ] Solve the Log Duplication mystery (Theory: DevTools RestartClassLoader or multiple bean registration).
-- [ ] Force true SQL Batching for Phase 2 loading (Verify `IN (?, ?, ...)` behavior).
-- [ ] **Searchable Security:** Research indexing permissions directly into the ES document to avoid DB-side DAC filtering.
-- [ ] **Write-Side Validation:** Use the Registry to prevent "dirty" keys during `createProduct`.
-
-### Future Roadmap
-- [ ] Migrate to PostgreSQL for persistent JSONB storage.
-- [ ] Test with real Elasticsearch container to verify globbing and native stats aggregations.
-- [ ] Explore "Custom Directives" to reduce Java boilerplate for flattening logic.
+## Technical Map
+- **Logic Entry:** `ProductService.searchProducts` / `PersonService.searchPeople`
+- **Core Builder:** `UniversalQueryBuilder.java`
+- **Security Logic:** `DacService.java`
+- **UI Logic:** `index.html` (Vue.js + Tailwind)
+- **Metadata Registry:** `PropertyCfgRepository`

@@ -1,6 +1,9 @@
 scalar JSON
 
 type Query {
+    # Metadata Discovery (New!)
+    metadata(entityName: String!): [PropertyMetadata]
+
     # The Universal Search Entry Point for Products
     searchProducts(
         text: String, 
@@ -22,6 +25,12 @@ type Query {
 
     # Tabular "Join" View: One row per Review
     searchProductReviewTable(text: String): [ProductReviewRow]
+}
+
+type PropertyMetadata {
+    propertyName: String
+    dataType: String
+    dotPath: String
 }
 
 type PersonSearchResult {

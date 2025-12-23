@@ -47,23 +47,27 @@ public class GraphqlApplication {
             entityManager.persist(personMeta);
             entityManager.persist(addressMeta);
 
-            // Product Core Properties
+            // Product Core Properties (id, logicalName, type, technicalPath, representedEntity, parent)
             entityManager.persist(new com.example.graphql.platform.metadata.PropertyCfg(null, "name", "STRING", "name_keyword", null, productMeta));
             com.example.graphql.platform.metadata.PropertyCfg categoryProp = new com.example.graphql.platform.metadata.PropertyCfg(null, "category", "STRING", "category_keyword", null, productMeta);
             entityManager.persist(categoryProp);
             entityManager.persist(new com.example.graphql.platform.metadata.PropertyCfg(null, "price", "DOUBLE", "price", null, productMeta));
             entityManager.persist(new com.example.graphql.platform.metadata.PropertyCfg(null, "sku", "STRING", "sku_keyword", null, productMeta));
+            entityManager.persist(new com.example.graphql.platform.metadata.PropertyCfg(null, "brand", "STRING", "brand.name_keyword", null, productMeta));
             
-            // Product Relationships
+            // Product -> Review Relationship
             entityManager.persist(new com.example.graphql.platform.metadata.PropertyCfg(null, "reviews", "ENTITY", null, "Review", productMeta));
             
             // Dynamic Attributes
             entityManager.persist(new com.example.graphql.platform.metadata.PropertyCfg(null, "color", "STRING", "custom_attributes.color_keyword", null, productMeta));
             entityManager.persist(new com.example.graphql.platform.metadata.PropertyCfg(null, "material", "STRING", "custom_attributes.material_keyword", null, productMeta));
+            entityManager.persist(new com.example.graphql.platform.metadata.PropertyCfg(null, "ram", "STRING", "custom_attributes.ram_keyword", null, productMeta));
+            entityManager.persist(new com.example.graphql.platform.metadata.PropertyCfg(null, "desc", "STRING", "custom_attributes.desc_keyword", null, productMeta));
             
             // Review Properties
             com.example.graphql.platform.metadata.PropertyCfg ratingProp = new com.example.graphql.platform.metadata.PropertyCfg(null, "rating", "INT", null, null, reviewMeta);
             entityManager.persist(ratingProp);
+            entityManager.persist(new com.example.graphql.platform.metadata.PropertyCfg(null, "comment", "STRING", null, null, reviewMeta));
 
             // Person Properties
             entityManager.persist(new com.example.graphql.platform.metadata.PropertyCfg(null, "name", "STRING", "name_keyword", null, personMeta));
@@ -94,6 +98,7 @@ public class GraphqlApplication {
             p1.setPrice(59.99);
             p1.setBrand(cfgCacheService.getLookup(logitech.getId()));
             p1.getCustom_attributes().put("color", "black");
+            p1.getCustom_attributes().put("material", "Plastic");
             addReview(p1, "User A", "Amazing speed!", 5);
             addReview(p1, "User B", "A bit small", 3);
             productRepository.save(p1);
@@ -105,6 +110,7 @@ public class GraphqlApplication {
             p2.setPrice(25.50);
             p2.setBrand(cfgCacheService.getLookup(nike.getId()));
             p2.getCustom_attributes().put("color", "navy blue");
+            p2.getCustom_attributes().put("material", "Cotton");
             addReview(p2, "Gregg", "Excellent navy color", 5);
             productRepository.save(p2);
 
@@ -115,6 +121,7 @@ public class GraphqlApplication {
             p3.setPrice(120.00);
             p3.setBrand(cfgCacheService.getLookup(razer.getId()));
             p3.getCustom_attributes().put("color", "white");
+            p3.getCustom_attributes().put("material", "Aluminum");
             addReview(p3, "Pro Gamer", "Best switches ever", 5);
             productRepository.save(p3);
 

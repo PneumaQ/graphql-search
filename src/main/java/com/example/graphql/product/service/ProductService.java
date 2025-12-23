@@ -65,25 +65,27 @@ public class ProductService {
                     propertyCfgRepository.findByPropertyNameAndParentEntityName(cond.getField(), "Product")
                         .or(() -> propertyCfgRepository.findByPropertyNameAndParentEntityName(cond.getField(), "Review"))
                         .ifPresent(meta -> {
-                            // Only synchronize if the property belongs to a child entity (e.g., Review)
-                            // and NOT the root entity (Product). This prevents JSON attributes from being misidentified.
-                            if (!meta.getParentEntity().getName().equalsIgnoreCase(root.getName())) {
-                                String childKey = meta.getParentEntity().getName().toLowerCase();
-                                // For this POC, we map 'rating' to 'minRating' for the batch loader
-                                String syncKey = childKey + "_minRating"; 
-                                
-                                Object val = null;
-                                try {
-                                    if (cond.getEq() != null) val = (int) Double.parseDouble(cond.getEq());
-                                    else if (cond.getGte() != null) val = cond.getGte().intValue();
-                                    else if (cond.getGt() != null) val = cond.getGt().intValue() + 1;
-                                    
-                                    if (val != null) context.put(syncKey, val);
-                                } catch (Exception ignored) {
-                                    // If conversion fails, we don't sync this specific filter
-                                }
-                            }
-                        });
+                                                        // Only synchronize if the property belongs to a child entity (e.g., Review)
+                                                        // and NOT the root entity (Product).
+                                                        if (!meta.getParentEntity().getName().equalsIgnoreCase(root.getName())) {
+                                                            String childKey = meta.getParentEntity().getName().toLowerCase();
+                                                            String syncKey = childKey + "_minRating"; 
+                                                            String dataType = meta.getDataType() != null ? meta.getDataType().toUpperCase() : "STRING";
+                            
+                                                            Object val = null;
+                                                            try {
+                                                                // TYPE-AWARE PARSING: Only parse if the registry says it's numeric
+                                                                if ("INT".equals(dataType) || "INTEGER".equals(dataType) || "DOUBLE".equals(dataType)) {
+                                                                    if (cond.getEq() != null) val = (int) Double.parseDouble(cond.getEq());
+                                                                    else if (cond.getGte() != null) val = cond.getGte().intValue();
+                                                                    else if (cond.getGt() != null) val = cond.getGt().intValue() + 1;
+                                                                }
+                                                                
+                                                                if (val != null) context.put(syncKey, val);
+                                                            } catch (Exception ignored) {
+                                                                // Fail gracefully if a user enters garbage
+                                                            }
+                                                        }                        });
                 }
             });
         }

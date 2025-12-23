@@ -91,15 +91,32 @@ public class ProductSearchRepository {
     private void applyFullTextSearch(SearchPredicateFactory f, BooleanPredicateClausesStep<?> bool, String text, EntityCfg rootEntity) {
         if (text == null || text.isBlank()) return;
 
-        var textQuery = f.simpleQueryString()
-                .field("name")
-                .field("internalStockCode")
-                .field("category_keyword")
-                .field("brand.name")
-                .field("reviews.comment")
-                .field("custom_attributes.color_text")
-                .field("custom_attributes.material_text");
+        java.util.Set<String> fields = new java.util.HashSet<>();
         
+        // 1. Always include core fields
+        fields.add("name");
+        fields.add("internalStockCode");
+
+        // 2. Dynamically include all STRING properties from the registry
+        for (PropertyCfg prop : rootEntity.getProperties()) {
+            if ("STRING".equalsIgnoreCase(prop.getDataType())) {
+                String path = prop.getDotPath(rootEntity);
+                if (path.startsWith("custom_attributes.") && path.endsWith("_keyword")) {
+                    path = path.replace("_keyword", "_text");
+                }
+                fields.add(path);
+            } else if ("ENTITY".equalsIgnoreCase(prop.getDataType()) && prop.getRepresentedEntityName() != null) {
+                entityCfgRepository.findByName(prop.getRepresentedEntityName()).ifPresent(childEntity -> {
+                    for (PropertyCfg childProp : childEntity.getProperties()) {
+                        if ("STRING".equalsIgnoreCase(childProp.getDataType())) {
+                            fields.add(childProp.getDotPath(rootEntity));
+                        }
+                    }
+                });
+            }
+        }
+        
+        var textQuery = f.simpleQueryString().fields(fields.toArray(new String[0]));
         bool.must(textQuery.matching(text));
     }
 

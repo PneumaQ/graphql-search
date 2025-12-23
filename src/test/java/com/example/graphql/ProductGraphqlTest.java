@@ -77,6 +77,31 @@ class ProductGraphqlTest {
     }
 
     @Test
+    void shouldSearchWithBrandFacets() throws InterruptedException {
+        // We need to use real lookups or mock them. 
+        // In this test, createProduct uses custom_attributes but doesn't set brand.
+        // I'll use a direct repository save for a quick check or update createProduct.
+        Product p = new Product();
+        p.setName("Brand Test 1");
+        p.setInternalStockCode("BT1");
+        p.setBrand(new com.example.graphql.cfg.model.LookupCfgRecord(1L, "Logitech", null, "BRAND"));
+        productRepository.save(p);
+
+        Product p2 = new Product();
+        p2.setName("Brand Test 2");
+        p2.setInternalStockCode("BT2");
+        p2.setBrand(new com.example.graphql.cfg.model.LookupCfgRecord(1L, "Logitech", null, "BRAND"));
+        productRepository.save(p2);
+
+        Thread.sleep(2000);
+
+        String facetQuery = "{ searchProducts(facetKeys: [\"brand\"]) { facets } }";
+        graphQlTester.document(facetQuery).execute()
+                .path("searchProducts.facets.brand")
+                .matchesJson("{ \"logitech\": 2 }");
+    }
+
+    @Test
     void shouldSearchWithFacets() throws InterruptedException {
         createProduct("P1", "SKU1", List.of(new ProductAttributeDto("color", "red")));
         createProduct("P2", "SKU2", List.of(new ProductAttributeDto("color", "red")));
