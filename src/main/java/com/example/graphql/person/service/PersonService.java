@@ -1,6 +1,7 @@
 package com.example.graphql.person.service;
 
 import com.example.graphql.person.model.Person;
+import com.example.graphql.person.repository.jpa.PersonRepository;
 import com.example.graphql.person.repository.search.PersonSearchRepository;
 import com.example.graphql.platform.security.DacService;
 import com.example.graphql.product.filter.SearchCondition;
@@ -12,10 +13,14 @@ import java.util.List;
 public class PersonService {
 
     private final PersonSearchRepository personSearchRepository;
+    private final PersonRepository personRepository;
     private final DacService dacService;
 
-    public PersonService(PersonSearchRepository personSearchRepository, DacService dacService) {
+    public PersonService(PersonSearchRepository personSearchRepository, 
+                         PersonRepository personRepository,
+                         DacService dacService) {
         this.personSearchRepository = personSearchRepository;
+        this.personRepository = personRepository;
         this.dacService = dacService;
     }
 
@@ -41,6 +46,12 @@ public class PersonService {
                 (int) repoResponse.totalElements(), 
                 repoResponse.totalPages()
         );
+    }
+
+    @Transactional
+    public Person savePerson(Person person) {
+        // Here you would perform any final aggregate-wide validation
+        return personRepository.save(person);
     }
 
     public record PersonSearchResponse(List<Person> results, Object facets, Object stats, int totalElements, int totalPages) {}

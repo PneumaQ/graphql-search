@@ -134,9 +134,37 @@ type Review {
 }
 
 type Mutation {
-    # Keep mutations for data setup if needed, but we will focus on search in UI
+    # Create: No ID allowed
+    createPerson(input: CreatePersonInput!): Person
+    
+    # Update: ID is mandatory
+    updatePerson(input: UpdatePersonInput!): Person
+
+    # Legacy mutations (keeping for now)
     createProduct(name: String!, sku: String!, category: String, price: Float, custom_attributes: [ProductAttributeInput]): Product
     addReview(productId: ID!, author: String, comment: String, rating: Int): Product
+}
+
+input CreatePersonInput {
+    name: String!
+    email: String!
+    age: Int
+    addresses: [AddressInput]
+}
+
+input UpdatePersonInput {
+    id: ID!
+    name: String
+    email: String
+    age: Int
+    addresses: [AddressInput]
+}
+
+input AddressInput {
+    id: ID
+    street: String
+    city: String
+    country: String
 }
 
 input ProductAttributeInput {

@@ -32,6 +32,9 @@ class PersonGraphqlTest {
     private PersonSearchRepository personSearchRepository;
 
     @MockitoBean
+    private com.example.graphql.platform.security.DacService dacService;
+
+    @MockitoBean
     private com.example.graphql.publications.repository.search.PublicationSearchRepository publicationSearchRepository;
 
     @MockitoBean
@@ -48,11 +51,13 @@ class PersonGraphqlTest {
         PersonSearchRepository.PersonSearchInternalResponse mockInternalResponse = 
             new PersonSearchRepository.PersonSearchInternalResponse(
                 List.of(mockPerson),
+                java.util.Map.of(),
+                java.util.Map.of(),
                 1L,
                 1
             );
         
-        when(personSearchRepository.search(any(), any(), anyInt(), anyInt())).thenReturn(mockInternalResponse);
+        when(personSearchRepository.search(any(), any(), any(), any(), anyInt(), anyInt())).thenReturn(mockInternalResponse);
 
         String searchQuery = """
             query {
