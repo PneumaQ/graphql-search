@@ -1,4 +1,4 @@
-package com.example.graphql.publications.graphql.filter;
+package com.example.graphql.publications.graphql.input;
 
 import java.util.List;
 

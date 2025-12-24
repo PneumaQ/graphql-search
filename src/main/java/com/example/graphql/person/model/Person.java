@@ -30,7 +30,7 @@ public class Person {
     @KeywordField(name = "name_keyword", sortable = Sortable.YES, aggregable = Aggregable.YES) // Creates name.keyword
     private String name;
     
-    @GenericField(sortable = Sortable.YES)
+    @GenericField(sortable = Sortable.YES, aggregable = Aggregable.YES)
     private int age;
 
     @FullTextField(analyzer = "standard")
@@ -46,7 +46,7 @@ public class Person {
     @GenericField(aggregable = Aggregable.YES)
     private Boolean isActive;
 
-    @GenericField(sortable = Sortable.YES)
+    @GenericField(sortable = Sortable.YES, aggregable = Aggregable.YES)
     private Double salary;
 
     @jakarta.persistence.OneToMany(mappedBy = "person", cascade = jakarta.persistence.CascadeType.ALL, orphanRemoval = true)

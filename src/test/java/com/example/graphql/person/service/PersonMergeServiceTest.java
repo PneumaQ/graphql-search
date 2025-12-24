@@ -6,7 +6,6 @@ import com.example.graphql.person.graphql.input.UpdatePersonInput;
 import com.example.graphql.person.model.Address;
 import com.example.graphql.person.model.Person;
 import com.example.graphql.person.repository.jpa.PersonRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,8 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PersonMergeServiceTest {
@@ -41,12 +40,11 @@ class PersonMergeServiceTest {
         assertEquals(40, result.getAge());
         assertEquals(1, result.getAddresses().size());
         assertEquals("123 Main St", result.getAddresses().get(0).getStreet());
-        assertEquals(result, result.getAddresses().get(0).getPerson()); // DDD Check
+        assertEquals(result, result.getAddresses().get(0).getPerson()); 
     }
 
     @Test
     void shouldMergeUpdateInputWithExistingAddress() {
-        // Setup existing entity
         Person existingPerson = new Person();
         existingPerson.setId(1L);
         existingPerson.setName("Old Name");
@@ -59,7 +57,6 @@ class PersonMergeServiceTest {
 
         when(personRepository.findById(1L)).thenReturn(Optional.of(existingPerson));
 
-        // Update input: Change name and update existing address
         AddressInput updateAddr = new AddressInput(100L, "New Street", null, null);
         UpdatePersonInput input = new UpdatePersonInput(1L, "New Name", null, null, List.of(updateAddr));
 

@@ -4,8 +4,9 @@ import com.example.graphql.product.model.Product;
 import com.example.graphql.product.model.Review;
 import com.example.graphql.product.repository.ReviewRepository;
 import com.example.graphql.product.service.ProductService;
-import com.example.graphql.platform.filter.SearchCondition;
-import com.example.graphql.product.graphql.filter.ProductSort;
+import com.example.graphql.platform.filter.SearchConditionInput;
+import com.example.graphql.product.graphql.input.ProductSortInput;
+import com.example.graphql.product.graphql.type.ProductSearchResult;
 import graphql.GraphQLContext;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.BatchMapping;
@@ -68,12 +69,12 @@ public class ProductController {
     }
 
     @QueryMapping
-    public ProductService.ProductSearchResponse searchProducts(
+    public ProductSearchResult searchProducts(
             @Argument String text,
-            @Argument List<SearchCondition> filter,
+            @Argument List<SearchConditionInput> filter,
             @Argument List<String> facetKeys,
             @Argument List<String> statsKeys,
-            @Argument List<ProductSort> sort,
+            @Argument List<ProductSortInput> sort,
             @Argument Integer page,
             @Argument Integer size,
             GraphQLContext context) {

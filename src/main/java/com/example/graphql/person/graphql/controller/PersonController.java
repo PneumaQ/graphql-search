@@ -2,11 +2,13 @@ package com.example.graphql.person.graphql.controller;
 
 import com.example.graphql.person.graphql.input.CreatePersonInput;
 import com.example.graphql.person.graphql.input.UpdatePersonInput;
+import com.example.graphql.person.graphql.input.PersonSortInput;
 import com.example.graphql.person.model.Person;
 import com.example.graphql.person.model.Address;
 import com.example.graphql.person.service.PersonMergeService;
 import com.example.graphql.person.service.PersonService;
-import com.example.graphql.platform.filter.SearchCondition;
+import com.example.graphql.platform.filter.SearchConditionInput;
+import com.example.graphql.person.graphql.type.PersonSearchResult;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.BatchMapping;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
@@ -29,9 +31,10 @@ public class PersonController {
     }
 
     @QueryMapping
-    public PersonService.PersonSearchResponse searchPeople(
+    public PersonSearchResult searchPeople(
             @Argument String text,
-            @Argument List<SearchCondition> filter,
+            @Argument List<SearchConditionInput> filter,
+            @Argument List<PersonSortInput> sort,
             @Argument List<String> facetKeys,
             @Argument List<String> statsKeys,
             @Argument Integer page,

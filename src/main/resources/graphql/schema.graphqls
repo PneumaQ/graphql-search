@@ -7,10 +7,10 @@ type Query {
     # The Universal Search Entry Point for Products
     searchProducts(
         text: String, 
-        filter: [SearchCondition], 
+        filter: [SearchConditionInput], 
         facetKeys: [String], 
         statsKeys: [String],
-        sort: [ProductSort],
+        sort: [ProductSortInput],
         page: Int,
         size: Int
     ): ProductSearchResult
@@ -18,15 +18,27 @@ type Query {
     # The Universal Search Entry Point for People (New!)
     searchPeople(
         text: String,
-        filter: [SearchCondition],
+        filter: [SearchConditionInput],
         facetKeys: [String],
         statsKeys: [String],
+        sort: [PersonSortInput],
         page: Int,
         size: Int
     ): PersonSearchResult
 
     # Tabular "Join" View: One row per Review
     searchProductReviewTable(text: String): [ProductReviewRow]
+    
+    # Publication Search
+    searchPublications(
+        text: String,
+        filter: PublicationFilterInput,
+        sort: [PublicationSortInput],
+        page: Int,
+        size: Int
+    ): PublicationSearchResult
+    
+    publications: [Publication]
 }
 
 type PropertyMetadata {
@@ -70,7 +82,7 @@ type ProductReviewRow {
     rating: Int
 }
 
-input SearchCondition {
+input SearchConditionInput {
     field: String
     # String Operators
     eq: String
@@ -85,14 +97,31 @@ input SearchCondition {
     lte: Float
 
     # Recursive Logic
-    and: [SearchCondition]
-    or: [SearchCondition]
-    not: SearchCondition
+    and: [SearchConditionInput]
+    or: [SearchConditionInput]
+    not: SearchConditionInput
 }
 
-input ProductSort {
+input ProductSortInput {
     field: String!
     direction: SortDirection
+}
+
+input PersonSortInput {
+    field: String!
+    direction: SortDirection
+}
+
+input PublicationSortInput {
+    field: PublicationSortField!
+    direction: SortDirection
+}
+
+enum PublicationSortField {
+    TITLE
+    JOURNAL_NAME
+    PUBLICATION_DATE
+    STATUS
 }
 
 enum SortDirection {
@@ -102,8 +131,8 @@ enum SortDirection {
 
 type ProductSearchResult {
     results: [Product]
-    facets: JSON      # Clean Map: { "category": { "Electronics": 5, "Clothing": 2 } }
-    stats: JSON       # Clean Map: { "price": { "min": 10, "max": 500, "avg": 45 }, "rating": { ... } }
+    facets: JSON
+    stats: JSON
     totalElements: Int
     totalPages: Int
 }
@@ -133,14 +162,35 @@ type Review {
     rating: Int
 }
 
-type Mutation {
-    # Create: No ID allowed
-    createPerson(input: CreatePersonInput!): Person
-    
-    # Update: ID is mandatory
-    updatePerson(input: UpdatePersonInput!): Person
+type PublicationSearchResult {
+    results: [Publication]
+    statusCounts: JSON
+    journalCounts: JSON
+    totalElements: Int
+    totalPages: Int
+}
 
-    # Legacy mutations (keeping for now)
+type Publication {
+    id: ID!
+    title: String
+    journalName: String
+    publicationDate: String
+    status: String
+    doi: String
+    authors: [PublicationAuthor]
+}
+
+type PublicationAuthor {
+    id: ID!
+    person: Person
+    rank: Int
+    isCorresponding: Boolean
+    affiliationAtTimeOfPublication: String
+}
+
+type Mutation {
+    createPerson(input: CreatePersonInput!): Person
+    updatePerson(input: UpdatePersonInput!): Person
     createProduct(name: String!, sku: String!, category: String, price: Float, custom_attributes: [ProductAttributeInput]): Product
     addReview(productId: ID!, author: String, comment: String, rating: Int): Product
 }
@@ -170,4 +220,22 @@ input AddressInput {
 input ProductAttributeInput {
     key: String!
     value: String!
+}
+
+input PersonFilterInput {
+    name: String
+    age: Int
+    email: String
+    and: [PersonFilterInput]
+    or: [PersonFilterInput]
+    not: PersonFilterInput
+}
+
+input PublicationFilterInput {
+    title: String
+    journalName: String
+    status: String
+    and: [PublicationFilterInput]
+    or: [PublicationFilterInput]
+    not: PublicationFilterInput
 }

@@ -38,6 +38,9 @@ class PersonMutationTest {
     private PersonSearchRepository personSearchRepository;
 
     @MockitoBean
+    private com.example.graphql.platform.security.DacService dacService;
+
+    @MockitoBean
     private com.example.graphql.publications.repository.search.PublicationSearchRepository publicationSearchRepository;
 
     @MockitoBean

@@ -32,11 +32,11 @@ public class Product {
     private Long id;
 
     @FullTextField(analyzer = "standard")
-    @KeywordField(name = "name_keyword", sortable = Sortable.YES, normalizer = "lowercase")
+    @KeywordField(name = "name_keyword", sortable = Sortable.YES, normalizer = "lowercase", aggregable = org.hibernate.search.engine.backend.types.Aggregable.YES)
     private String name;
 
     @FullTextField(analyzer = "standard")
-    @KeywordField(name = "sku_keyword", sortable = org.hibernate.search.engine.backend.types.Sortable.YES, normalizer = "lowercase")
+    @KeywordField(name = "sku_keyword", sortable = org.hibernate.search.engine.backend.types.Sortable.YES, normalizer = "lowercase", aggregable = org.hibernate.search.engine.backend.types.Aggregable.YES)
     private String internalStockCode;
 
     @KeywordField(name = "category_keyword", sortable = Sortable.YES, normalizer = "lowercase", aggregable = org.hibernate.search.engine.backend.types.Aggregable.YES)

@@ -6,12 +6,12 @@ import com.example.graphql.person.model.Person;
 import com.example.graphql.publications.repository.jpa.PublicationRepository;
 import com.example.graphql.publications.repository.search.PublicationSearchRepository;
 import com.example.graphql.person.repository.jpa.PersonRepository;
-import com.example.graphql.publications.graphql.filter.PublicationFilterInput;
-import com.example.graphql.publications.graphql.filter.PublicationSort;
+import com.example.graphql.publications.graphql.input.PublicationFilterInput;
+import com.example.graphql.publications.graphql.input.PublicationSortInput;
+import com.example.graphql.publications.graphql.type.PublicationSearchResult;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Map;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -34,19 +34,11 @@ public class PublicationService {
         return publicationRepository.findAll();
     }
     
-    public PublicationSearchResponse searchPublications(String text, PublicationFilterInput filter, List<PublicationSort> sort, Integer page, Integer size) {
+    public PublicationSearchResult searchPublications(String text, PublicationFilterInput filter, List<PublicationSortInput> sort, Integer page, Integer size) {
         int pageNum = (page != null) ? page : 0;
         int pageSize = (size != null) ? size : 10;
         return publicationSearchRepository.searchWithFacets(text, filter, sort, pageNum, pageSize);
     }
-
-    public record PublicationSearchResponse(
-        List<Publication> results,
-        Map<String, Long> statusCounts,
-        Map<String, Long> journalCounts,
-        long totalElements,
-        int totalPages
-    ) {}
 
     @Transactional
     public Publication createPublication(String title, String journalName, LocalDate date, String status, String doi) {

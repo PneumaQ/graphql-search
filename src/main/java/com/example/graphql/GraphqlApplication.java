@@ -71,6 +71,8 @@ public class GraphqlApplication {
 
             // Person Properties
             entityManager.persist(new com.example.graphql.platform.metadata.PropertyCfg(null, "name", "STRING", "name_keyword", null, personMeta));
+            entityManager.persist(new com.example.graphql.platform.metadata.PropertyCfg(null, "age", "INT", "age", null, personMeta));
+            entityManager.persist(new com.example.graphql.platform.metadata.PropertyCfg(null, "salary", "DOUBLE", "salary", null, personMeta));
             entityManager.persist(new com.example.graphql.platform.metadata.PropertyCfg(null, "addresses", "ENTITY", null, "Address", personMeta));
             com.example.graphql.platform.metadata.PropertyCfg countryProp = new com.example.graphql.platform.metadata.PropertyCfg(null, "country", "STRING", "country_keyword", null, addressMeta);
             entityManager.persist(countryProp);
@@ -127,17 +129,75 @@ public class GraphqlApplication {
 
             // 6. Seed People
             com.example.graphql.person.repository.jpa.PersonRepository personRepo = applicationContext.getBean(com.example.graphql.person.repository.jpa.PersonRepository.class);
+            
             com.example.graphql.person.model.Person g = new com.example.graphql.person.model.Person();
             g.setName("Gregg");
             g.setEmail("gregg@example.com");
+            g.setAge(40);
+            g.setSalary(125000.0);
+            g.setBirthDate(java.time.LocalDate.of(1985, 5, 15));
+            g.setIsActive(true);
+            g.setPhoneNumber("555-0101");
             addAddress(g, "123 Main St", "New York", "USA");
             personRepo.save(g);
 
             com.example.graphql.person.model.Person j = new com.example.graphql.person.model.Person();
             j.setName("Jean");
             j.setEmail("jean@example.fr");
+            j.setAge(32);
+            j.setSalary(85000.0);
+            j.setBirthDate(java.time.LocalDate.of(1993, 11, 22));
+            j.setIsActive(true);
+            j.setPhoneNumber("555-0202");
             addAddress(j, "Rue de Rivoli", "Paris", "France");
             personRepo.save(j);
+
+            com.example.graphql.person.model.Person s = new com.example.graphql.person.model.Person();
+            s.setName("Sarah");
+            s.setEmail("sarah@example.ca");
+            s.setAge(28);
+            s.setSalary(95000.0);
+            s.setBirthDate(java.time.LocalDate.of(1997, 2, 10));
+            s.setIsActive(false);
+            s.setPhoneNumber("555-0303");
+            addAddress(s, "Queen St", "Toronto", "Canada");
+            personRepo.save(s);
+
+            com.example.graphql.person.model.Person a = new com.example.graphql.person.model.Person();
+            a.setName("Akira");
+            a.setEmail("akira@example.jp");
+            a.setAge(45);
+            a.setSalary(150000.0);
+            a.setBirthDate(java.time.LocalDate.of(1980, 8, 30));
+            a.setIsActive(true);
+            a.setPhoneNumber("555-0404");
+            addAddress(a, "Shibuya", "Tokyo", "Japan");
+            personRepo.save(a);
+
+            // 7. Seed Publications
+            com.example.graphql.publications.model.Publication pbl1 = new com.example.graphql.publications.model.Publication();
+            pbl1.setTitle("Advanced GraphQL Search Architectures");
+            pbl1.setJournalName("Tech Innovations 2025");
+            pbl1.setDoi("10.1000/graphql.2025");
+            pbl1.setPublicationDate(java.time.LocalDate.of(2025, 12, 1));
+            pbl1.setStatus("PUBLISHED");
+            entityManager.persist(pbl1);
+
+            com.example.graphql.publications.model.PublicationAuthor pa1 = new com.example.graphql.publications.model.PublicationAuthor();
+            pa1.setPerson(g);
+            pa1.setPublication(pbl1);
+            pa1.setRank(1);
+            pa1.setIsCorresponding(true);
+            pa1.setAffiliationAtTimeOfPublication("POC Solutions Inc");
+            entityManager.persist(pa1);
+
+            com.example.graphql.publications.model.PublicationAuthor pa2 = new com.example.graphql.publications.model.PublicationAuthor();
+            pa2.setPerson(j);
+            pa2.setPublication(pbl1);
+            pa2.setRank(2);
+            pa2.setIsCorresponding(false);
+            pa2.setAffiliationAtTimeOfPublication("Research Labs Paris");
+            entityManager.persist(pa2);
 
             cfgCacheService.primeCache();
             return null;

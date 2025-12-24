@@ -22,6 +22,7 @@ public class Address {
     private String street;
     
     @FullTextField(analyzer = "standard")
+    @KeywordField(name = "city_keyword", aggregable = Aggregable.YES)
     private String city;
 
     @FullTextField(analyzer = "standard")

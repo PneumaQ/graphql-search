@@ -4,6 +4,8 @@ import com.example.graphql.person.repository.search.PersonSearchRepository;
 import com.example.graphql.person.model.Person;
 import com.example.graphql.person.model.Address;
 import com.example.graphql.person.service.PersonService;
+import com.example.graphql.person.graphql.type.PersonSearchResult;
+import com.example.graphql.platform.filter.SearchConditionInput;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.graphql.tester.AutoConfigureGraphQlTester;

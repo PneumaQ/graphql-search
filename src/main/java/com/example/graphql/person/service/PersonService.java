@@ -4,7 +4,8 @@ import com.example.graphql.person.model.Person;
 import com.example.graphql.person.repository.jpa.PersonRepository;
 import com.example.graphql.person.repository.search.PersonSearchRepository;
 import com.example.graphql.platform.security.DacService;
-import com.example.graphql.platform.filter.SearchCondition;
+import com.example.graphql.platform.filter.SearchConditionInput;
+import com.example.graphql.person.graphql.type.PersonSearchResult;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -25,12 +26,11 @@ public class PersonService {
     }
 
     @Transactional(readOnly = true)
-    public PersonSearchResponse searchPeople(String text, List<SearchCondition> userFilters, List<String> facetKeys, List<String> statsKeys, Integer page, Integer size) {
+    public PersonSearchResult searchPeople(String text, List<SearchConditionInput> userFilters, List<String> facetKeys, List<String> statsKeys, Integer page, Integer size) {
         
-        // 1. DYNAMIC SECURITY INJECTION (Person DACs!)
-        List<SearchCondition> securityFilters = dacService.getSecurityConditions("Person");
+        List<SearchConditionInput> securityFilters = dacService.getSecurityConditions("Person");
         
-        List<SearchCondition> allFilters = new java.util.ArrayList<>();
+        List<SearchConditionInput> allFilters = new java.util.ArrayList<>();
         if (userFilters != null) allFilters.addAll(userFilters);
         allFilters.addAll(securityFilters);
 
@@ -39,7 +39,7 @@ public class PersonService {
 
         var repoResponse = personSearchRepository.search(text, allFilters, facetKeys, statsKeys, pageNum, pageSize);
         
-        return new PersonSearchResponse(
+        return new PersonSearchResult(
                 repoResponse.results(), 
                 repoResponse.facets(),
                 repoResponse.stats(),
@@ -50,9 +50,6 @@ public class PersonService {
 
     @Transactional
     public Person savePerson(Person person) {
-        // Here you would perform any final aggregate-wide validation
         return personRepository.save(person);
     }
-
-    public record PersonSearchResponse(List<Person> results, Object facets, Object stats, int totalElements, int totalPages) {}
 }

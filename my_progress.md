@@ -7,13 +7,14 @@ This POC demonstrates a "Search-First" paradigm where **Elasticsearch** (via Hib
 1.  **Persistence Bridge:** Maps flexible Java Maps to PostgreSQL JSONB using `JsonType`, ensuring "dirty" changes trigger re-indexing.
 2.  **API Bridge:** Uses Jackson (`@JsonAnyGetter/@JsonAnySetter`) to flatten custom attributes into the root JSON object for API transparency.
 3.  **Search Bridge/Binder:** Utilizes Hibernate Search `TypeBinder`/`TypeBridge` to dynamically index JSON map contents into Elasticsearch.
-4.  **Clean Vertical Architecture:** Enforces a strict package structure for all verticals (Person, Product, Publication):
-    - `model`: Pure JPA Domain Entities (Aggregate Roots/Parts).
-    - `repository`: Data access (JPA and Search).
+4.  **Keyword-to-Package Architecture:** Enforces a strict 1:1 mapping between GraphQL keywords and Java packages across all verticals:
+    - `*.graphql.input`: Everything defined as an `input` in the schema (Commands, Sorts, Filters, e.g., `PersonSortInput`).
+    - `*.graphql.type`: Everything defined as a `type` or `enum` in the schema (Result envelopes, e.g., `PersonSearchResult`).
+    - `model`: Pure JPA Domain Entities.
     - `service`: Business logic and Merge/Hydration accelerators.
-    - `graphql`: API Layer containing `controller`, `input` (Commands), and `filter` (Queries).
 
 ## Key Features & Components
+-   **Strict Schema-Java Alignment:** Java class names (e.g., `SearchConditionInput`) and locations now perfectly mirror the GraphQL schema, eliminating cognitive load for developers.
 -   **Metadata Registry:** JPA-backed registry (`EntityCfg`, `PropertyCfg`) mapping logical names to technical paths and data types.
 -   **Universal Query Builder:** Decouples GraphQL input from Hibernate Search internals, handling type-safe path resolution and predicate building. Moved to `platform.filter` for global reuse.
 -   **Dynamic DAC Engine:** Translates relational security rules (`DacCfg`) into Elasticsearch predicates at runtime for automatic authorization.

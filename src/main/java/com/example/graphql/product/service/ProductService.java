@@ -3,9 +3,10 @@ package com.example.graphql.product.service;
 import com.example.graphql.product.model.Product;
 import com.example.graphql.product.repository.ProductRepository;
 import com.example.graphql.product.repository.search.ProductSearchRepository;
-import com.example.graphql.platform.filter.SearchCondition;
-import com.example.graphql.product.graphql.filter.ProductSort;
+import com.example.graphql.platform.filter.SearchConditionInput;
+import com.example.graphql.product.graphql.input.ProductSortInput;
 import com.example.graphql.product.model.Review;
+import com.example.graphql.product.graphql.type.ProductSearchResult;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,30 +44,22 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public ProductSearchResponse searchProducts(String text, List<SearchCondition> userFilters, List<String> facetKeys, List<String> statsKeys, List<ProductSort> sort, Integer page, Integer size, GraphQLContext context) {
+    public ProductSearchResult searchProducts(String text, List<SearchConditionInput> userFilters, List<String> facetKeys, List<String> statsKeys, List<ProductSortInput> sort, Integer page, Integer size, GraphQLContext context) {
         
-        // 1. DYNAMIC SECURITY INJECTION
-        List<SearchCondition> securityFilters = dacService.getSecurityConditions("Product");
-        if (!securityFilters.isEmpty()) {
-            log.info("Applying Security DACs: {}", securityFilters.stream().map(s -> s.getField() + " " + s.getEq()).collect(java.util.stream.Collectors.joining(", ")));
-        }
+        List<SearchConditionInput> securityFilters = dacService.getSecurityConditions("Product");
         
-        // 2. MERGE FILTERS
-        List<SearchCondition> allFilters = new java.util.ArrayList<>();
+        List<SearchConditionInput> allFilters = new java.util.ArrayList<>();
         if (userFilters != null) allFilters.addAll(userFilters);
         allFilters.addAll(securityFilters);
 
-        // 3. DYNAMIC FILTER SYNCHRONIZATION
         if (context != null) {
             entityCfgRepository.findByName("Product").ifPresent(root -> {
-                for (SearchCondition cond : allFilters) {
+                for (SearchConditionInput cond : allFilters) {
                     if (cond.getField() == null) continue;
                     
                     propertyCfgRepository.findByPropertyNameAndParentEntityName(cond.getField(), "Product")
                         .or(() -> propertyCfgRepository.findByPropertyNameAndParentEntityName(cond.getField(), "Review"))
                         .ifPresent(meta -> {
-                                                        // Only synchronize if the property belongs to a child entity (e.g., Review)
-                                                        // and NOT the root entity (Product).
                                                         if (!meta.getParentEntity().getName().equalsIgnoreCase(root.getName())) {
                                                             String childKey = meta.getParentEntity().getName().toLowerCase();
                                                             String syncKey = childKey + "_minRating"; 
@@ -74,7 +67,6 @@ public class ProductService {
                             
                                                             Object val = null;
                                                             try {
-                                                                // TYPE-AWARE PARSING: Only parse if the registry says it's numeric
                                                                 if ("INT".equals(dataType) || "INTEGER".equals(dataType) || "DOUBLE".equals(dataType)) {
                                                                     if (cond.getEq() != null) val = (int) Double.parseDouble(cond.getEq());
                                                                     else if (cond.getGte() != null) val = cond.getGte().intValue();
@@ -83,7 +75,6 @@ public class ProductService {
                                                                 
                                                                 if (val != null) context.put(syncKey, val);
                                                             } catch (Exception ignored) {
-                                                                // Fail gracefully if a user enters garbage
                                                             }
                                                         }                        });
                 }
@@ -96,7 +87,7 @@ public class ProductService {
 
         var repoResponse = productSearchRepository.search(text, allFilters, facetKeys, statsKeys, sort, pageNum, pageSize);
         
-        return new ProductSearchResponse(
+        return new ProductSearchResult(
                 repoResponse.results(), 
                 repoResponse.facets(), 
                 repoResponse.stats(), 
@@ -128,6 +119,4 @@ public class ProductService {
         product.getReviews().add(review);
         return productRepository.save(product);
     }
-    
-    public record ProductSearchResponse(List<Product> results, Object facets, Object stats, int totalElements, int totalPages) {}
 }

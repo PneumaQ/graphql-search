@@ -1,12 +1,12 @@
 package com.example.graphql.publications.repository.search;
 
 import com.example.graphql.publications.model.Publication;
-import com.example.graphql.publications.graphql.filter.PublicationFilterInput;
-import com.example.graphql.publications.graphql.filter.PublicationSort;
-import com.example.graphql.publications.graphql.filter.PublicationSortField;
+import com.example.graphql.publications.graphql.input.PublicationFilterInput;
+import com.example.graphql.publications.graphql.input.PublicationSortInput;
+import com.example.graphql.publications.graphql.input.PublicationSortField;
 import com.example.graphql.platform.filter.SortDirection;
 import com.example.graphql.platform.search.HibernateSearchQueryBuilder;
-import com.example.graphql.publications.service.PublicationService.PublicationSearchResponse;
+import com.example.graphql.publications.graphql.type.PublicationSearchResult;
 
 import org.hibernate.search.mapper.orm.Search;
 import org.hibernate.search.mapper.orm.session.SearchSession;
@@ -28,7 +28,7 @@ public class PublicationSearchRepository {
         this.queryBuilder = queryBuilder;
     }
 
-    public PublicationSearchResponse searchWithFacets(String text, PublicationFilterInput filter, List<PublicationSort> sort, int page, int size) {
+    public PublicationSearchResult searchWithFacets(String text, PublicationFilterInput filter, List<PublicationSortInput> sort, int page, int size) {
         SearchSession searchSession = Search.session(entityManager);
         
         AggregationKey<Map<String, Long>> statusKey = AggregationKey.of("status_counts");
@@ -56,7 +56,7 @@ public class PublicationSearchRepository {
             .sort(f -> {
                 if (sort != null && !sort.isEmpty()) {
                     var composite = f.composite();
-                    for (PublicationSort s : sort) {
+                    for (PublicationSortInput s : sort) {
                         String fieldPath = switch (s.field()) {
                             case TITLE -> "title_keyword";
                             case JOURNAL_NAME -> "journalName_keyword";
@@ -78,7 +78,7 @@ public class PublicationSearchRepository {
         long total = result.total().hitCount();
         int totalPages = (int) Math.ceil((double) total / size);
         
-        return new PublicationSearchResponse(
+        return new PublicationSearchResult(
             result.hits(),
             result.aggregation(statusKey),
             result.aggregation(journalKey),

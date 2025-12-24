@@ -2,9 +2,10 @@ package com.example.graphql;
 
 import com.example.graphql.product.model.Product;
 import com.example.graphql.product.model.Review;
-import com.example.graphql.platform.filter.SearchCondition;
-import com.example.graphql.product.service.ProductService;
 import com.example.graphql.product.repository.ProductRepository;
+import com.example.graphql.platform.filter.SearchConditionInput;
+import com.example.graphql.product.service.ProductService;
+import com.example.graphql.product.graphql.type.ProductSearchResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,9 +82,6 @@ class ProductGraphqlTest {
 
     @Test
     void shouldSearchWithBrandFacets() throws InterruptedException {
-        // We need to use real lookups or mock them. 
-        // In this test, createProduct uses custom_attributes but doesn't set brand.
-        // I'll use a direct repository save for a quick check or update createProduct.
         Product p = new Product();
         p.setName("Brand Test 1");
         p.setInternalStockCode("BT1");
