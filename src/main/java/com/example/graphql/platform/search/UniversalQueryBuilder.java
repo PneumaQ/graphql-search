@@ -3,7 +3,7 @@ package com.example.graphql.platform.search;
 import com.example.graphql.platform.metadata.EntityCfg;
 import com.example.graphql.platform.metadata.PropertyCfg;
 import com.example.graphql.platform.metadata.PropertyCfgRepository;
-import com.example.graphql.product.filter.SearchCondition;
+import com.example.graphql.platform.filter.SearchCondition;
 import org.hibernate.search.engine.search.predicate.dsl.BooleanPredicateClausesStep;
 import org.hibernate.search.engine.search.predicate.dsl.SearchPredicateFactory;
 import org.springframework.stereotype.Component;

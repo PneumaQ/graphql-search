@@ -1,8 +1,10 @@
 package com.example.graphql.platform.security;
 
 import com.example.graphql.platform.metadata.EntityCfg;
+import com.example.graphql.platform.metadata.EntityCfgRepository;
 import com.example.graphql.platform.metadata.PropertyCfg;
-import com.example.graphql.product.filter.SearchCondition;
+import com.example.graphql.platform.metadata.PropertyCfgRepository;
+import com.example.graphql.platform.filter.SearchCondition;
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Service;
 import java.util.List;

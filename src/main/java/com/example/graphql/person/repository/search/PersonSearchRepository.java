@@ -1,7 +1,7 @@
 package com.example.graphql.person.repository.search;
 
 import com.example.graphql.person.model.Person;
-import com.example.graphql.product.filter.SearchCondition;
+import com.example.graphql.platform.filter.SearchCondition;
 import com.example.graphql.platform.search.UniversalQueryBuilder;
 import com.example.graphql.platform.metadata.EntityCfg;
 import com.example.graphql.platform.metadata.EntityCfgRepository;

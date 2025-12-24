@@ -1,11 +1,11 @@
-package com.example.graphql.product.controller;
+package com.example.graphql.product.graphql.controller;
 
 import com.example.graphql.product.model.Product;
 import com.example.graphql.product.model.Review;
 import com.example.graphql.product.repository.ReviewRepository;
 import com.example.graphql.product.service.ProductService;
-import com.example.graphql.product.filter.SearchCondition;
-import com.example.graphql.product.filter.ProductSort;
+import com.example.graphql.platform.filter.SearchCondition;
+import com.example.graphql.product.graphql.filter.ProductSort;
 import graphql.GraphQLContext;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.BatchMapping;
@@ -56,14 +56,9 @@ public class ProductController {
     public Map<Product, List<Review>> reviews(List<Product> products, GraphQLContext context) {
         com.example.graphql.platform.logging.QueryContext.set("Batch Fetching Reviews");
         
-        // 1. Retrieve the "Synchronized Filter" from the context
         Integer minRating = context.get("review_minRating");
         List<Long> productIds = products.stream().map(Product::getId).toList();
         
-        // 2. Fetch security conditions for reviews (simulation)
-        // In a real system, we'd check DACs for the Review entity too
-        
-        // 3. Apply the filter if it exists
         List<Review> allReviews = (minRating != null) 
             ? reviewRepository.findByProductIdInAndRatingGreaterThanEqual(productIds, minRating)
             : reviewRepository.findByProductIdIn(productIds);

@@ -1,14 +1,14 @@
 package com.example.graphql.product.repository.search;
 
 import com.example.graphql.product.model.Product;
-import com.example.graphql.product.filter.SearchCondition;
+import com.example.graphql.platform.filter.SearchCondition;
 import com.example.graphql.platform.search.UniversalQueryBuilder;
 import com.example.graphql.platform.logging.QueryContext;
 import com.example.graphql.platform.metadata.EntityCfg;
 import com.example.graphql.platform.metadata.EntityCfgRepository;
 import com.example.graphql.platform.metadata.PropertyCfg;
 import com.example.graphql.platform.filter.SortDirection;
-import com.example.graphql.product.filter.ProductSort;
+import com.example.graphql.product.graphql.filter.ProductSort;
 import org.hibernate.search.mapper.orm.Search;
 import org.hibernate.search.mapper.orm.session.SearchSession;
 import org.hibernate.search.engine.search.aggregation.AggregationKey;

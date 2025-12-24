@@ -4,7 +4,7 @@ import com.example.graphql.person.model.Person;
 import com.example.graphql.person.repository.jpa.PersonRepository;
 import com.example.graphql.person.repository.search.PersonSearchRepository;
 import com.example.graphql.platform.security.DacService;
-import com.example.graphql.product.filter.SearchCondition;
+import com.example.graphql.platform.filter.SearchCondition;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;

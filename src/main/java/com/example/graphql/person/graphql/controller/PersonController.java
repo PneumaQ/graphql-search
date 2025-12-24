@@ -1,12 +1,12 @@
-package com.example.graphql.person.controller;
+package com.example.graphql.person.graphql.controller;
 
-import com.example.graphql.person.dto.CreatePersonInput;
-import com.example.graphql.person.dto.UpdatePersonInput;
+import com.example.graphql.person.graphql.input.CreatePersonInput;
+import com.example.graphql.person.graphql.input.UpdatePersonInput;
 import com.example.graphql.person.model.Person;
 import com.example.graphql.person.model.Address;
 import com.example.graphql.person.service.PersonMergeService;
 import com.example.graphql.person.service.PersonService;
-import com.example.graphql.product.filter.SearchCondition;
+import com.example.graphql.platform.filter.SearchCondition;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.BatchMapping;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
@@ -42,25 +42,13 @@ public class PersonController {
 
     @MutationMapping
     public Person createPerson(@Argument CreatePersonInput input) {
-        // 1. HYDRATION: Call the merge service to get a JPA entity from the input
         Person person = personMergeService.mergeCreate(input);
-        
-        // 2. BUSINESS LOGIC: Perform any aggregate-level domain logic here
-        // e.g. person.validateEmailDomain();
-        
-        // 3. PERSISTENCE: Pass the fully prepared entity to the domain service for saving
         return personService.savePerson(person);
     }
 
     @MutationMapping
     public Person updatePerson(@Argument UpdatePersonInput input) {
-        // 1. HYDRATION: The merge service handles findById and applying the delta
         Person person = personMergeService.mergeUpdate(input);
-        
-        // 2. BUSINESS LOGIC: Decide if you want to allow this specific update
-        // if (person.isLocked()) throw new RuntimeException("...");
-        
-        // 3. PERSISTENCE
         return personService.savePerson(person);
     }
 

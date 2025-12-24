@@ -1,4 +1,4 @@
-package com.example.graphql.product.filter;
+package com.example.graphql.platform.filter;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

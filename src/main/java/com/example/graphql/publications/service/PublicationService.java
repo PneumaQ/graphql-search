@@ -1,16 +1,16 @@
 package com.example.graphql.publications.service;
 
-import com.example.graphql.publications.repository.jpa.PublicationRepository;
-import com.example.graphql.publications.repository.search.PublicationSearchRepository;
-import com.example.graphql.person.repository.jpa.PersonRepository;
 import com.example.graphql.publications.model.Publication;
 import com.example.graphql.publications.model.PublicationAuthor;
 import com.example.graphql.person.model.Person;
+import com.example.graphql.publications.repository.jpa.PublicationRepository;
+import com.example.graphql.publications.repository.search.PublicationSearchRepository;
+import com.example.graphql.person.repository.jpa.PersonRepository;
+import com.example.graphql.publications.graphql.filter.PublicationFilterInput;
+import com.example.graphql.publications.graphql.filter.PublicationSort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.graphql.publications.filter.PublicationFilterInput;
-import org.springframework.data.domain.Pageable;
 import java.util.Map;
 import java.time.LocalDate;
 import java.util.List;
@@ -34,12 +34,10 @@ public class PublicationService {
         return publicationRepository.findAll();
     }
     
-    public List<Publication> searchPublications(String text) {
-        return publicationSearchRepository.searchPublications(text);
-    }
-
-    public PublicationSearchResponse searchWithFacets(String text, PublicationFilterInput filter, Pageable pageable) {
-        return publicationSearchRepository.searchWithFacets(text, filter, pageable);
+    public PublicationSearchResponse searchPublications(String text, PublicationFilterInput filter, List<PublicationSort> sort, Integer page, Integer size) {
+        int pageNum = (page != null) ? page : 0;
+        int pageSize = (size != null) ? size : 10;
+        return publicationSearchRepository.searchWithFacets(text, filter, sort, pageNum, pageSize);
     }
 
     public record PublicationSearchResponse(
@@ -58,7 +56,6 @@ public class PublicationService {
         pub.setPublicationDate(date);
         pub.setStatus(status);
         pub.setDoi(doi);
-        
         return publicationRepository.save(pub);
     }
 
@@ -78,7 +75,6 @@ public class PublicationService {
         author.setAffiliationAtTimeOfPublication(affiliation);
 
         pub.getAuthors().add(author);
-        
         return publicationRepository.save(pub);
     }
 }

@@ -1,14 +1,15 @@
 package com.example.graphql;
 
-import com.example.graphql.person.service.PersonService;
+import com.example.graphql.platform.security.DacCfg;
+import com.example.graphql.platform.security.DacCfgRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.graphql.tester.AutoConfigureGraphQlTester;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.graphql.test.tester.GraphQlTester;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @AutoConfigureGraphQlTester
@@ -17,13 +18,19 @@ class PersonDacIntegrationTest {
     @Autowired
     private GraphQlTester graphQlTester;
 
+    @Autowired
+    private DacCfgRepository dacCfgRepository;
+
     @Test
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     void shouldOnlyReturnUSAResidentsDueToDac() {
-        // The demoData seeds:
-        // 1. Gregg (USA)
-        // 2. Jean (France)
-        // 3. DAC: USA Residents Only (Active)
+        // Explicitly enable the DAC for this test
+        DacCfg dac = dacCfgRepository.findAll().stream()
+                .filter(d -> d.getName().equals("USA Residents Only"))
+                .findFirst()
+                .orElseThrow();
+        dac.setActive(true);
+        dacCfgRepository.saveAndFlush(dac);
 
         String searchQuery = """
             query {

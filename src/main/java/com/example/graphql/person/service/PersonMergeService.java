@@ -1,16 +1,13 @@
 package com.example.graphql.person.service;
 
-import com.example.graphql.person.dto.AddressInput;
-import com.example.graphql.person.dto.CreatePersonInput;
-import com.example.graphql.person.dto.UpdatePersonInput;
+import com.example.graphql.person.graphql.input.AddressInput;
+import com.example.graphql.person.graphql.input.CreatePersonInput;
+import com.example.graphql.person.graphql.input.UpdatePersonInput;
 import com.example.graphql.person.model.Address;
 import com.example.graphql.person.model.Person;
 import com.example.graphql.person.repository.jpa.PersonRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.Optional;
 
 @Service
 public class PersonMergeService {
@@ -55,7 +52,6 @@ public class PersonMergeService {
 
     private void addOrUpdateAddress(Person person, AddressInput ai) {
         if (ai.id() != null) {
-            // Update existing
             person.getAddresses().stream()
                     .filter(a -> a.getId().equals(ai.id()))
                     .findFirst()
@@ -65,7 +61,6 @@ public class PersonMergeService {
                         if (ai.country() != null) existing.setCountry(ai.country());
                     });
         } else {
-            // Add new
             Address newAddr = new Address();
             newAddr.setStreet(ai.street());
             newAddr.setCity(ai.city());

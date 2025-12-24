@@ -1,8 +1,8 @@
 package com.example.graphql;
 
-import com.example.graphql.person.dto.AddressInput;
-import com.example.graphql.person.dto.CreatePersonInput;
-import com.example.graphql.person.dto.UpdatePersonInput;
+import com.example.graphql.person.graphql.input.AddressInput;
+import com.example.graphql.person.graphql.input.CreatePersonInput;
+import com.example.graphql.person.graphql.input.UpdatePersonInput;
 import com.example.graphql.person.model.Person;
 import com.example.graphql.person.service.PersonMergeService;
 import com.example.graphql.person.service.PersonService;
