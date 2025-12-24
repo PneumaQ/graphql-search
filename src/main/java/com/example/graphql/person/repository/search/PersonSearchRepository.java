@@ -5,16 +5,27 @@ import com.example.graphql.product.filter.SearchCondition;
 import com.example.graphql.platform.search.UniversalQueryBuilder;
 import com.example.graphql.platform.metadata.EntityCfg;
 import com.example.graphql.platform.metadata.EntityCfgRepository;
+import com.example.graphql.platform.metadata.PropertyCfg;
 import com.example.graphql.platform.logging.QueryContext;
 import org.hibernate.search.mapper.orm.Search;
 import org.hibernate.search.mapper.orm.session.SearchSession;
+import org.hibernate.search.engine.search.aggregation.AggregationKey;
+import org.hibernate.search.engine.search.predicate.dsl.BooleanPredicateClausesStep;
+import org.hibernate.search.engine.search.predicate.dsl.SearchPredicateFactory;
+import org.hibernate.search.engine.search.query.SearchResult;
 import org.springframework.stereotype.Repository;
 import jakarta.persistence.EntityManager;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Repository
 public class PersonSearchRepository {
 
+    private static final Logger log = LoggerFactory.getLogger(PersonSearchRepository.class);
     private final EntityManager entityManager;
     private final UniversalQueryBuilder queryBuilder;
     private final EntityCfgRepository entityCfgRepository;
@@ -27,27 +38,134 @@ public class PersonSearchRepository {
         this.entityCfgRepository = entityCfgRepository;
     }
 
-    public PersonSearchInternalResponse search(String text, List<SearchCondition> filter, int page, int size) {
+    public PersonSearchInternalResponse search(String text, List<SearchCondition> filter, List<String> facetKeys, List<String> statsKeys, int page, int size) {
         SearchSession searchSession = Search.session(entityManager);
         EntityCfg rootEntity = entityCfgRepository.findByName("Person").orElseThrow();
 
         var query = searchSession.search(Person.class)
             .where(f -> f.bool(b -> {
                 b.must(queryBuilder.build(f, filter, rootEntity));
-                if (text != null && !text.isBlank()) {
-                    b.must(f.simpleQueryString().field("name").field("email").matching(text));
-                }
+                applyFullTextSearch(f, b, text, rootEntity);
             }));
+
+        // Configure Facets
+        Map<String, AggregationKey<Map<String, Long>>> facetAggKeys = new HashMap<>();
+        if (facetKeys != null) {
+            for (String key : facetKeys) {
+                String path = getMetadataPath(key, rootEntity);
+                var aggKey = AggregationKey.<Map<String, Long>>of(key);
+                facetAggKeys.put(key, aggKey);
+                query.aggregation(aggKey, f -> f.terms().field(path, String.class).maxTermCount(20));
+            }
+        }
+
+        // Configure Stats
+        Map<String, AggregationKey<Map<Object, Long>>> statsAggKeys = new HashMap<>();
+        if (statsKeys != null) {
+            for (String key : statsKeys) {
+                String path = getMetadataPath(key, rootEntity);
+                var aggKey = AggregationKey.<Map<Object, Long>>of("stats_" + key);
+                statsAggKeys.put(key, aggKey);
+                query.aggregation(aggKey, f -> f.terms().field(path, Object.class));
+            }
+        }
 
         QueryContext.set("Hibernate Search - Person Loading");
         var result = query.fetch(page * size, size);
         
         return new PersonSearchInternalResponse(
             result.hits(),
+            mapFacetResults(result, facetAggKeys),
+            mapStatsResults(result, statsAggKeys),
             result.total().hitCount(),
             (int) Math.ceil((double) result.total().hitCount() / size)
         );
     }
 
-    public record PersonSearchInternalResponse(List<Person> results, long totalElements, int totalPages) {}
+    private void applyFullTextSearch(SearchPredicateFactory f, BooleanPredicateClausesStep<?> bool, String text, EntityCfg rootEntity) {
+        if (text == null || text.isBlank()) return;
+
+        java.util.Set<String> fields = new java.util.HashSet<>();
+        fields.add("name");
+        fields.add("email");
+
+        for (PropertyCfg prop : rootEntity.getProperties()) {
+            if ("STRING".equalsIgnoreCase(prop.getDataType())) {
+                fields.add(prop.getDotPath(rootEntity));
+            } else if ("ENTITY".equalsIgnoreCase(prop.getDataType()) && prop.getRepresentedEntityName() != null) {
+                entityCfgRepository.findByName(prop.getRepresentedEntityName()).ifPresent(childEntity -> {
+                    for (PropertyCfg childProp : childEntity.getProperties()) {
+                        if ("STRING".equalsIgnoreCase(childProp.getDataType())) {
+                            fields.add(childProp.getDotPath(rootEntity));
+                        }
+                    }
+                });
+            }
+        }
+        
+        var textQuery = f.simpleQueryString().fields(fields.toArray(new String[0]));
+        bool.must(textQuery.matching(text));
+    }
+
+    private String getMetadataPath(String propertyName, EntityCfg rootEntity) {
+        return rootEntity.getProperties().stream()
+            .filter(p -> p.getPropertyName().equalsIgnoreCase(propertyName))
+            .findFirst()
+            .map(p -> p.getDotPath(rootEntity))
+            .orElseGet(() -> {
+                return entityCfgRepository.findByName("Address")
+                    .flatMap(addr -> addr.getProperties().stream()
+                        .filter(p -> p.getPropertyName().equalsIgnoreCase(propertyName))
+                        .findFirst())
+                    .map(p -> p.getDotPath(rootEntity))
+                    .orElse(propertyName);
+            });
+    }
+
+    private Map<String, Map<String, Long>> mapFacetResults(SearchResult<Person> result, Map<String, AggregationKey<Map<String, Long>>> aggKeys) {
+        Map<String, Map<String, Long>> facetResults = new HashMap<>();
+        for (var entry : aggKeys.entrySet()) {
+            facetResults.put(entry.getKey(), result.aggregation(entry.getValue()));
+        }
+        return facetResults;
+    }
+
+    private Map<String, Object> mapStatsResults(SearchResult<Person> result, Map<String, AggregationKey<Map<Object, Long>>> statsAggKeys) {
+        Map<String, Object> statsResults = new HashMap<>();
+        for (var entry : statsAggKeys.entrySet()) {
+            Map<Object, Long> dist = result.aggregation(entry.getValue());
+            statsResults.put(entry.getKey(), calculateNumericStats(dist));
+        }
+        return statsResults;
+    }
+
+    private Map<String, Object> calculateNumericStats(Map<Object, Long> dist) {
+        if (dist.isEmpty()) return Map.of();
+        double min = Double.MAX_VALUE;
+        double max = Double.MIN_VALUE;
+        double sum = 0;
+        long count = 0;
+
+        for (Map.Entry<Object, Long> entry : dist.entrySet()) {
+            try {
+                double val = Double.parseDouble(entry.getKey().toString());
+                long freq = entry.getValue();
+                if (val < min) min = val;
+                if (val > max) max = val;
+                sum += (val * freq);
+                count += freq;
+            } catch (Exception e) { /* skip non-numeric */ }
+        }
+
+        if (count == 0) return Map.of();
+        Map<String, Object> s = new HashMap<>();
+        s.put("min", min);
+        s.put("max", max);
+        s.put("avg", sum / count);
+        s.put("sum", sum);
+        s.put("count", count);
+        return s;
+    }
+
+    public record PersonSearchInternalResponse(List<Person> results, Map<String, Map<String, Long>> facets, Map<String, Object> stats, long totalElements, int totalPages) {}
 }

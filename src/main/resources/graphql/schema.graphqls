@@ -19,6 +19,8 @@ type Query {
     searchPeople(
         text: String,
         filter: [SearchCondition],
+        facetKeys: [String],
+        statsKeys: [String],
         page: Int,
         size: Int
     ): PersonSearchResult
@@ -35,6 +37,8 @@ type PropertyMetadata {
 
 type PersonSearchResult {
     results: [Person]
+    facets: JSON
+    stats: JSON
     totalElements: Int
     totalPages: Int
 }

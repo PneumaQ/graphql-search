@@ -26,10 +26,12 @@ public class PersonController {
     public PersonService.PersonSearchResponse searchPeople(
             @Argument String text,
             @Argument List<SearchCondition> filter,
+            @Argument List<String> facetKeys,
+            @Argument List<String> statsKeys,
             @Argument Integer page,
             @Argument Integer size) {
         
-        return personService.searchPeople(text, filter, page, size);
+        return personService.searchPeople(text, filter, facetKeys, statsKeys, page, size);
     }
 
     @BatchMapping

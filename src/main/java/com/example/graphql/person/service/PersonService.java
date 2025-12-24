@@ -20,7 +20,7 @@ public class PersonService {
     }
 
     @Transactional(readOnly = true)
-    public PersonSearchResponse searchPeople(String text, List<SearchCondition> userFilters, Integer page, Integer size) {
+    public PersonSearchResponse searchPeople(String text, List<SearchCondition> userFilters, List<String> facetKeys, List<String> statsKeys, Integer page, Integer size) {
         
         // 1. DYNAMIC SECURITY INJECTION (Person DACs!)
         List<SearchCondition> securityFilters = dacService.getSecurityConditions("Person");
@@ -32,14 +32,16 @@ public class PersonService {
         int pageNum = (page != null) ? page : 0;
         int pageSize = (size != null) ? size : 10;
 
-        var repoResponse = personSearchRepository.search(text, allFilters, pageNum, pageSize);
+        var repoResponse = personSearchRepository.search(text, allFilters, facetKeys, statsKeys, pageNum, pageSize);
         
         return new PersonSearchResponse(
                 repoResponse.results(), 
+                repoResponse.facets(),
+                repoResponse.stats(),
                 (int) repoResponse.totalElements(), 
                 repoResponse.totalPages()
         );
     }
 
-    public record PersonSearchResponse(List<Person> results, int totalElements, int totalPages) {}
+    public record PersonSearchResponse(List<Person> results, Object facets, Object stats, int totalElements, int totalPages) {}
 }

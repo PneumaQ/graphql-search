@@ -80,8 +80,8 @@ public class GraphqlApplication {
             entityManager.persist(dac);
             entityManager.persist(new com.example.graphql.platform.security.DacConditionCfg(null, categoryProp, "EQ", List.of("Electronics"), dac));
 
-            // 3. Seed DAC Rule: "Only USA People" (Active for demo)
-            com.example.graphql.platform.security.DacCfg personDac = new com.example.graphql.platform.security.DacCfg(null, "USA Residents Only", true, personMeta, null);
+            // 3. Seed DAC Rule: "Only USA People" (Disabled to show full dataset)
+            com.example.graphql.platform.security.DacCfg personDac = new com.example.graphql.platform.security.DacCfg(null, "USA Residents Only", false, personMeta, null);
             entityManager.persist(personDac);
             entityManager.persist(new com.example.graphql.platform.security.DacConditionCfg(null, countryProp, "EQ", List.of("USA"), personDac));
 
