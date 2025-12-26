@@ -1,8 +1,8 @@
 package com.example.graphql.product.graphql.controller;
 
-import com.example.graphql.product.model.Product;
-import com.example.graphql.product.model.Review;
-import com.example.graphql.product.repository.ReviewRepository;
+import com.example.graphql.product.domain.model.Product;
+import com.example.graphql.product.domain.model.Review;
+import com.example.graphql.product.domain.repository.ReviewRepository;
 import com.example.graphql.product.service.ProductService;
 import com.example.graphql.platform.filter.SearchConditionInput;
 import com.example.graphql.product.graphql.input.ProductSortInput;
@@ -19,8 +19,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.example.graphql.platform.security.DacService;
-import com.example.graphql.platform.metadata.PropertyMetadata;
-import com.example.graphql.platform.metadata.PropertyCfgRepository;
 
 @Controller
 public class ProductController {
@@ -28,24 +26,13 @@ public class ProductController {
     private final ProductService productService;
     private final ReviewRepository reviewRepository;
     private final DacService dacService;
-    private final PropertyCfgRepository propertyCfgRepository;
 
     public ProductController(ProductService productService, 
                              ReviewRepository reviewRepository, 
-                             DacService dacService,
-                             PropertyCfgRepository propertyCfgRepository) {
+                             DacService dacService) {
         this.productService = productService;
         this.reviewRepository = reviewRepository;
         this.dacService = dacService;
-        this.propertyCfgRepository = propertyCfgRepository;
-    }
-
-    @QueryMapping
-    public List<PropertyMetadata> metadata(@Argument String entityName) {
-        return propertyCfgRepository.findAll().stream()
-            .filter(p -> p.getParentEntity().getName().equalsIgnoreCase(entityName))
-            .map(p -> new PropertyMetadata(p.getPropertyName(), p.getDataType(), p.getDotPath(p.getParentEntity())))
-            .toList();
     }
 
     @SchemaMapping(typeName = "Product", field = "sku")

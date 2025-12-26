@@ -1,7 +1,7 @@
 package com.example.graphql.product.service;
 
-import com.example.graphql.product.model.CustomFieldDefinition;
-import com.example.graphql.product.repository.CustomFieldRepository;
+import com.example.graphql.product.domain.model.CustomFieldDefinition;
+import com.example.graphql.product.domain.repository.CustomFieldRepository;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.springframework.stereotype.Service;

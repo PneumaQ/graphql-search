@@ -22,22 +22,17 @@ This POC demonstrates a "Search-First" paradigm where **Elasticsearch** (via Hib
 -   **Intelligence Layer:** Supports dynamic **Facets** (counts) and **Statistics** (min, max, avg) for both Product (price, rating) and Person (salary, age) domains.
 
 ## Recent Progress & Improvements
--   **Project-Wide Refactor:** Successfully reorganized the entire codebase into the "Clean Vertical Architecture" described above.
--   **Domain Alignment:** Fully implemented `searchPeople` in the backend, supporting facets and statistics parity with `searchProducts`.
--   **Schema Consistency:** Updated GraphQL schema and repository layers to support `facetKeys` and `statsKeys` across all domains.
--   **Performance Optimizations:**
-    -   Implemented caching for dynamic field discovery to avoid redundant table scans.
-    -   Added `@BatchSize` to nested collections to mitigate the N+1 loading problem.
--   **UI Enhancements:**
-    -   Interactive Dashboard with point-and-click filter/facet/stat building.
-    -   Added "Copy to Clipboard" buttons for raw GraphQL requests and JSON responses.
-    -   Enabled "Enter" key to execute searches.
-    -   Fixed stats rendering to show Average, Min, and Max in a sidebar discovery panel.
--   **DDD-Style Mutations:**
-    -   Implemented `createPerson` and `updatePerson` mutations with explicit input types to enforce POST vs PATCH semantics (ID requirement).
-    -   Introduced `PersonMergeService` as a "Hydration Accelerator" to handle canonical JPA entity construction before business logic.
-    -   Added comprehensive unit tests (`PersonMergeServiceTest`), GraphQL mutation tests (`PersonMutationTest`), and fixed all integration tests.
--   **Security Configuration:** Disabled the default "USA Residents Only" DAC for People to ensure full dataset visibility during development.
+-   **Full Project Refactor to "Gold Standard":** Successfully refactored all vertical domains (People, Product, Publications) to strict Hexagonal/Search-First standards.
+    -   Centralized all models in `*.domain.model`.
+    -   Established technology-agnostic contracts in `*.domain.repository`.
+    -   Implemented robust infrastructure adapters in `*.infrastructure.persistence` (JPA) and `*.infrastructure.search` (Hibernate Search).
+    -   Ensured all GraphQL inputs and types are correctly package-aligned (`*.graphql.input/type`).
+-   **Metadata Registry Maturity:** Completed registration for all entity properties across all domains, enabling dynamic, registry-driven search, facets, and filters project-wide.
+-   **Architectural Integrity & Stability:**
+    -   Resolved all compilation and type mismatch issues arising from the deep refactor.
+    -   Fixed Hibernate Search field-level binding and property-level binder annotations.
+    -   Standardized test mocking and verified all 16 tests passing across all domains.
+-   **Domain Alignment:** Achieved full parity for search, facets, and statistics functionality across People, Product, and Publications.
 
 ## Current State
 -   **Logic Entry:** `ProductService.searchProducts` / `PersonService.searchPeople`

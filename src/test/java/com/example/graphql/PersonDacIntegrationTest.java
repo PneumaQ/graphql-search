@@ -51,7 +51,12 @@ class PersonDacIntegrationTest {
                 .path("searchPeople.results")
                 .entityList(Object.class)
                 .satisfies(results -> {
-                    // Jean should be filtered out by DacService + UniversalQueryBuilder
+                    // Jean (France) filtered out. Gregg (USA), Sarah (Canada), Akira (Japan) remain.
+                    // Wait, the DAC is "USA Residents Only" and active=true. 
+                    // Let me re-read the DAC condition. 
+                    // It is country == "USA". 
+                    // So Sarah and Akira SHOULD be filtered out too.
+                    // Only 1 person (Gregg) should be found.
                     assertEquals(1, results.size(), "Should only find 1 person (Gregg) due to USA DAC");
                 })
                 .path("searchPeople.results[0].name")

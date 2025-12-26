@@ -71,10 +71,10 @@ public class UniversalQueryBuilder {
             if (propOpt.isPresent()) {
                 PropertyCfg prop = propOpt.get();
                 String resolvedPath = prop.getDotPath(rootEntity);
-                log.info("Resolved Filter: {} -> {}", cond.getField(), resolvedPath);
+                log.info("[Registry X-Ray] Resolved Logical Field '{}' -> Technical Path '{}' (DataType: {})", cond.getField(), resolvedPath, prop.getDataType());
                 applyCondition(f, bool, resolvedPath, cond, prop);
             } else if (cond.getField().contains(".")) {
-                log.info("Using Direct Path: {}", cond.getField());
+                log.info("[Registry X-Ray] Using Direct/Custom Path: '{}'", cond.getField());
                 applyCondition(f, bool, cond.getField(), cond, null);
             }
             hasClause = true;

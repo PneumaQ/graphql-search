@@ -1,16 +1,16 @@
 package com.example.graphql;
 
-import com.example.graphql.person.repository.search.PersonSearchRepository;
-import com.example.graphql.person.model.Person;
-import com.example.graphql.person.model.Address;
-import com.example.graphql.person.service.PersonService;
+import com.example.graphql.person.domain.repository.PersonSearchRepository;
+import com.example.graphql.person.domain.model.Person;
+import com.example.graphql.person.domain.model.Address;
+import com.example.graphql.person.domain.service.PersonService;
 import com.example.graphql.person.graphql.type.PersonSearchResult;
 import com.example.graphql.platform.filter.SearchConditionInput;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.graphql.tester.AutoConfigureGraphQlTester;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.graphql.test.tester.GraphQlTester;
 
 import java.util.Collections;
@@ -30,16 +30,16 @@ class PersonGraphqlTest {
     @Autowired
     private GraphQlTester graphQlTester;
 
-    @MockitoBean
+    @MockBean
     private PersonSearchRepository personSearchRepository;
 
-    @MockitoBean
+    @MockBean
     private com.example.graphql.platform.security.DacService dacService;
 
-    @MockitoBean
-    private com.example.graphql.publications.repository.search.PublicationSearchRepository publicationSearchRepository;
+    @MockBean
+    private com.example.graphql.publications.domain.repository.PublicationSearchRepository publicationSearchRepository;
 
-    @MockitoBean
+    @MockBean
     private org.springframework.boot.CommandLineRunner commandLineRunner;
 
     @Test

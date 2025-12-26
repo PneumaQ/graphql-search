@@ -1,22 +1,24 @@
 package com.example.graphql;
 
-import com.example.graphql.person.graphql.input.AddressInput;
+import com.example.graphql.person.domain.model.Person;
+import com.example.graphql.person.domain.repository.PersonRepository;
+import com.example.graphql.person.domain.repository.PersonSearchRepository;
 import com.example.graphql.person.graphql.input.CreatePersonInput;
 import com.example.graphql.person.graphql.input.UpdatePersonInput;
-import com.example.graphql.person.model.Person;
-import com.example.graphql.person.service.PersonMergeService;
-import com.example.graphql.person.service.PersonService;
-import com.example.graphql.person.repository.search.PersonSearchRepository;
+import com.example.graphql.person.domain.service.PersonService;
+import com.example.graphql.publications.domain.repository.PublicationSearchRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.graphql.tester.AutoConfigureGraphQlTester;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.graphql.test.tester.GraphQlTester;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -28,22 +30,22 @@ class PersonMutationTest {
     @Autowired
     private GraphQlTester graphQlTester;
 
-    @MockitoBean
-    private PersonMergeService personMergeService;
-
-    @MockitoBean
+    @MockBean
     private PersonService personService;
 
-    @MockitoBean
+    @MockBean
+    private PersonRepository personRepository;
+
+    @MockBean
     private PersonSearchRepository personSearchRepository;
 
-    @MockitoBean
+    @MockBean
     private com.example.graphql.platform.security.DacService dacService;
 
-    @MockitoBean
-    private com.example.graphql.publications.repository.search.PublicationSearchRepository publicationSearchRepository;
+    @MockBean
+    private PublicationSearchRepository publicationSearchRepository;
 
-    @MockitoBean
+    @MockBean
     private org.springframework.boot.CommandLineRunner commandLineRunner;
 
     @Test
@@ -52,8 +54,7 @@ class PersonMutationTest {
         mockPerson.setId(99L);
         mockPerson.setName("Gregg");
         
-        when(personMergeService.mergeCreate(any())).thenReturn(mockPerson);
-        when(personService.savePerson(any())).thenReturn(mockPerson);
+        when(personService.createPerson(any())).thenReturn(mockPerson);
 
         String mutation = """
             mutation {
@@ -73,8 +74,7 @@ class PersonMutationTest {
                 .path("createPerson.id").entity(Long.class).isEqualTo(99L)
                 .path("createPerson.name").entity(String.class).isEqualTo("Gregg");
 
-        verify(personMergeService).mergeCreate(any(CreatePersonInput.class));
-        verify(personService).savePerson(mockPerson);
+        verify(personService).createPerson(any(CreatePersonInput.class));
     }
 
     @Test
@@ -84,8 +84,7 @@ class PersonMutationTest {
         mockPerson.setName("Updated Name");
         mockPerson.setAddresses(new ArrayList<>());
 
-        when(personMergeService.mergeUpdate(any())).thenReturn(mockPerson);
-        when(personService.savePerson(any())).thenReturn(mockPerson);
+        when(personService.updatePerson(any())).thenReturn(mockPerson);
 
         String mutation = """
             mutation {
@@ -103,7 +102,6 @@ class PersonMutationTest {
                 .execute()
                 .path("updatePerson.name").entity(String.class).isEqualTo("Updated Name");
 
-        verify(personMergeService).mergeUpdate(any(UpdatePersonInput.class));
-        verify(personService).savePerson(mockPerson);
+        verify(personService).updatePerson(any(UpdatePersonInput.class));
     }
 }

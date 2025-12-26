@@ -1,8 +1,8 @@
 package com.example.graphql;
 
-import com.example.graphql.product.model.Product;
-import com.example.graphql.product.model.Review;
-import com.example.graphql.product.repository.ProductRepository;
+import com.example.graphql.product.domain.model.Product;
+import com.example.graphql.product.domain.model.Review;
+import com.example.graphql.product.domain.repository.ProductRepository;
 import com.example.graphql.platform.filter.SearchConditionInput;
 import com.example.graphql.product.service.ProductService;
 import com.example.graphql.product.graphql.type.ProductSearchResult;

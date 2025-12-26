@@ -1,75 +1,17 @@
-2025-12-24T15:42:57.470-05:00  INFO 59160 --- [graphql] [nio-8080-exec-6] c.e.g.p.l.RequestLoggingInstrumentation  : ================================================================================
-2025-12-24T15:42:57.470-05:00  INFO 59160 --- [graphql] [nio-8080-exec-6] c.e.g.p.l.RequestLoggingInstrumentation  : >>> START REQUEST #5 (Thread: http-nio-8080-exec-6 [96]) [Logger:511f21f9]: query { searchPeople( text: "", facetKeys: ["country"], statsKeys: ["age"] ) { totalElements resu...
-2025-12-24T15:42:57.470-05:00  INFO 59160 --- [graphql] [nio-8080-exec-6] c.e.g.p.l.RequestLoggingInstrumentation  : ================================================================================
-2025-12-24T15:42:57.474-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ /* <criteria> */ select
-        dc1_0.id,
-        dc1_0.active,
-        dc1_0.name,
-        dc1_0.target_entity_id 
-    from
-        dac_cfg dc1_0
-2025-12-24T15:42:57.476-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ select
+2025-12-26T15:35:11.966-05:00  INFO 15304 --- [graphql] [nio-8080-exec-4] c.e.g.p.l.RequestLoggingInstrumentation  : ================================================================================
+2025-12-26T15:35:11.966-05:00  INFO 15304 --- [graphql] [nio-8080-exec-4] c.e.g.p.l.RequestLoggingInstrumentation  : >>> START REQUEST #5 (Thread: http-nio-8080-exec-4 [94]) [Logger:54980154]: query { searchPeople( text: "", facetKeys: ["country","isActive"], statsKeys: ["salary","age"] ) ...
+2025-12-26T15:35:11.966-05:00  INFO 15304 --- [graphql] [nio-8080-exec-4] c.e.g.p.l.RequestLoggingInstrumentation  : ================================================================================
+2025-12-26T15:35:11.971-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ /* <criteria> */ select
         ec1_0.id,
         ec1_0.aggregate_root,
-        ec1_0.name,
-        p1_0.parent_entity_id,
-        p1_0.id,
-        p1_0.data_type,
-        p1_0.dot_path,
-        p1_0.property_name,
-        p1_0.represented_entity_name 
+        ec1_0.name 
     from
         entity_cfg ec1_0 
-    left join
-        property_cfg p1_0 
-            on ec1_0.id=p1_0.parent_entity_id 
     where
-        ec1_0.id=?
-2025-12-24T15:42:57.479-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ select
-        ec1_0.id,
-        ec1_0.aggregate_root,
-        ec1_0.name,
-        p1_0.parent_entity_id,
-        p1_0.id,
-        p1_0.data_type,
-        p1_0.dot_path,
-        p1_0.property_name,
-        p1_0.represented_entity_name 
-    from
-        entity_cfg ec1_0 
-    left join
-        property_cfg p1_0 
-            on ec1_0.id=p1_0.parent_entity_id 
-    where
-        ec1_0.id=?
-2025-12-24T15:42:57.480-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ select
-        c1_0.dac_id,
-        c1_0.id,
-        c1_0.operator,
-        p1_0.id,
-        p1_0.data_type,
-        p1_0.dot_path,
-        pe1_0.id,
-        pe1_0.aggregate_root,
-        pe1_0.name,
-        p1_0.property_name,
-        p1_0.represented_entity_name 
-    from
-        dac_condition_cfg c1_0 
-    left join
-        property_cfg p1_0 
-            on p1_0.id=c1_0.property_id 
-    left join
-        entity_cfg pe1_0 
-            on pe1_0.id=p1_0.parent_entity_id 
-    where
-        c1_0.dac_id=?
-2025-12-24T15:42:57.481-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ select
+        ec1_0.name=?
+2025-12-26T15:35:11.975-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ select
         p1_0.parent_entity_id,
         p1_0.id,
         p1_0.data_type,
@@ -80,16 +22,34 @@
         property_cfg p1_0 
     where
         p1_0.parent_entity_id=?
-2025-12-24T15:42:57.482-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ select
-        cv1_0.dac_condition_id,
-        cv1_0.condition_value 
+2025-12-26T15:35:11.979-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ /* <criteria> */ select
+        dc1_0.id,
+        dc1_0.active,
+        dc1_0.name,
+        dc1_0.target_entity_id 
     from
-        dac_condition_values cv1_0 
+        dac_cfg dc1_0
+2025-12-26T15:35:11.980-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ select
+        ec1_0.id,
+        ec1_0.aggregate_root,
+        ec1_0.name,
+        p1_0.parent_entity_id,
+        p1_0.id,
+        p1_0.data_type,
+        p1_0.dot_path,
+        p1_0.property_name,
+        p1_0.represented_entity_name 
+    from
+        entity_cfg ec1_0 
+    left join
+        property_cfg p1_0 
+            on ec1_0.id=p1_0.parent_entity_id 
     where
-        cv1_0.dac_condition_id=?
-2025-12-24T15:42:57.483-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ select
+        ec1_0.id=?
+2025-12-26T15:35:11.981-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ select
         c1_0.dac_id,
         c1_0.id,
         c1_0.operator,
@@ -111,16 +71,59 @@
             on pe1_0.id=p1_0.parent_entity_id 
     where
         c1_0.dac_id=?
-2025-12-24T15:42:57.484-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ select
+2025-12-26T15:35:11.983-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ select
+        p1_0.parent_entity_id,
+        p1_0.id,
+        p1_0.data_type,
+        p1_0.dot_path,
+        p1_0.property_name,
+        p1_0.represented_entity_name 
+    from
+        property_cfg p1_0 
+    where
+        p1_0.parent_entity_id=?
+2025-12-26T15:35:11.984-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ select
         cv1_0.dac_condition_id,
         cv1_0.condition_value 
     from
         dac_condition_values cv1_0 
     where
         cv1_0.dac_condition_id=?
-2025-12-24T15:42:57.485-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ /* <criteria> */ select
+2025-12-26T15:35:11.984-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ select
+        c1_0.dac_id,
+        c1_0.id,
+        c1_0.operator,
+        p1_0.id,
+        p1_0.data_type,
+        p1_0.dot_path,
+        pe1_0.id,
+        pe1_0.aggregate_root,
+        pe1_0.name,
+        p1_0.property_name,
+        p1_0.represented_entity_name 
+    from
+        dac_condition_cfg c1_0 
+    left join
+        property_cfg p1_0 
+            on p1_0.id=c1_0.property_id 
+    left join
+        entity_cfg pe1_0 
+            on pe1_0.id=p1_0.parent_entity_id 
+    where
+        c1_0.dac_id=?
+2025-12-26T15:35:11.985-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ select
+        cv1_0.dac_condition_id,
+        cv1_0.condition_value 
+    from
+        dac_condition_values cv1_0 
+    where
+        cv1_0.dac_condition_id=?
+2025-12-26T15:35:11.986-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ /* <criteria> */ select
         ec1_0.id,
         ec1_0.aggregate_root,
         ec1_0.name 
@@ -128,8 +131,8 @@
         entity_cfg ec1_0 
     where
         ec1_0.name=?
-2025-12-24T15:42:57.486-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ /* <criteria> */ select
+2025-12-26T15:35:11.988-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ /* <criteria> */ select
         ec1_0.id,
         ec1_0.aggregate_root,
         ec1_0.name 
@@ -137,19 +140,15 @@
         entity_cfg ec1_0 
     where
         ec1_0.name=?
-2025-12-24T15:42:57.489-05:00 ERROR 59160 --- [graphql] [nio-8080-exec-6] s.g.e.ExceptionResolversExceptionHandler : Unresolved SearchException for executionId b23877e8-d200-6d82-e33b-22d7f422a3f7
+2025-12-26T15:35:11.989-05:00 ERROR 15304 --- [graphql] [nio-8080-exec-4] s.g.e.ExceptionResolversExceptionHandler : Unresolved RuntimeException for executionId 38eebc39-f2ca-fab9-0c94-9cdcb94c20a7
 
-org.hibernate.search.util.common.SearchException: HSEARCH000604: Cannot use 'aggregation:terms' on field 'age': Make sure the field is marked as searchable/sortable/projectable/aggregable/highlightable (whichever is relevant). If it already is, then 'aggregation:terms' is not available for fields of this type.
-Context: field 'age'
-        at org.hibernate.search.engine.search.common.spi.SearchIndexSchemaElementContextHelper.cannotUseQueryElement(SearchIndexSchemaElementContextHelper.java:93)
-        at org.hibernate.search.engine.search.common.spi.SearchIndexSchemaElementContextHelper.queryElement(SearchIndexSchemaElementContextHelper.java:80)
-        at org.hibernate.search.engine.backend.document.model.spi.AbstractIndexNode.queryElement(AbstractIndexNode.java:42)
-        at org.hibernate.search.engine.backend.scope.spi.AbstractSearchIndexScope.fieldQueryElement(AbstractSearchIndexScope.java:216)
-        at org.hibernate.search.engine.search.aggregation.dsl.impl.TermsAggregationFieldStepImpl.field(TermsAggregationFieldStepImpl.java:33)
-        at org.hibernate.search.engine.search.aggregation.dsl.TermsAggregationFieldStep.field(TermsAggregationFieldStep.java:31)
-        at com.example.graphql.person.repository.search.PersonSearchRepository.lambda$search$3(PersonSearchRepository.java:77)
-        at org.hibernate.search.engine.search.query.dsl.spi.AbstractSearchQueryOptionsStep.aggregation(AbstractSearchQueryOptionsStep.java:181)
-        at com.example.graphql.person.repository.search.PersonSearchRepository.search(PersonSearchRepository.java:77)
+java.lang.RuntimeException: Property not found in registry: isActive
+        at com.example.graphql.person.infrastructure.search.HibernatePersonSearchAdapter.lambda$findProperty$7(HibernatePersonSearchAdapter.java:113)
+        at java.base/java.util.Optional.orElseThrow(Optional.java:403)
+        at com.example.graphql.person.infrastructure.search.HibernatePersonSearchAdapter.lambda$findProperty$8(HibernatePersonSearchAdapter.java:113)
+        at java.base/java.util.Optional.orElseGet(Optional.java:364)
+        at com.example.graphql.person.infrastructure.search.HibernatePersonSearchAdapter.findProperty(HibernatePersonSearchAdapter.java:108)
+        at com.example.graphql.person.infrastructure.search.HibernatePersonSearchAdapter.search(HibernatePersonSearchAdapter.java:68)
         at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
         at java.base/java.lang.reflect.Method.invoke(Method.java:580)
         at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:360)
@@ -158,8 +157,8 @@ Context: field 'age'
         at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.invoke(PersistenceExceptionTranslationInterceptor.java:138)
         at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
         at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:728)
-        at com.example.graphql.person.repository.search.PersonSearchRepository$$SpringCGLIB$$0.search(<generated>)
-        at com.example.graphql.person.service.PersonService.searchPeople(PersonService.java:40)
+        at com.example.graphql.person.infrastructure.search.HibernatePersonSearchAdapter$$SpringCGLIB$$0.search(<generated>)
+        at com.example.graphql.person.domain.service.PersonService.searchPeople(PersonService.java:33)
         at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
         at java.base/java.lang.reflect.Method.invoke(Method.java:580)
         at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:360)
@@ -169,8 +168,8 @@ Context: field 'age'
         at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:119)
         at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
         at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:728)
-        at com.example.graphql.person.service.PersonService$$SpringCGLIB$$0.searchPeople(<generated>)
-        at com.example.graphql.person.graphql.controller.PersonController.searchPeople(PersonController.java:43)
+        at com.example.graphql.person.domain.service.PersonService$$SpringCGLIB$$0.searchPeople(<generated>)
+        at com.example.graphql.person.graphql.controller.PersonController.searchPeople(PersonController.java:38)
         at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
         at java.base/java.lang.reflect.Method.invoke(Method.java:580)
         at org.springframework.graphql.data.method.InvocableHandlerMethodSupport.doInvoke(InvocableHandlerMethodSupport.java:117)
@@ -251,81 +250,23 @@ Context: field 'age'
         at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
         at java.base/java.lang.Thread.run(Thread.java:1583)
 
-2025-12-24T15:42:57.489-05:00  INFO 59160 --- [graphql] [nio-8080-exec-6] c.e.g.p.l.RequestLoggingInstrumentation  : --------------------------------------------------------------------------------
-2025-12-24T15:42:57.489-05:00  INFO 59160 --- [graphql] [nio-8080-exec-6] c.e.g.p.l.RequestLoggingInstrumentation  : <<< END GRAPHQL REQUEST #5 (Thread: http-nio-8080-exec-6 [96])
-2025-12-24T15:42:57.489-05:00  INFO 59160 --- [graphql] [nio-8080-exec-6] c.e.g.p.l.RequestLoggingInstrumentation  : --------------------------------------------------------------------------------
-2025-12-24T15:42:57.470-05:00  INFO 59160 --- [graphql] [nio-8080-exec-6] c.e.g.p.l.RequestLoggingInstrumentation  : ================================================================================
-2025-12-24T15:42:57.470-05:00  INFO 59160 --- [graphql] [nio-8080-exec-6] c.e.g.p.l.RequestLoggingInstrumentation  : >>> START REQUEST #5 (Thread: http-nio-8080-exec-6 [96]) [Logger:511f21f9]: query { searchPeople( text: "", facetKeys: ["country"], statsKeys: ["age"] ) { totalElements resu...
-2025-12-24T15:42:57.470-05:00  INFO 59160 --- [graphql] [nio-8080-exec-6] c.e.g.p.l.RequestLoggingInstrumentation  : ================================================================================
-2025-12-24T15:42:57.474-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ /* <criteria> */ select
-        dc1_0.id,
-        dc1_0.active,
-        dc1_0.name,
-        dc1_0.target_entity_id 
-    from
-        dac_cfg dc1_0
-2025-12-24T15:42:57.476-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ select
+2025-12-26T15:35:11.990-05:00  INFO 15304 --- [graphql] [nio-8080-exec-4] c.e.g.p.l.RequestLoggingInstrumentation  : --------------------------------------------------------------------------------
+2025-12-26T15:35:11.990-05:00  INFO 15304 --- [graphql] [nio-8080-exec-4] c.e.g.p.l.RequestLoggingInstrumentation  : <<< END GRAPHQL REQUEST #5 (Thread: http-nio-8080-exec-4 [94])
+2025-12-26T15:35:11.990-05:00  INFO 15304 --- [graphql] [nio-8080-exec-4] c.e.g.p.l.RequestLoggingInstrumentation  : --------------------------------------------------------------------------------
+2025-12-26T15:35:11.966-05:00  INFO 15304 --- [graphql] [nio-8080-exec-4] c.e.g.p.l.RequestLoggingInstrumentation  : ================================================================================
+2025-12-26T15:35:11.966-05:00  INFO 15304 --- [graphql] [nio-8080-exec-4] c.e.g.p.l.RequestLoggingInstrumentation  : >>> START REQUEST #5 (Thread: http-nio-8080-exec-4 [94]) [Logger:54980154]: query { searchPeople( text: "", facetKeys: ["country","isActive"], statsKeys: ["salary","age"] ) ...
+2025-12-26T15:35:11.966-05:00  INFO 15304 --- [graphql] [nio-8080-exec-4] c.e.g.p.l.RequestLoggingInstrumentation  : ================================================================================
+2025-12-26T15:35:11.971-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ /* <criteria> */ select
         ec1_0.id,
         ec1_0.aggregate_root,
-        ec1_0.name,
-        p1_0.parent_entity_id,
-        p1_0.id,
-        p1_0.data_type,
-        p1_0.dot_path,
-        p1_0.property_name,
-        p1_0.represented_entity_name 
+        ec1_0.name 
     from
         entity_cfg ec1_0 
-    left join
-        property_cfg p1_0 
-            on ec1_0.id=p1_0.parent_entity_id 
     where
-        ec1_0.id=?
-2025-12-24T15:42:57.479-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ select
-        ec1_0.id,
-        ec1_0.aggregate_root,
-        ec1_0.name,
-        p1_0.parent_entity_id,
-        p1_0.id,
-        p1_0.data_type,
-        p1_0.dot_path,
-        p1_0.property_name,
-        p1_0.represented_entity_name 
-    from
-        entity_cfg ec1_0 
-    left join
-        property_cfg p1_0 
-            on ec1_0.id=p1_0.parent_entity_id 
-    where
-        ec1_0.id=?
-2025-12-24T15:42:57.480-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ select
-        c1_0.dac_id,
-        c1_0.id,
-        c1_0.operator,
-        p1_0.id,
-        p1_0.data_type,
-        p1_0.dot_path,
-        pe1_0.id,
-        pe1_0.aggregate_root,
-        pe1_0.name,
-        p1_0.property_name,
-        p1_0.represented_entity_name 
-    from
-        dac_condition_cfg c1_0 
-    left join
-        property_cfg p1_0 
-            on p1_0.id=c1_0.property_id 
-    left join
-        entity_cfg pe1_0 
-            on pe1_0.id=p1_0.parent_entity_id 
-    where
-        c1_0.dac_id=?
-2025-12-24T15:42:57.481-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ select
+        ec1_0.name=?
+2025-12-26T15:35:11.975-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ select
         p1_0.parent_entity_id,
         p1_0.id,
         p1_0.data_type,
@@ -336,16 +277,34 @@ Context: field 'age'
         property_cfg p1_0 
     where
         p1_0.parent_entity_id=?
-2025-12-24T15:42:57.482-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ select
-        cv1_0.dac_condition_id,
-        cv1_0.condition_value 
+2025-12-26T15:35:11.979-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ /* <criteria> */ select
+        dc1_0.id,
+        dc1_0.active,
+        dc1_0.name,
+        dc1_0.target_entity_id 
     from
-        dac_condition_values cv1_0 
+        dac_cfg dc1_0
+2025-12-26T15:35:11.980-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ select
+        ec1_0.id,
+        ec1_0.aggregate_root,
+        ec1_0.name,
+        p1_0.parent_entity_id,
+        p1_0.id,
+        p1_0.data_type,
+        p1_0.dot_path,
+        p1_0.property_name,
+        p1_0.represented_entity_name 
+    from
+        entity_cfg ec1_0 
+    left join
+        property_cfg p1_0 
+            on ec1_0.id=p1_0.parent_entity_id 
     where
-        cv1_0.dac_condition_id=?
-2025-12-24T15:42:57.483-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ select
+        ec1_0.id=?
+2025-12-26T15:35:11.981-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ select
         c1_0.dac_id,
         c1_0.id,
         c1_0.operator,
@@ -367,16 +326,59 @@ Context: field 'age'
             on pe1_0.id=p1_0.parent_entity_id 
     where
         c1_0.dac_id=?
-2025-12-24T15:42:57.484-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ select
+2025-12-26T15:35:11.983-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ select
+        p1_0.parent_entity_id,
+        p1_0.id,
+        p1_0.data_type,
+        p1_0.dot_path,
+        p1_0.property_name,
+        p1_0.represented_entity_name 
+    from
+        property_cfg p1_0 
+    where
+        p1_0.parent_entity_id=?
+2025-12-26T15:35:11.984-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ select
         cv1_0.dac_condition_id,
         cv1_0.condition_value 
     from
         dac_condition_values cv1_0 
     where
         cv1_0.dac_condition_id=?
-2025-12-24T15:42:57.485-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ /* <criteria> */ select
+2025-12-26T15:35:11.984-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ select
+        c1_0.dac_id,
+        c1_0.id,
+        c1_0.operator,
+        p1_0.id,
+        p1_0.data_type,
+        p1_0.dot_path,
+        pe1_0.id,
+        pe1_0.aggregate_root,
+        pe1_0.name,
+        p1_0.property_name,
+        p1_0.represented_entity_name 
+    from
+        dac_condition_cfg c1_0 
+    left join
+        property_cfg p1_0 
+            on p1_0.id=c1_0.property_id 
+    left join
+        entity_cfg pe1_0 
+            on pe1_0.id=p1_0.parent_entity_id 
+    where
+        c1_0.dac_id=?
+2025-12-26T15:35:11.985-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ select
+        cv1_0.dac_condition_id,
+        cv1_0.condition_value 
+    from
+        dac_condition_values cv1_0 
+    where
+        cv1_0.dac_condition_id=?
+2025-12-26T15:35:11.986-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ /* <criteria> */ select
         ec1_0.id,
         ec1_0.aggregate_root,
         ec1_0.name 
@@ -384,8 +386,8 @@ Context: field 'age'
         entity_cfg ec1_0 
     where
         ec1_0.name=?
-2025-12-24T15:42:57.486-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ /* <criteria> */ select
+2025-12-26T15:35:11.988-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ /* <criteria> */ select
         ec1_0.id,
         ec1_0.aggregate_root,
         ec1_0.name 
@@ -393,19 +395,15 @@ Context: field 'age'
         entity_cfg ec1_0 
     where
         ec1_0.name=?
-2025-12-24T15:42:57.489-05:00 ERROR 59160 --- [graphql] [nio-8080-exec-6] s.g.e.ExceptionResolversExceptionHandler : Unresolved SearchException for executionId b23877e8-d200-6d82-e33b-22d7f422a3f7
+2025-12-26T15:35:11.989-05:00 ERROR 15304 --- [graphql] [nio-8080-exec-4] s.g.e.ExceptionResolversExceptionHandler : Unresolved RuntimeException for executionId 38eebc39-f2ca-fab9-0c94-9cdcb94c20a7
 
-org.hibernate.search.util.common.SearchException: HSEARCH000604: Cannot use 'aggregation:terms' on field 'age': Make sure the field is marked as searchable/sortable/projectable/aggregable/highlightable (whichever is relevant). If it already is, then 'aggregation:terms' is not available for fields of this type.
-Context: field 'age'
-        at org.hibernate.search.engine.search.common.spi.SearchIndexSchemaElementContextHelper.cannotUseQueryElement(SearchIndexSchemaElementContextHelper.java:93)
-        at org.hibernate.search.engine.search.common.spi.SearchIndexSchemaElementContextHelper.queryElement(SearchIndexSchemaElementContextHelper.java:80)
-        at org.hibernate.search.engine.backend.document.model.spi.AbstractIndexNode.queryElement(AbstractIndexNode.java:42)
-        at org.hibernate.search.engine.backend.scope.spi.AbstractSearchIndexScope.fieldQueryElement(AbstractSearchIndexScope.java:216)
-        at org.hibernate.search.engine.search.aggregation.dsl.impl.TermsAggregationFieldStepImpl.field(TermsAggregationFieldStepImpl.java:33)
-        at org.hibernate.search.engine.search.aggregation.dsl.TermsAggregationFieldStep.field(TermsAggregationFieldStep.java:31)
-        at com.example.graphql.person.repository.search.PersonSearchRepository.lambda$search$3(PersonSearchRepository.java:77)
-        at org.hibernate.search.engine.search.query.dsl.spi.AbstractSearchQueryOptionsStep.aggregation(AbstractSearchQueryOptionsStep.java:181)
-        at com.example.graphql.person.repository.search.PersonSearchRepository.search(PersonSearchRepository.java:77)
+java.lang.RuntimeException: Property not found in registry: isActive
+        at com.example.graphql.person.infrastructure.search.HibernatePersonSearchAdapter.lambda$findProperty$7(HibernatePersonSearchAdapter.java:113)
+        at java.base/java.util.Optional.orElseThrow(Optional.java:403)
+        at com.example.graphql.person.infrastructure.search.HibernatePersonSearchAdapter.lambda$findProperty$8(HibernatePersonSearchAdapter.java:113)
+        at java.base/java.util.Optional.orElseGet(Optional.java:364)
+        at com.example.graphql.person.infrastructure.search.HibernatePersonSearchAdapter.findProperty(HibernatePersonSearchAdapter.java:108)
+        at com.example.graphql.person.infrastructure.search.HibernatePersonSearchAdapter.search(HibernatePersonSearchAdapter.java:68)
         at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
         at java.base/java.lang.reflect.Method.invoke(Method.java:580)
         at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:360)
@@ -414,8 +412,8 @@ Context: field 'age'
         at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.invoke(PersistenceExceptionTranslationInterceptor.java:138)
         at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
         at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:728)
-        at com.example.graphql.person.repository.search.PersonSearchRepository$$SpringCGLIB$$0.search(<generated>)
-        at com.example.graphql.person.service.PersonService.searchPeople(PersonService.java:40)
+        at com.example.graphql.person.infrastructure.search.HibernatePersonSearchAdapter$$SpringCGLIB$$0.search(<generated>)
+        at com.example.graphql.person.domain.service.PersonService.searchPeople(PersonService.java:33)
         at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
         at java.base/java.lang.reflect.Method.invoke(Method.java:580)
         at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:360)
@@ -425,8 +423,8 @@ Context: field 'age'
         at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:119)
         at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
         at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:728)
-        at com.example.graphql.person.service.PersonService$$SpringCGLIB$$0.searchPeople(<generated>)
-        at com.example.graphql.person.graphql.controller.PersonController.searchPeople(PersonController.java:43)
+        at com.example.graphql.person.domain.service.PersonService$$SpringCGLIB$$0.searchPeople(<generated>)
+        at com.example.graphql.person.graphql.controller.PersonController.searchPeople(PersonController.java:38)
         at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
         at java.base/java.lang.reflect.Method.invoke(Method.java:580)
         at org.springframework.graphql.data.method.InvocableHandlerMethodSupport.doInvoke(InvocableHandlerMethodSupport.java:117)
@@ -507,81 +505,23 @@ Context: field 'age'
         at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
         at java.base/java.lang.Thread.run(Thread.java:1583)
 
-2025-12-24T15:42:57.489-05:00  INFO 59160 --- [graphql] [nio-8080-exec-6] c.e.g.p.l.RequestLoggingInstrumentation  : --------------------------------------------------------------------------------
-2025-12-24T15:42:57.489-05:00  INFO 59160 --- [graphql] [nio-8080-exec-6] c.e.g.p.l.RequestLoggingInstrumentation  : <<< END GRAPHQL REQUEST #5 (Thread: http-nio-8080-exec-6 [96])
-2025-12-24T15:42:57.489-05:00  INFO 59160 --- [graphql] [nio-8080-exec-6] c.e.g.p.l.RequestLoggingInstrumentation  : --------------------------------------------------------------------------------
-2025-12-24T15:42:57.470-05:00  INFO 59160 --- [graphql] [nio-8080-exec-6] c.e.g.p.l.RequestLoggingInstrumentation  : ================================================================================
-2025-12-24T15:42:57.470-05:00  INFO 59160 --- [graphql] [nio-8080-exec-6] c.e.g.p.l.RequestLoggingInstrumentation  : >>> START REQUEST #5 (Thread: http-nio-8080-exec-6 [96]) [Logger:511f21f9]: query { searchPeople( text: "", facetKeys: ["country"], statsKeys: ["age"] ) { totalElements resu...
-2025-12-24T15:42:57.470-05:00  INFO 59160 --- [graphql] [nio-8080-exec-6] c.e.g.p.l.RequestLoggingInstrumentation  : ================================================================================
-2025-12-24T15:42:57.474-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ /* <criteria> */ select
-        dc1_0.id,
-        dc1_0.active,
-        dc1_0.name,
-        dc1_0.target_entity_id 
-    from
-        dac_cfg dc1_0
-2025-12-24T15:42:57.476-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ select
+2025-12-26T15:35:11.990-05:00  INFO 15304 --- [graphql] [nio-8080-exec-4] c.e.g.p.l.RequestLoggingInstrumentation  : --------------------------------------------------------------------------------
+2025-12-26T15:35:11.990-05:00  INFO 15304 --- [graphql] [nio-8080-exec-4] c.e.g.p.l.RequestLoggingInstrumentation  : <<< END GRAPHQL REQUEST #5 (Thread: http-nio-8080-exec-4 [94])
+2025-12-26T15:35:11.990-05:00  INFO 15304 --- [graphql] [nio-8080-exec-4] c.e.g.p.l.RequestLoggingInstrumentation  : --------------------------------------------------------------------------------
+2025-12-26T15:35:11.966-05:00  INFO 15304 --- [graphql] [nio-8080-exec-4] c.e.g.p.l.RequestLoggingInstrumentation  : ================================================================================
+2025-12-26T15:35:11.966-05:00  INFO 15304 --- [graphql] [nio-8080-exec-4] c.e.g.p.l.RequestLoggingInstrumentation  : >>> START REQUEST #5 (Thread: http-nio-8080-exec-4 [94]) [Logger:54980154]: query { searchPeople( text: "", facetKeys: ["country","isActive"], statsKeys: ["salary","age"] ) ...
+2025-12-26T15:35:11.966-05:00  INFO 15304 --- [graphql] [nio-8080-exec-4] c.e.g.p.l.RequestLoggingInstrumentation  : ================================================================================
+2025-12-26T15:35:11.971-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ /* <criteria> */ select
         ec1_0.id,
         ec1_0.aggregate_root,
-        ec1_0.name,
-        p1_0.parent_entity_id,
-        p1_0.id,
-        p1_0.data_type,
-        p1_0.dot_path,
-        p1_0.property_name,
-        p1_0.represented_entity_name 
+        ec1_0.name 
     from
         entity_cfg ec1_0 
-    left join
-        property_cfg p1_0 
-            on ec1_0.id=p1_0.parent_entity_id 
     where
-        ec1_0.id=?
-2025-12-24T15:42:57.479-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ select
-        ec1_0.id,
-        ec1_0.aggregate_root,
-        ec1_0.name,
-        p1_0.parent_entity_id,
-        p1_0.id,
-        p1_0.data_type,
-        p1_0.dot_path,
-        p1_0.property_name,
-        p1_0.represented_entity_name 
-    from
-        entity_cfg ec1_0 
-    left join
-        property_cfg p1_0 
-            on ec1_0.id=p1_0.parent_entity_id 
-    where
-        ec1_0.id=?
-2025-12-24T15:42:57.480-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ select
-        c1_0.dac_id,
-        c1_0.id,
-        c1_0.operator,
-        p1_0.id,
-        p1_0.data_type,
-        p1_0.dot_path,
-        pe1_0.id,
-        pe1_0.aggregate_root,
-        pe1_0.name,
-        p1_0.property_name,
-        p1_0.represented_entity_name 
-    from
-        dac_condition_cfg c1_0 
-    left join
-        property_cfg p1_0 
-            on p1_0.id=c1_0.property_id 
-    left join
-        entity_cfg pe1_0 
-            on pe1_0.id=p1_0.parent_entity_id 
-    where
-        c1_0.dac_id=?
-2025-12-24T15:42:57.481-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ select
+        ec1_0.name=?
+2025-12-26T15:35:11.975-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ select
         p1_0.parent_entity_id,
         p1_0.id,
         p1_0.data_type,
@@ -592,16 +532,34 @@ Context: field 'age'
         property_cfg p1_0 
     where
         p1_0.parent_entity_id=?
-2025-12-24T15:42:57.482-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ select
-        cv1_0.dac_condition_id,
-        cv1_0.condition_value 
+2025-12-26T15:35:11.979-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ /* <criteria> */ select
+        dc1_0.id,
+        dc1_0.active,
+        dc1_0.name,
+        dc1_0.target_entity_id 
     from
-        dac_condition_values cv1_0 
+        dac_cfg dc1_0
+2025-12-26T15:35:11.980-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ select
+        ec1_0.id,
+        ec1_0.aggregate_root,
+        ec1_0.name,
+        p1_0.parent_entity_id,
+        p1_0.id,
+        p1_0.data_type,
+        p1_0.dot_path,
+        p1_0.property_name,
+        p1_0.represented_entity_name 
+    from
+        entity_cfg ec1_0 
+    left join
+        property_cfg p1_0 
+            on ec1_0.id=p1_0.parent_entity_id 
     where
-        cv1_0.dac_condition_id=?
-2025-12-24T15:42:57.483-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ select
+        ec1_0.id=?
+2025-12-26T15:35:11.981-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ select
         c1_0.dac_id,
         c1_0.id,
         c1_0.operator,
@@ -623,16 +581,59 @@ Context: field 'age'
             on pe1_0.id=p1_0.parent_entity_id 
     where
         c1_0.dac_id=?
-2025-12-24T15:42:57.484-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ select
+2025-12-26T15:35:11.983-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ select
+        p1_0.parent_entity_id,
+        p1_0.id,
+        p1_0.data_type,
+        p1_0.dot_path,
+        p1_0.property_name,
+        p1_0.represented_entity_name 
+    from
+        property_cfg p1_0 
+    where
+        p1_0.parent_entity_id=?
+2025-12-26T15:35:11.984-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ select
         cv1_0.dac_condition_id,
         cv1_0.condition_value 
     from
         dac_condition_values cv1_0 
     where
         cv1_0.dac_condition_id=?
-2025-12-24T15:42:57.485-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ /* <criteria> */ select
+2025-12-26T15:35:11.984-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ select
+        c1_0.dac_id,
+        c1_0.id,
+        c1_0.operator,
+        p1_0.id,
+        p1_0.data_type,
+        p1_0.dot_path,
+        pe1_0.id,
+        pe1_0.aggregate_root,
+        pe1_0.name,
+        p1_0.property_name,
+        p1_0.represented_entity_name 
+    from
+        dac_condition_cfg c1_0 
+    left join
+        property_cfg p1_0 
+            on p1_0.id=c1_0.property_id 
+    left join
+        entity_cfg pe1_0 
+            on pe1_0.id=p1_0.parent_entity_id 
+    where
+        c1_0.dac_id=?
+2025-12-26T15:35:11.985-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ select
+        cv1_0.dac_condition_id,
+        cv1_0.condition_value 
+    from
+        dac_condition_values cv1_0 
+    where
+        cv1_0.dac_condition_id=?
+2025-12-26T15:35:11.986-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ /* <criteria> */ select
         ec1_0.id,
         ec1_0.aggregate_root,
         ec1_0.name 
@@ -640,8 +641,8 @@ Context: field 'age'
         entity_cfg ec1_0 
     where
         ec1_0.name=?
-2025-12-24T15:42:57.486-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ /* <criteria> */ select
+2025-12-26T15:35:11.988-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ /* <criteria> */ select
         ec1_0.id,
         ec1_0.aggregate_root,
         ec1_0.name 
@@ -649,19 +650,15 @@ Context: field 'age'
         entity_cfg ec1_0 
     where
         ec1_0.name=?
-2025-12-24T15:42:57.489-05:00 ERROR 59160 --- [graphql] [nio-8080-exec-6] s.g.e.ExceptionResolversExceptionHandler : Unresolved SearchException for executionId b23877e8-d200-6d82-e33b-22d7f422a3f7
+2025-12-26T15:35:11.989-05:00 ERROR 15304 --- [graphql] [nio-8080-exec-4] s.g.e.ExceptionResolversExceptionHandler : Unresolved RuntimeException for executionId 38eebc39-f2ca-fab9-0c94-9cdcb94c20a7
 
-org.hibernate.search.util.common.SearchException: HSEARCH000604: Cannot use 'aggregation:terms' on field 'age': Make sure the field is marked as searchable/sortable/projectable/aggregable/highlightable (whichever is relevant). If it already is, then 'aggregation:terms' is not available for fields of this type.
-Context: field 'age'
-        at org.hibernate.search.engine.search.common.spi.SearchIndexSchemaElementContextHelper.cannotUseQueryElement(SearchIndexSchemaElementContextHelper.java:93)
-        at org.hibernate.search.engine.search.common.spi.SearchIndexSchemaElementContextHelper.queryElement(SearchIndexSchemaElementContextHelper.java:80)
-        at org.hibernate.search.engine.backend.document.model.spi.AbstractIndexNode.queryElement(AbstractIndexNode.java:42)
-        at org.hibernate.search.engine.backend.scope.spi.AbstractSearchIndexScope.fieldQueryElement(AbstractSearchIndexScope.java:216)
-        at org.hibernate.search.engine.search.aggregation.dsl.impl.TermsAggregationFieldStepImpl.field(TermsAggregationFieldStepImpl.java:33)
-        at org.hibernate.search.engine.search.aggregation.dsl.TermsAggregationFieldStep.field(TermsAggregationFieldStep.java:31)
-        at com.example.graphql.person.repository.search.PersonSearchRepository.lambda$search$3(PersonSearchRepository.java:77)
-        at org.hibernate.search.engine.search.query.dsl.spi.AbstractSearchQueryOptionsStep.aggregation(AbstractSearchQueryOptionsStep.java:181)
-        at com.example.graphql.person.repository.search.PersonSearchRepository.search(PersonSearchRepository.java:77)
+java.lang.RuntimeException: Property not found in registry: isActive
+        at com.example.graphql.person.infrastructure.search.HibernatePersonSearchAdapter.lambda$findProperty$7(HibernatePersonSearchAdapter.java:113)
+        at java.base/java.util.Optional.orElseThrow(Optional.java:403)
+        at com.example.graphql.person.infrastructure.search.HibernatePersonSearchAdapter.lambda$findProperty$8(HibernatePersonSearchAdapter.java:113)
+        at java.base/java.util.Optional.orElseGet(Optional.java:364)
+        at com.example.graphql.person.infrastructure.search.HibernatePersonSearchAdapter.findProperty(HibernatePersonSearchAdapter.java:108)
+        at com.example.graphql.person.infrastructure.search.HibernatePersonSearchAdapter.search(HibernatePersonSearchAdapter.java:68)
         at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
         at java.base/java.lang.reflect.Method.invoke(Method.java:580)
         at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:360)
@@ -670,8 +667,8 @@ Context: field 'age'
         at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.invoke(PersistenceExceptionTranslationInterceptor.java:138)
         at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
         at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:728)
-        at com.example.graphql.person.repository.search.PersonSearchRepository$$SpringCGLIB$$0.search(<generated>)
-        at com.example.graphql.person.service.PersonService.searchPeople(PersonService.java:40)
+        at com.example.graphql.person.infrastructure.search.HibernatePersonSearchAdapter$$SpringCGLIB$$0.search(<generated>)
+        at com.example.graphql.person.domain.service.PersonService.searchPeople(PersonService.java:33)
         at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
         at java.base/java.lang.reflect.Method.invoke(Method.java:580)
         at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:360)
@@ -681,8 +678,8 @@ Context: field 'age'
         at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:119)
         at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
         at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:728)
-        at com.example.graphql.person.service.PersonService$$SpringCGLIB$$0.searchPeople(<generated>)
-        at com.example.graphql.person.graphql.controller.PersonController.searchPeople(PersonController.java:43)
+        at com.example.graphql.person.domain.service.PersonService$$SpringCGLIB$$0.searchPeople(<generated>)
+        at com.example.graphql.person.graphql.controller.PersonController.searchPeople(PersonController.java:38)
         at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
         at java.base/java.lang.reflect.Method.invoke(Method.java:580)
         at org.springframework.graphql.data.method.InvocableHandlerMethodSupport.doInvoke(InvocableHandlerMethodSupport.java:117)
@@ -763,81 +760,23 @@ Context: field 'age'
         at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
         at java.base/java.lang.Thread.run(Thread.java:1583)
 
-2025-12-24T15:42:57.489-05:00  INFO 59160 --- [graphql] [nio-8080-exec-6] c.e.g.p.l.RequestLoggingInstrumentation  : --------------------------------------------------------------------------------
-2025-12-24T15:42:57.489-05:00  INFO 59160 --- [graphql] [nio-8080-exec-6] c.e.g.p.l.RequestLoggingInstrumentation  : <<< END GRAPHQL REQUEST #5 (Thread: http-nio-8080-exec-6 [96])
-2025-12-24T15:42:57.489-05:00  INFO 59160 --- [graphql] [nio-8080-exec-6] c.e.g.p.l.RequestLoggingInstrumentation  : --------------------------------------------------------------------------------
-2025-12-24T15:42:57.470-05:00  INFO 59160 --- [graphql] [nio-8080-exec-6] c.e.g.p.l.RequestLoggingInstrumentation  : ================================================================================
-2025-12-24T15:42:57.470-05:00  INFO 59160 --- [graphql] [nio-8080-exec-6] c.e.g.p.l.RequestLoggingInstrumentation  : >>> START REQUEST #5 (Thread: http-nio-8080-exec-6 [96]) [Logger:511f21f9]: query { searchPeople( text: "", facetKeys: ["country"], statsKeys: ["age"] ) { totalElements resu...
-2025-12-24T15:42:57.470-05:00  INFO 59160 --- [graphql] [nio-8080-exec-6] c.e.g.p.l.RequestLoggingInstrumentation  : ================================================================================
-2025-12-24T15:42:57.474-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ /* <criteria> */ select
-        dc1_0.id,
-        dc1_0.active,
-        dc1_0.name,
-        dc1_0.target_entity_id 
-    from
-        dac_cfg dc1_0
-2025-12-24T15:42:57.476-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ select
+2025-12-26T15:35:11.990-05:00  INFO 15304 --- [graphql] [nio-8080-exec-4] c.e.g.p.l.RequestLoggingInstrumentation  : --------------------------------------------------------------------------------
+2025-12-26T15:35:11.990-05:00  INFO 15304 --- [graphql] [nio-8080-exec-4] c.e.g.p.l.RequestLoggingInstrumentation  : <<< END GRAPHQL REQUEST #5 (Thread: http-nio-8080-exec-4 [94])
+2025-12-26T15:35:11.990-05:00  INFO 15304 --- [graphql] [nio-8080-exec-4] c.e.g.p.l.RequestLoggingInstrumentation  : --------------------------------------------------------------------------------
+2025-12-26T15:35:11.966-05:00  INFO 15304 --- [graphql] [nio-8080-exec-4] c.e.g.p.l.RequestLoggingInstrumentation  : ================================================================================
+2025-12-26T15:35:11.966-05:00  INFO 15304 --- [graphql] [nio-8080-exec-4] c.e.g.p.l.RequestLoggingInstrumentation  : >>> START REQUEST #5 (Thread: http-nio-8080-exec-4 [94]) [Logger:54980154]: query { searchPeople( text: "", facetKeys: ["country","isActive"], statsKeys: ["salary","age"] ) ...
+2025-12-26T15:35:11.966-05:00  INFO 15304 --- [graphql] [nio-8080-exec-4] c.e.g.p.l.RequestLoggingInstrumentation  : ================================================================================
+2025-12-26T15:35:11.971-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ /* <criteria> */ select
         ec1_0.id,
         ec1_0.aggregate_root,
-        ec1_0.name,
-        p1_0.parent_entity_id,
-        p1_0.id,
-        p1_0.data_type,
-        p1_0.dot_path,
-        p1_0.property_name,
-        p1_0.represented_entity_name 
+        ec1_0.name 
     from
         entity_cfg ec1_0 
-    left join
-        property_cfg p1_0 
-            on ec1_0.id=p1_0.parent_entity_id 
     where
-        ec1_0.id=?
-2025-12-24T15:42:57.479-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ select
-        ec1_0.id,
-        ec1_0.aggregate_root,
-        ec1_0.name,
-        p1_0.parent_entity_id,
-        p1_0.id,
-        p1_0.data_type,
-        p1_0.dot_path,
-        p1_0.property_name,
-        p1_0.represented_entity_name 
-    from
-        entity_cfg ec1_0 
-    left join
-        property_cfg p1_0 
-            on ec1_0.id=p1_0.parent_entity_id 
-    where
-        ec1_0.id=?
-2025-12-24T15:42:57.480-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ select
-        c1_0.dac_id,
-        c1_0.id,
-        c1_0.operator,
-        p1_0.id,
-        p1_0.data_type,
-        p1_0.dot_path,
-        pe1_0.id,
-        pe1_0.aggregate_root,
-        pe1_0.name,
-        p1_0.property_name,
-        p1_0.represented_entity_name 
-    from
-        dac_condition_cfg c1_0 
-    left join
-        property_cfg p1_0 
-            on p1_0.id=c1_0.property_id 
-    left join
-        entity_cfg pe1_0 
-            on pe1_0.id=p1_0.parent_entity_id 
-    where
-        c1_0.dac_id=?
-2025-12-24T15:42:57.481-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ select
+        ec1_0.name=?
+2025-12-26T15:35:11.975-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ select
         p1_0.parent_entity_id,
         p1_0.id,
         p1_0.data_type,
@@ -848,16 +787,34 @@ Context: field 'age'
         property_cfg p1_0 
     where
         p1_0.parent_entity_id=?
-2025-12-24T15:42:57.482-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ select
-        cv1_0.dac_condition_id,
-        cv1_0.condition_value 
+2025-12-26T15:35:11.979-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ /* <criteria> */ select
+        dc1_0.id,
+        dc1_0.active,
+        dc1_0.name,
+        dc1_0.target_entity_id 
     from
-        dac_condition_values cv1_0 
+        dac_cfg dc1_0
+2025-12-26T15:35:11.980-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ select
+        ec1_0.id,
+        ec1_0.aggregate_root,
+        ec1_0.name,
+        p1_0.parent_entity_id,
+        p1_0.id,
+        p1_0.data_type,
+        p1_0.dot_path,
+        p1_0.property_name,
+        p1_0.represented_entity_name 
+    from
+        entity_cfg ec1_0 
+    left join
+        property_cfg p1_0 
+            on ec1_0.id=p1_0.parent_entity_id 
     where
-        cv1_0.dac_condition_id=?
-2025-12-24T15:42:57.483-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ select
+        ec1_0.id=?
+2025-12-26T15:35:11.981-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ select
         c1_0.dac_id,
         c1_0.id,
         c1_0.operator,
@@ -879,16 +836,59 @@ Context: field 'age'
             on pe1_0.id=p1_0.parent_entity_id 
     where
         c1_0.dac_id=?
-2025-12-24T15:42:57.484-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ select
+2025-12-26T15:35:11.983-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ select
+        p1_0.parent_entity_id,
+        p1_0.id,
+        p1_0.data_type,
+        p1_0.dot_path,
+        p1_0.property_name,
+        p1_0.represented_entity_name 
+    from
+        property_cfg p1_0 
+    where
+        p1_0.parent_entity_id=?
+2025-12-26T15:35:11.984-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ select
         cv1_0.dac_condition_id,
         cv1_0.condition_value 
     from
         dac_condition_values cv1_0 
     where
         cv1_0.dac_condition_id=?
-2025-12-24T15:42:57.485-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ /* <criteria> */ select
+2025-12-26T15:35:11.984-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ select
+        c1_0.dac_id,
+        c1_0.id,
+        c1_0.operator,
+        p1_0.id,
+        p1_0.data_type,
+        p1_0.dot_path,
+        pe1_0.id,
+        pe1_0.aggregate_root,
+        pe1_0.name,
+        p1_0.property_name,
+        p1_0.represented_entity_name 
+    from
+        dac_condition_cfg c1_0 
+    left join
+        property_cfg p1_0 
+            on p1_0.id=c1_0.property_id 
+    left join
+        entity_cfg pe1_0 
+            on pe1_0.id=p1_0.parent_entity_id 
+    where
+        c1_0.dac_id=?
+2025-12-26T15:35:11.985-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ select
+        cv1_0.dac_condition_id,
+        cv1_0.condition_value 
+    from
+        dac_condition_values cv1_0 
+    where
+        cv1_0.dac_condition_id=?
+2025-12-26T15:35:11.986-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ /* <criteria> */ select
         ec1_0.id,
         ec1_0.aggregate_root,
         ec1_0.name 
@@ -896,8 +896,8 @@ Context: field 'age'
         entity_cfg ec1_0 
     where
         ec1_0.name=?
-2025-12-24T15:42:57.486-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ /* <criteria> */ select
+2025-12-26T15:35:11.988-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ /* <criteria> */ select
         ec1_0.id,
         ec1_0.aggregate_root,
         ec1_0.name 
@@ -905,19 +905,15 @@ Context: field 'age'
         entity_cfg ec1_0 
     where
         ec1_0.name=?
-2025-12-24T15:42:57.489-05:00 ERROR 59160 --- [graphql] [nio-8080-exec-6] s.g.e.ExceptionResolversExceptionHandler : Unresolved SearchException for executionId b23877e8-d200-6d82-e33b-22d7f422a3f7
+2025-12-26T15:35:11.989-05:00 ERROR 15304 --- [graphql] [nio-8080-exec-4] s.g.e.ExceptionResolversExceptionHandler : Unresolved RuntimeException for executionId 38eebc39-f2ca-fab9-0c94-9cdcb94c20a7
 
-org.hibernate.search.util.common.SearchException: HSEARCH000604: Cannot use 'aggregation:terms' on field 'age': Make sure the field is marked as searchable/sortable/projectable/aggregable/highlightable (whichever is relevant). If it already is, then 'aggregation:terms' is not available for fields of this type.
-Context: field 'age'
-        at org.hibernate.search.engine.search.common.spi.SearchIndexSchemaElementContextHelper.cannotUseQueryElement(SearchIndexSchemaElementContextHelper.java:93)
-        at org.hibernate.search.engine.search.common.spi.SearchIndexSchemaElementContextHelper.queryElement(SearchIndexSchemaElementContextHelper.java:80)
-        at org.hibernate.search.engine.backend.document.model.spi.AbstractIndexNode.queryElement(AbstractIndexNode.java:42)
-        at org.hibernate.search.engine.backend.scope.spi.AbstractSearchIndexScope.fieldQueryElement(AbstractSearchIndexScope.java:216)
-        at org.hibernate.search.engine.search.aggregation.dsl.impl.TermsAggregationFieldStepImpl.field(TermsAggregationFieldStepImpl.java:33)
-        at org.hibernate.search.engine.search.aggregation.dsl.TermsAggregationFieldStep.field(TermsAggregationFieldStep.java:31)
-        at com.example.graphql.person.repository.search.PersonSearchRepository.lambda$search$3(PersonSearchRepository.java:77)
-        at org.hibernate.search.engine.search.query.dsl.spi.AbstractSearchQueryOptionsStep.aggregation(AbstractSearchQueryOptionsStep.java:181)
-        at com.example.graphql.person.repository.search.PersonSearchRepository.search(PersonSearchRepository.java:77)
+java.lang.RuntimeException: Property not found in registry: isActive
+        at com.example.graphql.person.infrastructure.search.HibernatePersonSearchAdapter.lambda$findProperty$7(HibernatePersonSearchAdapter.java:113)
+        at java.base/java.util.Optional.orElseThrow(Optional.java:403)
+        at com.example.graphql.person.infrastructure.search.HibernatePersonSearchAdapter.lambda$findProperty$8(HibernatePersonSearchAdapter.java:113)
+        at java.base/java.util.Optional.orElseGet(Optional.java:364)
+        at com.example.graphql.person.infrastructure.search.HibernatePersonSearchAdapter.findProperty(HibernatePersonSearchAdapter.java:108)
+        at com.example.graphql.person.infrastructure.search.HibernatePersonSearchAdapter.search(HibernatePersonSearchAdapter.java:68)
         at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
         at java.base/java.lang.reflect.Method.invoke(Method.java:580)
         at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:360)
@@ -926,8 +922,8 @@ Context: field 'age'
         at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.invoke(PersistenceExceptionTranslationInterceptor.java:138)
         at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
         at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:728)
-        at com.example.graphql.person.repository.search.PersonSearchRepository$$SpringCGLIB$$0.search(<generated>)
-        at com.example.graphql.person.service.PersonService.searchPeople(PersonService.java:40)
+        at com.example.graphql.person.infrastructure.search.HibernatePersonSearchAdapter$$SpringCGLIB$$0.search(<generated>)
+        at com.example.graphql.person.domain.service.PersonService.searchPeople(PersonService.java:33)
         at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
         at java.base/java.lang.reflect.Method.invoke(Method.java:580)
         at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:360)
@@ -937,8 +933,8 @@ Context: field 'age'
         at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:119)
         at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
         at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:728)
-        at com.example.graphql.person.service.PersonService$$SpringCGLIB$$0.searchPeople(<generated>)
-        at com.example.graphql.person.graphql.controller.PersonController.searchPeople(PersonController.java:43)
+        at com.example.graphql.person.domain.service.PersonService$$SpringCGLIB$$0.searchPeople(<generated>)
+        at com.example.graphql.person.graphql.controller.PersonController.searchPeople(PersonController.java:38)
         at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
         at java.base/java.lang.reflect.Method.invoke(Method.java:580)
         at org.springframework.graphql.data.method.InvocableHandlerMethodSupport.doInvoke(InvocableHandlerMethodSupport.java:117)
@@ -1019,81 +1015,23 @@ Context: field 'age'
         at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
         at java.base/java.lang.Thread.run(Thread.java:1583)
 
-2025-12-24T15:42:57.489-05:00  INFO 59160 --- [graphql] [nio-8080-exec-6] c.e.g.p.l.RequestLoggingInstrumentation  : --------------------------------------------------------------------------------
-2025-12-24T15:42:57.489-05:00  INFO 59160 --- [graphql] [nio-8080-exec-6] c.e.g.p.l.RequestLoggingInstrumentation  : <<< END GRAPHQL REQUEST #5 (Thread: http-nio-8080-exec-6 [96])
-2025-12-24T15:42:57.489-05:00  INFO 59160 --- [graphql] [nio-8080-exec-6] c.e.g.p.l.RequestLoggingInstrumentation  : --------------------------------------------------------------------------------
-2025-12-24T15:42:57.470-05:00  INFO 59160 --- [graphql] [nio-8080-exec-6] c.e.g.p.l.RequestLoggingInstrumentation  : ================================================================================
-2025-12-24T15:42:57.470-05:00  INFO 59160 --- [graphql] [nio-8080-exec-6] c.e.g.p.l.RequestLoggingInstrumentation  : >>> START REQUEST #5 (Thread: http-nio-8080-exec-6 [96]) [Logger:511f21f9]: query { searchPeople( text: "", facetKeys: ["country"], statsKeys: ["age"] ) { totalElements resu...
-2025-12-24T15:42:57.470-05:00  INFO 59160 --- [graphql] [nio-8080-exec-6] c.e.g.p.l.RequestLoggingInstrumentation  : ================================================================================
-2025-12-24T15:42:57.474-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ /* <criteria> */ select
-        dc1_0.id,
-        dc1_0.active,
-        dc1_0.name,
-        dc1_0.target_entity_id 
-    from
-        dac_cfg dc1_0
-2025-12-24T15:42:57.476-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ select
+2025-12-26T15:35:11.990-05:00  INFO 15304 --- [graphql] [nio-8080-exec-4] c.e.g.p.l.RequestLoggingInstrumentation  : --------------------------------------------------------------------------------
+2025-12-26T15:35:11.990-05:00  INFO 15304 --- [graphql] [nio-8080-exec-4] c.e.g.p.l.RequestLoggingInstrumentation  : <<< END GRAPHQL REQUEST #5 (Thread: http-nio-8080-exec-4 [94])
+2025-12-26T15:35:11.990-05:00  INFO 15304 --- [graphql] [nio-8080-exec-4] c.e.g.p.l.RequestLoggingInstrumentation  : --------------------------------------------------------------------------------
+2025-12-26T15:35:11.966-05:00  INFO 15304 --- [graphql] [nio-8080-exec-4] c.e.g.p.l.RequestLoggingInstrumentation  : ================================================================================
+2025-12-26T15:35:11.966-05:00  INFO 15304 --- [graphql] [nio-8080-exec-4] c.e.g.p.l.RequestLoggingInstrumentation  : >>> START REQUEST #5 (Thread: http-nio-8080-exec-4 [94]) [Logger:54980154]: query { searchPeople( text: "", facetKeys: ["country","isActive"], statsKeys: ["salary","age"] ) ...
+2025-12-26T15:35:11.966-05:00  INFO 15304 --- [graphql] [nio-8080-exec-4] c.e.g.p.l.RequestLoggingInstrumentation  : ================================================================================
+2025-12-26T15:35:11.971-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ /* <criteria> */ select
         ec1_0.id,
         ec1_0.aggregate_root,
-        ec1_0.name,
-        p1_0.parent_entity_id,
-        p1_0.id,
-        p1_0.data_type,
-        p1_0.dot_path,
-        p1_0.property_name,
-        p1_0.represented_entity_name 
+        ec1_0.name 
     from
         entity_cfg ec1_0 
-    left join
-        property_cfg p1_0 
-            on ec1_0.id=p1_0.parent_entity_id 
     where
-        ec1_0.id=?
-2025-12-24T15:42:57.479-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ select
-        ec1_0.id,
-        ec1_0.aggregate_root,
-        ec1_0.name,
-        p1_0.parent_entity_id,
-        p1_0.id,
-        p1_0.data_type,
-        p1_0.dot_path,
-        p1_0.property_name,
-        p1_0.represented_entity_name 
-    from
-        entity_cfg ec1_0 
-    left join
-        property_cfg p1_0 
-            on ec1_0.id=p1_0.parent_entity_id 
-    where
-        ec1_0.id=?
-2025-12-24T15:42:57.480-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ select
-        c1_0.dac_id,
-        c1_0.id,
-        c1_0.operator,
-        p1_0.id,
-        p1_0.data_type,
-        p1_0.dot_path,
-        pe1_0.id,
-        pe1_0.aggregate_root,
-        pe1_0.name,
-        p1_0.property_name,
-        p1_0.represented_entity_name 
-    from
-        dac_condition_cfg c1_0 
-    left join
-        property_cfg p1_0 
-            on p1_0.id=c1_0.property_id 
-    left join
-        entity_cfg pe1_0 
-            on pe1_0.id=p1_0.parent_entity_id 
-    where
-        c1_0.dac_id=?
-2025-12-24T15:42:57.481-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ select
+        ec1_0.name=?
+2025-12-26T15:35:11.975-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ select
         p1_0.parent_entity_id,
         p1_0.id,
         p1_0.data_type,
@@ -1104,16 +1042,34 @@ Context: field 'age'
         property_cfg p1_0 
     where
         p1_0.parent_entity_id=?
-2025-12-24T15:42:57.482-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ select
-        cv1_0.dac_condition_id,
-        cv1_0.condition_value 
+2025-12-26T15:35:11.979-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ /* <criteria> */ select
+        dc1_0.id,
+        dc1_0.active,
+        dc1_0.name,
+        dc1_0.target_entity_id 
     from
-        dac_condition_values cv1_0 
+        dac_cfg dc1_0
+2025-12-26T15:35:11.980-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ select
+        ec1_0.id,
+        ec1_0.aggregate_root,
+        ec1_0.name,
+        p1_0.parent_entity_id,
+        p1_0.id,
+        p1_0.data_type,
+        p1_0.dot_path,
+        p1_0.property_name,
+        p1_0.represented_entity_name 
+    from
+        entity_cfg ec1_0 
+    left join
+        property_cfg p1_0 
+            on ec1_0.id=p1_0.parent_entity_id 
     where
-        cv1_0.dac_condition_id=?
-2025-12-24T15:42:57.483-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ select
+        ec1_0.id=?
+2025-12-26T15:35:11.981-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ select
         c1_0.dac_id,
         c1_0.id,
         c1_0.operator,
@@ -1135,16 +1091,59 @@ Context: field 'age'
             on pe1_0.id=p1_0.parent_entity_id 
     where
         c1_0.dac_id=?
-2025-12-24T15:42:57.484-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ select
+2025-12-26T15:35:11.983-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ select
+        p1_0.parent_entity_id,
+        p1_0.id,
+        p1_0.data_type,
+        p1_0.dot_path,
+        p1_0.property_name,
+        p1_0.represented_entity_name 
+    from
+        property_cfg p1_0 
+    where
+        p1_0.parent_entity_id=?
+2025-12-26T15:35:11.984-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ select
         cv1_0.dac_condition_id,
         cv1_0.condition_value 
     from
         dac_condition_values cv1_0 
     where
         cv1_0.dac_condition_id=?
-2025-12-24T15:42:57.485-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ /* <criteria> */ select
+2025-12-26T15:35:11.984-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ select
+        c1_0.dac_id,
+        c1_0.id,
+        c1_0.operator,
+        p1_0.id,
+        p1_0.data_type,
+        p1_0.dot_path,
+        pe1_0.id,
+        pe1_0.aggregate_root,
+        pe1_0.name,
+        p1_0.property_name,
+        p1_0.represented_entity_name 
+    from
+        dac_condition_cfg c1_0 
+    left join
+        property_cfg p1_0 
+            on p1_0.id=c1_0.property_id 
+    left join
+        entity_cfg pe1_0 
+            on pe1_0.id=p1_0.parent_entity_id 
+    where
+        c1_0.dac_id=?
+2025-12-26T15:35:11.985-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ select
+        cv1_0.dac_condition_id,
+        cv1_0.condition_value 
+    from
+        dac_condition_values cv1_0 
+    where
+        cv1_0.dac_condition_id=?
+2025-12-26T15:35:11.986-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ /* <criteria> */ select
         ec1_0.id,
         ec1_0.aggregate_root,
         ec1_0.name 
@@ -1152,8 +1151,8 @@ Context: field 'age'
         entity_cfg ec1_0 
     where
         ec1_0.name=?
-2025-12-24T15:42:57.486-05:00 DEBUG 59160 --- [graphql] [nio-8080-exec-6] org.hibernate.SQL                        : 
-    /* Action: Generic Action | Thread: http-nio-8080-exec-6 [96] */ /* <criteria> */ select
+2025-12-26T15:35:11.988-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ /* <criteria> */ select
         ec1_0.id,
         ec1_0.aggregate_root,
         ec1_0.name 
@@ -1161,19 +1160,15 @@ Context: field 'age'
         entity_cfg ec1_0 
     where
         ec1_0.name=?
-2025-12-24T15:42:57.489-05:00 ERROR 59160 --- [graphql] [nio-8080-exec-6] s.g.e.ExceptionResolversExceptionHandler : Unresolved SearchException for executionId b23877e8-d200-6d82-e33b-22d7f422a3f7
+2025-12-26T15:35:11.989-05:00 ERROR 15304 --- [graphql] [nio-8080-exec-4] s.g.e.ExceptionResolversExceptionHandler : Unresolved RuntimeException for executionId 38eebc39-f2ca-fab9-0c94-9cdcb94c20a7
 
-org.hibernate.search.util.common.SearchException: HSEARCH000604: Cannot use 'aggregation:terms' on field 'age': Make sure the field is marked as searchable/sortable/projectable/aggregable/highlightable (whichever is relevant). If it already is, then 'aggregation:terms' is not available for fields of this type.
-Context: field 'age'
-        at org.hibernate.search.engine.search.common.spi.SearchIndexSchemaElementContextHelper.cannotUseQueryElement(SearchIndexSchemaElementContextHelper.java:93)
-        at org.hibernate.search.engine.search.common.spi.SearchIndexSchemaElementContextHelper.queryElement(SearchIndexSchemaElementContextHelper.java:80)
-        at org.hibernate.search.engine.backend.document.model.spi.AbstractIndexNode.queryElement(AbstractIndexNode.java:42)
-        at org.hibernate.search.engine.backend.scope.spi.AbstractSearchIndexScope.fieldQueryElement(AbstractSearchIndexScope.java:216)
-        at org.hibernate.search.engine.search.aggregation.dsl.impl.TermsAggregationFieldStepImpl.field(TermsAggregationFieldStepImpl.java:33)
-        at org.hibernate.search.engine.search.aggregation.dsl.TermsAggregationFieldStep.field(TermsAggregationFieldStep.java:31)
-        at com.example.graphql.person.repository.search.PersonSearchRepository.lambda$search$3(PersonSearchRepository.java:77)
-        at org.hibernate.search.engine.search.query.dsl.spi.AbstractSearchQueryOptionsStep.aggregation(AbstractSearchQueryOptionsStep.java:181)
-        at com.example.graphql.person.repository.search.PersonSearchRepository.search(PersonSearchRepository.java:77)
+java.lang.RuntimeException: Property not found in registry: isActive
+        at com.example.graphql.person.infrastructure.search.HibernatePersonSearchAdapter.lambda$findProperty$7(HibernatePersonSearchAdapter.java:113)
+        at java.base/java.util.Optional.orElseThrow(Optional.java:403)
+        at com.example.graphql.person.infrastructure.search.HibernatePersonSearchAdapter.lambda$findProperty$8(HibernatePersonSearchAdapter.java:113)
+        at java.base/java.util.Optional.orElseGet(Optional.java:364)
+        at com.example.graphql.person.infrastructure.search.HibernatePersonSearchAdapter.findProperty(HibernatePersonSearchAdapter.java:108)
+        at com.example.graphql.person.infrastructure.search.HibernatePersonSearchAdapter.search(HibernatePersonSearchAdapter.java:68)
         at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
         at java.base/java.lang.reflect.Method.invoke(Method.java:580)
         at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:360)
@@ -1182,8 +1177,8 @@ Context: field 'age'
         at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.invoke(PersistenceExceptionTranslationInterceptor.java:138)
         at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
         at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:728)
-        at com.example.graphql.person.repository.search.PersonSearchRepository$$SpringCGLIB$$0.search(<generated>)
-        at com.example.graphql.person.service.PersonService.searchPeople(PersonService.java:40)
+        at com.example.graphql.person.infrastructure.search.HibernatePersonSearchAdapter$$SpringCGLIB$$0.search(<generated>)
+        at com.example.graphql.person.domain.service.PersonService.searchPeople(PersonService.java:33)
         at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
         at java.base/java.lang.reflect.Method.invoke(Method.java:580)
         at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:360)
@@ -1193,8 +1188,8 @@ Context: field 'age'
         at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:119)
         at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
         at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:728)
-        at com.example.graphql.person.service.PersonService$$SpringCGLIB$$0.searchPeople(<generated>)
-        at com.example.graphql.person.graphql.controller.PersonController.searchPeople(PersonController.java:43)
+        at com.example.graphql.person.domain.service.PersonService$$SpringCGLIB$$0.searchPeople(<generated>)
+        at com.example.graphql.person.graphql.controller.PersonController.searchPeople(PersonController.java:38)
         at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
         at java.base/java.lang.reflect.Method.invoke(Method.java:580)
         at org.springframework.graphql.data.method.InvocableHandlerMethodSupport.doInvoke(InvocableHandlerMethodSupport.java:117)
@@ -1275,6 +1270,257 @@ Context: field 'age'
         at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
         at java.base/java.lang.Thread.run(Thread.java:1583)
 
-2025-12-24T15:42:57.489-05:00  INFO 59160 --- [graphql] [nio-8080-exec-6] c.e.g.p.l.RequestLoggingInstrumentation  : --------------------------------------------------------------------------------
-2025-12-24T15:42:57.489-05:00  INFO 59160 --- [graphql] [nio-8080-exec-6] c.e.g.p.l.RequestLoggingInstrumentation  : <<< END GRAPHQL REQUEST #5 (Thread: http-nio-8080-exec-6 [96])
-2025-12-24T15:42:57.489-05:00  INFO 59160 --- [graphql] [nio-8080-exec-6] c.e.g.p.l.RequestLoggingInstrumentation  : --------------------------------------------------------------------------------
+2025-12-26T15:35:11.990-05:00  INFO 15304 --- [graphql] [nio-8080-exec-4] c.e.g.p.l.RequestLoggingInstrumentation  : --------------------------------------------------------------------------------
+2025-12-26T15:35:11.990-05:00  INFO 15304 --- [graphql] [nio-8080-exec-4] c.e.g.p.l.RequestLoggingInstrumentation  : <<< END GRAPHQL REQUEST #5 (Thread: http-nio-8080-exec-4 [94])
+2025-12-26T15:35:11.990-05:00  INFO 15304 --- [graphql] [nio-8080-exec-4] c.e.g.p.l.RequestLoggingInstrumentation  : --------------------------------------------------------------------------------
+2025-12-26T15:35:11.966-05:00  INFO 15304 --- [graphql] [nio-8080-exec-4] c.e.g.p.l.RequestLoggingInstrumentation  : ================================================================================
+2025-12-26T15:35:11.966-05:00  INFO 15304 --- [graphql] [nio-8080-exec-4] c.e.g.p.l.RequestLoggingInstrumentation  : >>> START REQUEST #5 (Thread: http-nio-8080-exec-4 [94]) [Logger:54980154]: query { searchPeople( text: "", facetKeys: ["country","isActive"], statsKeys: ["salary","age"] ) ...
+2025-12-26T15:35:11.966-05:00  INFO 15304 --- [graphql] [nio-8080-exec-4] c.e.g.p.l.RequestLoggingInstrumentation  : ================================================================================
+2025-12-26T15:35:11.971-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ /* <criteria> */ select
+        ec1_0.id,
+        ec1_0.aggregate_root,
+        ec1_0.name 
+    from
+        entity_cfg ec1_0 
+    where
+        ec1_0.name=?
+2025-12-26T15:35:11.975-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ select
+        p1_0.parent_entity_id,
+        p1_0.id,
+        p1_0.data_type,
+        p1_0.dot_path,
+        p1_0.property_name,
+        p1_0.represented_entity_name 
+    from
+        property_cfg p1_0 
+    where
+        p1_0.parent_entity_id=?
+2025-12-26T15:35:11.979-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ /* <criteria> */ select
+        dc1_0.id,
+        dc1_0.active,
+        dc1_0.name,
+        dc1_0.target_entity_id 
+    from
+        dac_cfg dc1_0
+2025-12-26T15:35:11.980-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ select
+        ec1_0.id,
+        ec1_0.aggregate_root,
+        ec1_0.name,
+        p1_0.parent_entity_id,
+        p1_0.id,
+        p1_0.data_type,
+        p1_0.dot_path,
+        p1_0.property_name,
+        p1_0.represented_entity_name 
+    from
+        entity_cfg ec1_0 
+    left join
+        property_cfg p1_0 
+            on ec1_0.id=p1_0.parent_entity_id 
+    where
+        ec1_0.id=?
+2025-12-26T15:35:11.981-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ select
+        c1_0.dac_id,
+        c1_0.id,
+        c1_0.operator,
+        p1_0.id,
+        p1_0.data_type,
+        p1_0.dot_path,
+        pe1_0.id,
+        pe1_0.aggregate_root,
+        pe1_0.name,
+        p1_0.property_name,
+        p1_0.represented_entity_name 
+    from
+        dac_condition_cfg c1_0 
+    left join
+        property_cfg p1_0 
+            on p1_0.id=c1_0.property_id 
+    left join
+        entity_cfg pe1_0 
+            on pe1_0.id=p1_0.parent_entity_id 
+    where
+        c1_0.dac_id=?
+2025-12-26T15:35:11.983-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ select
+        p1_0.parent_entity_id,
+        p1_0.id,
+        p1_0.data_type,
+        p1_0.dot_path,
+        p1_0.property_name,
+        p1_0.represented_entity_name 
+    from
+        property_cfg p1_0 
+    where
+        p1_0.parent_entity_id=?
+2025-12-26T15:35:11.984-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ select
+        cv1_0.dac_condition_id,
+        cv1_0.condition_value 
+    from
+        dac_condition_values cv1_0 
+    where
+        cv1_0.dac_condition_id=?
+2025-12-26T15:35:11.984-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ select
+        c1_0.dac_id,
+        c1_0.id,
+        c1_0.operator,
+        p1_0.id,
+        p1_0.data_type,
+        p1_0.dot_path,
+        pe1_0.id,
+        pe1_0.aggregate_root,
+        pe1_0.name,
+        p1_0.property_name,
+        p1_0.represented_entity_name 
+    from
+        dac_condition_cfg c1_0 
+    left join
+        property_cfg p1_0 
+            on p1_0.id=c1_0.property_id 
+    left join
+        entity_cfg pe1_0 
+            on pe1_0.id=p1_0.parent_entity_id 
+    where
+        c1_0.dac_id=?
+2025-12-26T15:35:11.985-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ select
+        cv1_0.dac_condition_id,
+        cv1_0.condition_value 
+    from
+        dac_condition_values cv1_0 
+    where
+        cv1_0.dac_condition_id=?
+2025-12-26T15:35:11.986-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ /* <criteria> */ select
+        ec1_0.id,
+        ec1_0.aggregate_root,
+        ec1_0.name 
+    from
+        entity_cfg ec1_0 
+    where
+        ec1_0.name=?
+2025-12-26T15:35:11.988-05:00 DEBUG 15304 --- [graphql] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    /* Action: Generic Action | Thread: http-nio-8080-exec-4 [94] */ /* <criteria> */ select
+        ec1_0.id,
+        ec1_0.aggregate_root,
+        ec1_0.name 
+    from
+        entity_cfg ec1_0 
+    where
+        ec1_0.name=?
+2025-12-26T15:35:11.989-05:00 ERROR 15304 --- [graphql] [nio-8080-exec-4] s.g.e.ExceptionResolversExceptionHandler : Unresolved RuntimeException for executionId 38eebc39-f2ca-fab9-0c94-9cdcb94c20a7
+
+java.lang.RuntimeException: Property not found in registry: isActive
+        at com.example.graphql.person.infrastructure.search.HibernatePersonSearchAdapter.lambda$findProperty$7(HibernatePersonSearchAdapter.java:113)
+        at java.base/java.util.Optional.orElseThrow(Optional.java:403)
+        at com.example.graphql.person.infrastructure.search.HibernatePersonSearchAdapter.lambda$findProperty$8(HibernatePersonSearchAdapter.java:113)
+        at java.base/java.util.Optional.orElseGet(Optional.java:364)
+        at com.example.graphql.person.infrastructure.search.HibernatePersonSearchAdapter.findProperty(HibernatePersonSearchAdapter.java:108)
+        at com.example.graphql.person.infrastructure.search.HibernatePersonSearchAdapter.search(HibernatePersonSearchAdapter.java:68)
+        at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+        at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+        at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:360)
+        at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:196)
+        at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
+        at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.invoke(PersistenceExceptionTranslationInterceptor.java:138)
+        at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
+        at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:728)
+        at com.example.graphql.person.infrastructure.search.HibernatePersonSearchAdapter$$SpringCGLIB$$0.search(<generated>)
+        at com.example.graphql.person.domain.service.PersonService.searchPeople(PersonService.java:33)
+        at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+        at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+        at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:360)
+        at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:196)
+        at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
+        at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:380)
+        at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:119)
+        at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
+        at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:728)
+        at com.example.graphql.person.domain.service.PersonService$$SpringCGLIB$$0.searchPeople(<generated>)
+        at com.example.graphql.person.graphql.controller.PersonController.searchPeople(PersonController.java:38)
+        at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+        at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+        at org.springframework.graphql.data.method.InvocableHandlerMethodSupport.doInvoke(InvocableHandlerMethodSupport.java:117)
+        at org.springframework.graphql.data.method.annotation.support.DataFetcherHandlerMethod.validateAndInvoke(DataFetcherHandlerMethod.java:142)
+        at org.springframework.graphql.data.method.annotation.support.DataFetcherHandlerMethod.invoke(DataFetcherHandlerMethod.java:125)
+        at org.springframework.graphql.data.method.annotation.support.DataFetcherHandlerMethod.invoke(DataFetcherHandlerMethod.java:103)
+        at org.springframework.graphql.data.method.annotation.support.AnnotatedControllerConfigurer$SchemaMappingDataFetcher.get(AnnotatedControllerConfigurer.java:521)
+        at org.springframework.graphql.execution.ContextDataFetcherDecorator.lambda$get$0(ContextDataFetcherDecorator.java:92)
+        at io.micrometer.context.ContextSnapshot.lambda$wrap$1(ContextSnapshot.java:106)
+        at org.springframework.graphql.execution.ContextDataFetcherDecorator.get(ContextDataFetcherDecorator.java:92)
+        at graphql.execution.ExecutionStrategy.invokeDataFetcher(ExecutionStrategy.java:510)
+        at graphql.execution.ExecutionStrategy.fetchField(ExecutionStrategy.java:464)
+        at graphql.execution.ExecutionStrategy.fetchField(ExecutionStrategy.java:404)
+        at graphql.execution.ExecutionStrategy.resolveFieldWithInfo(ExecutionStrategy.java:363)
+        at graphql.execution.ExecutionStrategy.getAsyncFieldValueInfo(ExecutionStrategy.java:328)
+        at graphql.execution.AsyncExecutionStrategy.execute(AsyncExecutionStrategy.java:57)
+        at graphql.execution.Execution.executeOperation(Execution.java:205)
+        at graphql.execution.Execution.execute(Execution.java:124)
+        at graphql.GraphQL.execute(GraphQL.java:549)
+        at graphql.GraphQL.lambda$parseValidateAndExecute$13(GraphQL.java:479)
+        at java.base/java.util.concurrent.CompletableFuture.uniComposeStage(CompletableFuture.java:1187)
+        at java.base/java.util.concurrent.CompletableFuture.thenCompose(CompletableFuture.java:2341)
+        at graphql.EngineRunningState.compose(EngineRunningState.java:87)
+        at graphql.GraphQL.parseValidateAndExecute(GraphQL.java:474)
+        at graphql.GraphQL.lambda$executeAsync$9(GraphQL.java:434)
+        at java.base/java.util.concurrent.CompletableFuture.uniComposeStage(CompletableFuture.java:1187)
+        at java.base/java.util.concurrent.CompletableFuture.thenCompose(CompletableFuture.java:2341)
+        at graphql.EngineRunningState.compose(EngineRunningState.java:87)
+        at graphql.GraphQL.lambda$executeAsync$10(GraphQL.java:423)
+        at graphql.EngineRunningState.call(EngineRunningState.java:198)
+        at graphql.GraphQL.executeAsync(GraphQL.java:416)
+        at org.springframework.graphql.execution.DefaultExecutionGraphQlService.lambda$execute$4(DefaultExecutionGraphQlService.java:97)
+        at reactor.core.publisher.MonoDeferContextual.subscribe(MonoDeferContextual.java:47)
+        at reactor.core.publisher.Mono.subscribe(Mono.java:4576)
+        at reactor.core.publisher.Mono.subscribeWith(Mono.java:4641)
+        at reactor.core.publisher.Mono.toFuture(Mono.java:5153)
+        at org.springframework.graphql.server.webmvc.GraphQlHttpHandler.prepareResponse(GraphQlHttpHandler.java:119)
+        at org.springframework.graphql.server.webmvc.AbstractGraphQlHttpHandler.handleRequest(AbstractGraphQlHttpHandler.java:137)
+        at org.springframework.web.servlet.function.support.HandlerFunctionAdapter.handle(HandlerFunctionAdapter.java:108)
+        at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089)
+        at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979)
+        at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
+        at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914)
+        at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:590)
+        at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
+        at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
+        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:195)
+        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+        at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
+        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+        at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+        at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+        at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+        at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+        at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+        at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+        at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
+        at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
+        at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:483)
+        at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:116)
+        at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
+        at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+        at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)
+        at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:398)
+        at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+        at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:903)
+        at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1769)
+        at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+        at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1189)
+        at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:658)
+        at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+        at java.base/java.lang.Thread.run(Thread.java:1583)

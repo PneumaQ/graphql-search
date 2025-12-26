@@ -1,12 +1,12 @@
 package com.example.graphql.product.service;
 
-import com.example.graphql.product.model.Product;
-import com.example.graphql.product.repository.ProductRepository;
-import com.example.graphql.product.repository.search.ProductSearchRepository;
-import com.example.graphql.platform.filter.SearchConditionInput;
+import com.example.graphql.product.domain.model.Product;
+import com.example.graphql.product.domain.model.Review;
+import com.example.graphql.product.domain.repository.ProductRepository;
+import com.example.graphql.product.domain.repository.ProductSearchRepository;
 import com.example.graphql.product.graphql.input.ProductSortInput;
-import com.example.graphql.product.model.Review;
 import com.example.graphql.product.graphql.type.ProductSearchResult;
+import com.example.graphql.platform.filter.SearchConditionInput;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

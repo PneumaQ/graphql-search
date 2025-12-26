@@ -1,0 +1,108 @@
+agent_profile:
+  name: spring-boot-java-search-first-ddd
+  version: "2.1"
+  description: "Optimized for Registry-First architectures, Developer Comfort, and Velocity"
+  java_version: ">=17"
+  framework:
+    spring_boot: ">=3.2"
+  architectural_style: pragmatic_hexagonal_ddd
+  priority_order:
+    - developer_experience
+    - registry_integrity
+    - search_first_performance
+    - domain_model_integrity
+
+developer_experience:
+  principles:
+    - rule: vertical_slice_proximity
+      description: "Keep all layers of a feature (API, Domain, Infra) in the same parent feature package to minimize navigation."
+      required: true
+    - rule: boilerplate_elimination
+      description: "Use Records for DTOs and Lombok (@Data, @Builder) for Entities. No manual getters/setters."
+      required: true
+    - rule: automated_hydration
+      description: "Complex input-to-entity merging must be handled by a dedicated MergeService to keep controllers thin."
+      required: true
+    - rule: x_ray_visibility
+      description: "Log the resolution of logical field names to technical index paths to make the Registry transparent."
+      required: true
+    - rule: zero_config_start
+      description: "Default profile must run perfectly using H2 and Lucene with zero external dependencies."
+      required: true
+
+registry_first_rules:
+  metadata_authority:
+    - rule: technical_paths_derived_from_registry
+      description: "Index paths (e.g., name_keyword) must be resolved via PropertyCfg, never hardcoded in services."
+      required: true
+    - rule: registry_driven_discovery
+      description: "The 'metadata' query is the source of truth for dynamic UI and Search construction."
+      required: true
+
+packaging_structure:
+  enforce_vertical_slices:
+    feature_root: "com.project.context.{feature_name}"
+    layers:
+      domain: "{feature_root}.domain.{model|repository|service|exception|event}"
+      application: "{feature_root}.application.{usecase}"
+      infrastructure: "{feature_root}.infrastructure.{persistence|search|config}"
+      api: "{feature_root}.graphql.{controller|input|type}"
+
+domain_layer:
+  purity_level: pragmatic
+  rules:
+    - rule: allow_hybrid_entities
+      description: "JPA and Hibernate Search annotations are allowed on models to reduce mapping boilerplate."
+      permitted: true
+    - rule: pragmatic_spring_in_domain
+      description: "Allow @Service and @Component for auto-discovery, but strictly forbid @Autowired or @Value. Use constructor injection to ensure logic remains 100% testable without a Spring context."
+      required: true
+    - rule: domain_exceptions_only
+      description: "Logic throws DomainExceptions; Infrastructure maps them to GraphQL errors."
+      required: true
+
+search_first_patterns:
+  intelligence:
+    - rule: search_logic_in_infrastructure
+      description: "Complex Hibernate Search predicates live in Infrastructure implementations of Domain Interfaces."
+      required: true
+    - rule: enforce_hibernate_entity_hydration
+      description: "Search results must always hydrate full JPA entities from the database to ensure Hibernate hooks and lifecycle events are triggered."
+      required: true
+    - rule: eventually_consistent_awareness
+      description: "Assume a ~500ms delay between DB write and Index availability in UI flows."
+      required: true
+
+aggregate_rules:
+  identity:
+    - rule: use_long_ids
+      description: "Standardize on Long IDs for simplicity unless UUID is explicitly requested."
+      required: true
+  persistence:
+    - rule: hydration_accelerators_for_mutations
+      description: "Use MergeServices to hydrate Aggregate Roots from Inputs before applying business logic."
+      required: true
+
+testing_strategy:
+  execution:
+    - rule: logic_tests_without_context
+      description: "Test domain logic in pure JUnit/Mockito for millisecond execution."
+      required: true
+    - rule: search_integration_tests
+      description: "Verify complex filters/facets using H2 and Lucene/Elasticsearch profiles."
+      required: true
+
+anti_patterns:
+  forbidden:
+    - hardcoded_index_paths
+    - direct_repository_access_from_controller
+    - leaking_infrastructure_to_domain_logic
+    - folder_hunting (Keep files related to a feature close together)
+
+acceptance:
+  enforcement:
+    mode: advisory
+    warn_on:
+      - rule_violation
+      - package_boundary_breach
+    suggest_refactor: true

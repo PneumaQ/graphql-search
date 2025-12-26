@@ -1,8 +1,9 @@
 package com.example.graphql.publications.graphql.controller;
 
-import com.example.graphql.publications.model.Publication;
+import com.example.graphql.publications.domain.model.Publication;
+import com.example.graphql.publications.domain.model.PublicationAuthor;
 import com.example.graphql.publications.service.PublicationService;
-import com.example.graphql.publications.graphql.input.PublicationFilterInput;
+import com.example.graphql.platform.filter.SearchConditionInput;
 import com.example.graphql.publications.graphql.input.PublicationSortInput;
 import com.example.graphql.publications.graphql.type.PublicationSearchResult;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -28,7 +29,7 @@ public class PublicationController {
     @QueryMapping
     public PublicationSearchResult searchPublications(
             @Argument String text,
-            @Argument PublicationFilterInput filter,
+            @Argument List<SearchConditionInput> filter,
             @Argument List<PublicationSortInput> sort,
             @Argument Integer page,
             @Argument Integer size) {

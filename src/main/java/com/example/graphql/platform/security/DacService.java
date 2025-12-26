@@ -5,7 +5,9 @@ import com.example.graphql.platform.metadata.EntityCfgRepository;
 import com.example.graphql.platform.metadata.PropertyCfg;
 import com.example.graphql.platform.metadata.PropertyCfgRepository;
 import com.example.graphql.platform.filter.SearchConditionInput;
-import jakarta.persistence.EntityManager;
+import com.example.graphql.platform.search.UniversalQueryBuilder;
+import org.hibernate.search.engine.search.predicate.dsl.SearchPredicateFactory;
+import org.hibernate.search.engine.search.predicate.SearchPredicate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -16,10 +18,22 @@ public class DacService {
 
     private final EntityCfgRepository entityCfgRepository;
     private final DacCfgRepository dacCfgRepository;
+    private final UniversalQueryBuilder queryBuilder;
 
-    public DacService(EntityCfgRepository entityCfgRepository, DacCfgRepository dacCfgRepository) {
+    public DacService(EntityCfgRepository entityCfgRepository, 
+                      DacCfgRepository dacCfgRepository,
+                      UniversalQueryBuilder queryBuilder) {
         this.entityCfgRepository = entityCfgRepository;
         this.dacCfgRepository = dacCfgRepository;
+        this.queryBuilder = queryBuilder;
+    }
+
+    public SearchPredicate getSecurityPredicate(SearchPredicateFactory f, EntityCfg rootEntity) {
+        List<SearchConditionInput> conditions = getSecurityConditions(rootEntity.getName());
+        if (conditions.isEmpty()) {
+            return f.matchAll().toPredicate();
+        }
+        return queryBuilder.build(f, conditions, rootEntity).toPredicate();
     }
 
     public List<SearchConditionInput> getSecurityConditions(String entityName) {
